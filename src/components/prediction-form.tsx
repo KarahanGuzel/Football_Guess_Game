@@ -46,18 +46,30 @@ export function PredictionForm({
     return row?.result && row?.goalsMarket;
   });
 
-  function update(
-    matchId: string,
-    key: "result" | "goalsMarket",
-    value: PredictResult | GoalsMarket,
-  ) {
-    setDraft((prev) => ({
-      ...prev,
-      [matchId]: {
-        ...prev[matchId],
-        [key]: value,
-      },
-    }));
+  function toggleResult(matchId: string, value: PredictResult) {
+    setDraft((prev) => {
+      const current = prev[matchId]?.result ?? "";
+      return {
+        ...prev,
+        [matchId]: {
+          ...prev[matchId],
+          result: current === value ? "" : value,
+        },
+      };
+    });
+  }
+
+  function toggleGoals(matchId: string, value: GoalsMarket) {
+    setDraft((prev) => {
+      const current = prev[matchId]?.goalsMarket ?? "";
+      return {
+        ...prev,
+        [matchId]: {
+          ...prev[matchId],
+          goalsMarket: current === value ? "" : value,
+        },
+      };
+    });
   }
 
   function onSave() {
@@ -80,7 +92,7 @@ export function PredictionForm({
   return (
     <div style={{ display: "grid", gap: "0.85rem" }}>
       {matches.map((match) => {
-        const row = draft[match.id];
+        const row = draft[match.id] ?? { result: "", goalsMarket: "" };
         return (
           <article key={match.id} className="panel" style={{ display: "grid", gap: "0.75rem" }}>
             <div
@@ -106,10 +118,10 @@ export function PredictionForm({
               </div>
             </div>
 
-            <fieldset disabled={locked} style={{ border: 0, margin: 0, padding: 0 }}>
-              <legend className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
+            <div>
+              <div className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
                 Maç sonucu
-              </legend>
+              </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
                 {(
                   [
@@ -117,69 +129,65 @@ export function PredictionForm({
                     ["draw", "Berabere"],
                     ["away", `${match.away_team.short_name} kazanır`],
                   ] as const
-                ).map(([value, label]) => (
-                  <label
-                    key={value}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "0.45rem 0.7rem",
-                      borderRadius: 999,
-                      border: "1px solid var(--line)",
-                      background:
-                        row.result === value ? "var(--bg-soft)" : "transparent",
-                      cursor: locked ? "default" : "pointer",
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name={`result-${match.id}`}
-                      checked={row.result === value}
-                      onChange={() => update(match.id, "result", value)}
-                    />
-                    {label}
-                  </label>
-                ))}
+                ).map(([value, label]) => {
+                  const selected = row.result === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      disabled={locked}
+                      onClick={() => toggleResult(match.id, value)}
+                      style={{
+                        padding: "0.45rem 0.7rem",
+                        borderRadius: 999,
+                        border: "1px solid var(--line)",
+                        background: selected ? "var(--bg-soft)" : "transparent",
+                        color: "var(--text)",
+                        cursor: locked ? "default" : "pointer",
+                        fontWeight: selected ? 700 : 500,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
-            </fieldset>
+            </div>
 
-            <fieldset disabled={locked} style={{ border: 0, margin: 0, padding: 0 }}>
-              <legend className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
+            <div>
+              <div className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
                 Gol alt/üst 2.5
-              </legend>
+              </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
                 {(
                   [
                     ["under_25", "Alt 2.5"],
                     ["over_25", "Üst 2.5"],
                   ] as const
-                ).map(([value, label]) => (
-                  <label
-                    key={value}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "0.45rem 0.7rem",
-                      borderRadius: 999,
-                      border: "1px solid var(--line)",
-                      background:
-                        row.goalsMarket === value ? "var(--bg-soft)" : "transparent",
-                      cursor: locked ? "default" : "pointer",
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name={`goals-${match.id}`}
-                      checked={row.goalsMarket === value}
-                      onChange={() => update(match.id, "goalsMarket", value)}
-                    />
-                    {label}
-                  </label>
-                ))}
+                ).map(([value, label]) => {
+                  const selected = row.goalsMarket === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      disabled={locked}
+                      onClick={() => toggleGoals(match.id, value)}
+                      style={{
+                        padding: "0.45rem 0.7rem",
+                        borderRadius: 999,
+                        border: "1px solid var(--line)",
+                        background: selected ? "var(--bg-soft)" : "transparent",
+                        color: "var(--text)",
+                        cursor: locked ? "default" : "pointer",
+                        fontWeight: selected ? 700 : 500,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
-            </fieldset>
+            </div>
           </article>
         );
       })}
