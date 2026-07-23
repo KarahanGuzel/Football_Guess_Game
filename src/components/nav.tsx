@@ -3,7 +3,7 @@ import { logoutAction } from "@/app/actions/auth";
 import type { SessionPlayer } from "@/types/session";
 
 const links = [
-  { href: "/", label: "Bu Hafta" },
+  { href: "/", label: "Ana Sayfa" },
   { href: "/standings", label: "Puan Durumu" },
   { href: "/history", label: "Geçmiş" },
   { href: "/fixtures", label: "Gelecek" },
