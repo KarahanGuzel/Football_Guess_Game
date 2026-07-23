@@ -17,16 +17,7 @@ export function AppNav({
   pathname: string;
 }) {
   return (
-    <header
-      style={{
-        borderBottom: "1px solid var(--line)",
-        background: "color-mix(in srgb, var(--bg) 85%, black)",
-        position: "sticky",
-        top: 0,
-        zIndex: 20,
-        backdropFilter: "blur(10px)",
-      }}
-    >
+    <header className="site-header">
       <div
         className="container"
         style={{
@@ -35,11 +26,11 @@ export function AppNav({
           alignItems: "center",
           justifyContent: "space-between",
           gap: "0.75rem",
-          padding: "0.85rem 0",
+          padding: "0.9rem 0",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <Link href="/" style={{ fontWeight: 800, letterSpacing: "-0.02em" }}>
+          <Link href="/" className="brand">
             Tahmin Ligi
           </Link>
           <span className="muted" style={{ fontSize: "0.85rem" }}>
@@ -51,7 +42,7 @@ export function AppNav({
           style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: "0.35rem",
+            gap: "0.3rem",
             alignItems: "center",
           }}
         >
@@ -61,14 +52,7 @@ export function AppNav({
               <Link
                 key={link.href}
                 href={link.href}
-                style={{
-                  padding: "0.4rem 0.7rem",
-                  borderRadius: 999,
-                  background: active ? "var(--bg-soft)" : "transparent",
-                  border: active ? "1px solid var(--line)" : "1px solid transparent",
-                  fontSize: "0.9rem",
-                  fontWeight: active ? 700 : 500,
-                }}
+                className={`nav-link${active ? " nav-link-active" : ""}`}
               >
                 {link.label}
               </Link>
@@ -77,24 +61,17 @@ export function AppNav({
           {player.isAdmin ? (
             <Link
               href="/admin"
-              style={{
-                padding: "0.4rem 0.7rem",
-                borderRadius: 999,
-                background:
-                  pathname.startsWith("/admin") ? "var(--bg-soft)" : "transparent",
-                border: pathname.startsWith("/admin")
-                  ? "1px solid var(--line)"
-                  : "1px solid transparent",
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                color: "var(--accent)",
-              }}
+              className={`nav-link${pathname.startsWith("/admin") ? " nav-link-active" : ""}`}
+              style={{ color: "var(--accent)", fontWeight: 700 }}
             >
               Yönetim
             </Link>
           ) : null}
           <form action={logoutAction}>
-            <button className="btn btn-secondary" type="submit" style={{ padding: "0.4rem 0.7rem" }}>
+            <button
+              className="btn btn-secondary btn-sm"
+              type="submit"
+            >
               Çıkış
             </button>
           </form>

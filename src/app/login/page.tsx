@@ -15,9 +15,11 @@ export default async function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: "2rem auto" }}>
-      <h1 className="page-title">Tahmin Ligi</h1>
-      <p className="page-sub">Kullanıcı adını seçip giriş yap.</p>
+    <div style={{ maxWidth: 440, margin: "3.5rem auto" }} className="reveal">
+      <header className="page-header" style={{ marginBottom: "1.25rem" }}>
+        <h1 className="page-title">Tahmin Ligi</h1>
+        <p className="page-sub">Kullanıcı adını seçip giriş yap.</p>
+      </header>
 
       {configError ? (
         <div className="panel" style={{ color: "#ffb4b4" }}>

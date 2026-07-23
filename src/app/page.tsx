@@ -41,15 +41,15 @@ export default async function HomePage() {
   const locked = weekData ? weekData.status !== "open" : true;
 
   return (
-    <div style={{ display: "grid", gap: "1.75rem" }}>
-      <section>
+    <div className="stack-lg">
+      <header className="page-header">
         <h1 className="page-title">Ana Sayfa</h1>
         <p className="page-sub">Yayındaki haftanın maçları ve güncel puan durumu.</p>
-      </section>
+      </header>
 
-      <section style={{ display: "grid", gap: "0.85rem" }}>
+      <section className="stack-md reveal">
         <div>
-          <h2 style={{ margin: 0, fontSize: "1.15rem" }}>
+          <h2 className="section-title">
             {weekData ? weekData.week.label : "Bu Hafta"}
           </h2>
           {weekData ? (
@@ -87,18 +87,10 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section style={{ display: "grid", gap: "0.85rem" }}>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            gap: "0.5rem",
-            alignItems: "end",
-          }}
-        >
+      <section className="stack-md reveal">
+        <div className="section-head" style={{ marginBottom: 0 }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: "1.15rem" }}>Puan Durumu</h2>
+            <h2 className="section-title">Puan Durumu</h2>
             <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
               Güncel sıralama
             </p>

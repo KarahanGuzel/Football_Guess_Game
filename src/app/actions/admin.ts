@@ -218,3 +218,15 @@ export async function deleteMatchAction(weekId: string, matchId: string) {
   revalidatePath(`/admin/weeks/${weekId}`);
   return { ok: true as const };
 }
+
+export async function deleteWeekAction(weekId: string) {
+  await requireAdmin();
+  const week = await getWeek(weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+
+  const { error } = await getSupabaseAdmin().from("weeks").delete().eq("id", weekId);
+
+  if (error) return { error: error.message };
+  revalidateAll();
+  return { ok: true as const };
+}
