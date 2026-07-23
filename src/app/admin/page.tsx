@@ -16,7 +16,7 @@ export default async function AdminPage() {
 
   return (
     <div>
-      <h1 className="page-title">Admin</h1>
+      <h1 className="page-title">Yönetim</h1>
       <p className="page-sub">Hafta oluştur, maç ekle, bonus seç, skor gir, puan hesapla.</p>
 
       <div style={{ display: "grid", gap: "1rem" }}>

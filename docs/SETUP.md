@@ -14,13 +14,37 @@ MVP’yi ayağa kaldırmak için senin yapman gerekenler:
 
 ## 2) Oyuncu isimleri
 
-Migration örnek oyuncular ekler: `Admin`, `Ali`, `Ayşe`, `Mehmet`, `Zeynep`.
+Migration şu oyuncuları ekler:
 
-Gerçek isimler için SQL Editor’de güncelle/ekle:
+| İsim | Rol |
+|---|---|
+| Karahan | Admin |
+| Batuhan | Oyuncu |
+| Buğra | Oyuncu |
+| Baran | Oyuncu |
+| Atınç | Oyuncu |
+| Emrah | Oyuncu |
+| Kaan | Oyuncu |
+
+Eski örnek seed’i (Admin/Ali/…) çalıştırdıysan SQL Editor’de şunu çalıştır:
 
 ```sql
-update public.players set display_name = 'SeninAdın' where slug = 'admin';
+delete from public.predictions;
+delete from public.players;
 
+insert into public.players (display_name, slug, is_admin) values
+  ('Karahan', 'karahan', true),
+  ('Batuhan', 'batuhan', false),
+  ('Buğra', 'bugra', false),
+  ('Baran', 'baran', false),
+  ('Atınç', 'atinc', false),
+  ('Emrah', 'emrah', false),
+  ('Kaan', 'kaan', false);
+```
+
+Yeni oyuncu eklemek için:
+
+```sql
 insert into public.players (display_name, slug, is_admin)
 values ('YeniOyuncu', 'yeni-oyuncu', false);
 ```
@@ -60,8 +84,8 @@ Project → Settings → Environment Variables → aynı 4 değişkeni ekle.
 
 ## 5) İlk kullanım
 
-1. `/login` → **Admin** ile gir.
-2. **Admin** → hafta oluştur → maç ekle → 1 bonus seç → **Haftayı Aç**.
+1. `/login` → **Karahan** ile gir.
+2. **Yönetim** → hafta oluştur → maç ekle → 1 bonus seç → **Haftayı Aç**.
 3. Diğer kullanıcılarla giriş yapıp tahmin gir.
 4. Maçlar bitince skorları gir → **Puanları Hesapla**.
 

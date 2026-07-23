@@ -31,7 +31,7 @@ export function LoginForm({ players }: { players: Player[] }) {
           {players.map((player) => (
             <option key={player.id} value={player.id}>
               {player.display_name}
-              {player.is_admin ? " (admin)" : ""}
+                  {player.is_admin ? " (yönetici)" : ""}
             </option>
           ))}
         </select>

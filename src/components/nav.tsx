@@ -90,7 +90,7 @@ export function AppNav({
                 color: "var(--accent)",
               }}
             >
-              Admin
+              Yönetim
             </Link>
           ) : null}
           <form action={logoutAction}>

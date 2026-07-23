@@ -33,7 +33,7 @@ export default async function CurrentWeekPage() {
         <h1 className="page-title">Bu Hafta</h1>
         <p className="page-sub">Şu an açık bir tahmin haftası yok.</p>
         <div className="panel muted">
-          Admin yeni bir hafta açtığında burada görünecek.
+          Yönetici yeni bir hafta açtığında burada görünecek.
         </div>
       </div>
     );
