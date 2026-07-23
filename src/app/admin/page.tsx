@@ -1,11 +1,12 @@
 import { requireAdmin } from "@/lib/auth/current-user";
-import { listWeeks } from "@/lib/data";
+import { getStandings, listWeeks } from "@/lib/data";
+import { AdminStandingsPanel } from "@/components/admin/standings-panel";
 import { AdminWeeksList } from "@/components/admin/weeks-list";
 import { CreateWeekForm } from "@/components/admin/create-week-form";
 
 export default async function AdminPage() {
   await requireAdmin();
-  const weeks = await listWeeks();
+  const [weeks, standings] = await Promise.all([listWeeks(), getStandings()]);
 
   return (
     <div className="stack-lg">
@@ -28,6 +29,8 @@ export default async function AdminPage() {
         </div>
         <AdminWeeksList weeks={weeks} />
       </section>
+
+      <AdminStandingsPanel rows={standings} />
     </div>
   );
 }

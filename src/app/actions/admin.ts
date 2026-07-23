@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getMatchesForWeek, getWeek } from "@/lib/data";
+import {
+  getMatchesForWeek,
+  getPredictionsForMatches,
+  getWeek,
+} from "@/lib/data";
+import { scorePrediction } from "@/lib/scoring";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 function revalidateAll() {
@@ -75,6 +80,20 @@ export async function lockWeekAction(weekId: string) {
 
   if (error) return { error: error.message };
   revalidateAll();
+  return { ok: true as const };
+}
+
+export async function unlockWeekAction(weekId: string) {
+  await requireAdmin();
+  const { error } = await getSupabaseAdmin()
+    .from("weeks")
+    .update({ status: "open" })
+    .eq("id", weekId)
+    .eq("status", "locked");
+
+  if (error) return { error: error.message };
+  revalidateAll();
+  revalidatePath(`/admin/weeks/${weekId}`);
   return { ok: true as const };
 }
 
@@ -243,14 +262,149 @@ export async function saveWeekScoresAction(input: {
 
 export async function calculateWeekPointsAction(weekId: string) {
   await requireAdmin();
-  const { error } = await getSupabaseAdmin().rpc("calculate_week_points", {
-    p_week_id: weekId,
-  });
 
-  if (error) return { error: error.message };
+  const week = await getWeek(weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+  if (week.status !== "locked") {
+    return { error: "Puan hesaplamak için hafta kilitli olmalı." };
+  }
+
+  const matches = await getMatchesForWeek(weekId);
+  if (matches.length === 0) return { error: "Bu haftada maç yok." };
+
+  const incomplete = matches.some(
+    (m) => m.home_goals === null || m.away_goals === null,
+  );
+  if (incomplete) {
+    return { error: "Tüm maç skorları kaydedilmeden puan hesaplanamaz." };
+  }
+
+  const matchById = new Map(matches.map((m) => [m.id, m]));
+  const predictions = await getPredictionsForMatches(matches.map((m) => m.id));
+  const db = getSupabaseAdmin();
+
+  for (const prediction of predictions) {
+    const match = matchById.get(prediction.match_id);
+    if (!match || match.home_goals === null || match.away_goals === null) {
+      continue;
+    }
+
+    const scored = scorePrediction({
+      result: prediction.result,
+      goalsMarket: prediction.goals_market,
+      homeGoals: match.home_goals,
+      awayGoals: match.away_goals,
+      isBonus: match.is_bonus,
+      isDerby: match.is_derby,
+    });
+
+    const { error } = await db
+      .from("predictions")
+      .update({
+        result_correct: scored.resultCorrect,
+        goals_correct: scored.goalsCorrect,
+        points_earned: scored.pointsEarned,
+      })
+      .eq("id", prediction.id);
+
+    if (error) return { error: error.message };
+  }
+
+  const finishMatches = await db
+    .from("matches")
+    .update({ status: "finished" })
+    .eq("week_id", weekId);
+  if (finishMatches.error) return { error: finishMatches.error.message };
+
+  const scoreWeek = await db
+    .from("weeks")
+    .update({ status: "scored" })
+    .eq("id", weekId);
+  if (scoreWeek.error) return { error: scoreWeek.error.message };
+
   revalidateAll();
   revalidatePath(`/admin/weeks/${weekId}`);
   revalidatePath(`/history/${weekId}`);
+  return { ok: true as const };
+}
+
+/** Puanlanmış haftayı sıfırlar: skorlar + o haftanın tahmin puanları temizlenir, durum kilitli olur. */
+export async function clearWeekAction(weekId: string) {
+  await requireAdmin();
+  const week = await getWeek(weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+  if (week.status !== "scored") {
+    return { error: "Sadece puanı hesaplanmış hafta temizlenebilir." };
+  }
+
+  const matches = await getMatchesForWeek(weekId);
+  const matchIds = matches.map((m) => m.id);
+  const db = getSupabaseAdmin();
+
+  if (matchIds.length > 0) {
+    const clearPredictions = await db
+      .from("predictions")
+      .update({
+        result_correct: null,
+        goals_correct: null,
+        points_earned: null,
+      })
+      .in("match_id", matchIds);
+    if (clearPredictions.error) return { error: clearPredictions.error.message };
+  }
+
+  const clearScores = await db
+    .from("matches")
+    .update({
+      home_goals: null,
+      away_goals: null,
+      status: "scheduled",
+    })
+    .eq("week_id", weekId);
+  if (clearScores.error) return { error: clearScores.error.message };
+
+  const resetWeek = await db
+    .from("weeks")
+    .update({ status: "locked" })
+    .eq("id", weekId);
+  if (resetWeek.error) return { error: resetWeek.error.message };
+
+  revalidateAll();
+  revalidatePath(`/admin/weeks/${weekId}`);
+  revalidatePath(`/history/${weekId}`);
+  return { ok: true as const };
+}
+
+/** Tüm puan tablosunu sıfırlar (tüm tahmin puanları + puanlanmış haftalar kilitliye döner). */
+export async function resetStandingsAction() {
+  await requireAdmin();
+  const db = getSupabaseAdmin();
+
+  const { data: predictionRows, error: listError } = await db
+    .from("predictions")
+    .select("id");
+  if (listError) return { error: listError.message };
+
+  const predictionIds = (predictionRows ?? []).map((row) => row.id as string);
+  if (predictionIds.length > 0) {
+    const clearPredictions = await db
+      .from("predictions")
+      .update({
+        result_correct: null,
+        goals_correct: null,
+        points_earned: null,
+      })
+      .in("id", predictionIds);
+    if (clearPredictions.error) return { error: clearPredictions.error.message };
+  }
+
+  const resetWeeks = await db
+    .from("weeks")
+    .update({ status: "locked" })
+    .eq("status", "scored");
+  if (resetWeeks.error) return { error: resetWeeks.error.message };
+
+  revalidateAll();
   return { ok: true as const };
 }
 

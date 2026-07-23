@@ -90,11 +90,11 @@ export function PredictionForm({
   }
 
   return (
-    <div style={{ display: "grid", gap: "0.85rem" }}>
+    <div className="prediction-form" style={{ display: "grid", gap: "0.9rem" }}>
       {matches.map((match) => {
         const row = draft[match.id] ?? { result: "", goalsMarket: "" };
         return (
-          <article key={match.id} className="panel" style={{ display: "grid", gap: "0.75rem" }}>
+          <article key={match.id} className="panel" style={{ display: "grid", gap: "0.85rem" }}>
             <div
               style={{
                 display: "flex",
