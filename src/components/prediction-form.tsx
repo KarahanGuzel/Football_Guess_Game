@@ -137,15 +137,8 @@ export function PredictionForm({
                       type="button"
                       disabled={locked}
                       onClick={() => toggleResult(match.id, value)}
-                      style={{
-                        padding: "0.45rem 0.7rem",
-                        borderRadius: 999,
-                        border: "1px solid var(--line)",
-                        background: selected ? "var(--bg-soft)" : "transparent",
-                        color: "var(--text)",
-                        cursor: locked ? "default" : "pointer",
-                        fontWeight: selected ? 700 : 500,
-                      }}
+                      className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
+                      style={{ cursor: locked ? "default" : "pointer" }}
                     >
                       {label}
                     </button>
@@ -172,15 +165,8 @@ export function PredictionForm({
                       type="button"
                       disabled={locked}
                       onClick={() => toggleGoals(match.id, value)}
-                      style={{
-                        padding: "0.45rem 0.7rem",
-                        borderRadius: 999,
-                        border: "1px solid var(--line)",
-                        background: selected ? "var(--bg-soft)" : "transparent",
-                        color: "var(--text)",
-                        cursor: locked ? "default" : "pointer",
-                        fontWeight: selected ? 700 : 500,
-                      }}
+                      className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
+                      style={{ cursor: locked ? "default" : "pointer" }}
                     >
                       {label}
                     </button>

@@ -21,7 +21,7 @@ export function AddMatchForm({
 
   return (
     <form
-      className="panel"
+      className="panel reveal"
       style={{ display: "grid", gap: "0.75rem" }}
       onSubmit={(event) => {
         event.preventDefault();
