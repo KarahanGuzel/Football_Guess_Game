@@ -305,23 +305,31 @@ begin
     raise exception 'SCORES_INCOMPLETE: all matches must have final scores';
   end if;
 
-  update public.predictions pr
+  update public.predictions as pr
   set
-    result_correct = s.result_correct,
-    goals_correct = s.goals_correct,
-    points_earned = s.points_earned,
+    result_correct = scored.result_correct,
+    goals_correct = scored.goals_correct,
+    points_earned = scored.points_earned,
     updated_at = now()
-  from public.matches m
-  cross join lateral public.score_prediction(
-    pr.result,
-    pr.goals_market,
-    m.home_goals,
-    m.away_goals,
-    m.is_bonus,
-    m.is_derby
-  ) s
-  where pr.match_id = m.id
-    and m.week_id = p_week_id;
+  from (
+    select
+      p.id as prediction_id,
+      s.result_correct,
+      s.goals_correct,
+      s.points_earned
+    from public.predictions p
+    join public.matches m on m.id = p.match_id
+    cross join lateral public.score_prediction(
+      p.result,
+      p.goals_market,
+      m.home_goals,
+      m.away_goals,
+      m.is_bonus,
+      m.is_derby
+    ) s
+    where m.week_id = p_week_id
+  ) scored
+  where pr.id = scored.prediction_id;
 
   update public.matches
   set status = 'finished',

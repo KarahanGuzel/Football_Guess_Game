@@ -186,6 +186,61 @@ export async function enterScoreAction(input: {
   return { ok: true as const };
 }
 
+export async function saveWeekScoresAction(input: {
+  weekId: string;
+  scores: { matchId: string; homeGoals: number; awayGoals: number }[];
+}) {
+  await requireAdmin();
+
+  const week = await getWeek(input.weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+  if (week.status !== "locked" && week.status !== "open") {
+    return { error: "Bu haftaya skor girilemez." };
+  }
+
+  const matches = await getMatchesForWeek(input.weekId);
+  const matchIds = new Set(matches.map((m) => m.id));
+
+  if (input.scores.length !== matches.length) {
+    return { error: "Tüm maçlar için skor girmelisin." };
+  }
+
+  for (const row of input.scores) {
+    if (!matchIds.has(row.matchId)) {
+      return { error: "Geçersiz maç." };
+    }
+    const homeGoals = Number(row.homeGoals);
+    const awayGoals = Number(row.awayGoals);
+    if (
+      !Number.isInteger(homeGoals) ||
+      !Number.isInteger(awayGoals) ||
+      homeGoals < 0 ||
+      awayGoals < 0
+    ) {
+      return { error: "Skorlar 0 veya pozitif tam sayı olmalı." };
+    }
+  }
+
+  const db = getSupabaseAdmin();
+  for (const row of input.scores) {
+    const { error } = await db
+      .from("matches")
+      .update({
+        home_goals: Number(row.homeGoals),
+        away_goals: Number(row.awayGoals),
+        status: "finished",
+      })
+      .eq("id", row.matchId)
+      .eq("week_id", input.weekId);
+
+    if (error) return { error: error.message };
+  }
+
+  revalidateAll();
+  revalidatePath(`/admin/weeks/${input.weekId}`);
+  return { ok: true as const };
+}
+
 export async function calculateWeekPointsAction(weekId: string) {
   await requireAdmin();
   const { error } = await getSupabaseAdmin().rpc("calculate_week_points", {

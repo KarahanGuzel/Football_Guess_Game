@@ -5,9 +5,9 @@ import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   calculateWeekPointsAction,
   deleteWeekAction,
-  enterScoreAction,
   lockWeekAction,
   openWeekAction,
+  saveWeekScoresAction,
   setBonusMatchAction,
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
@@ -52,10 +52,27 @@ export function AdminWeekControls({
 
   const phase = getPhase(week.status);
   const bonusCount = matches.filter((m) => m.is_bonus).length;
-  const allScoresEntered =
+  const allScoresSaved =
     matches.length > 0 &&
     matches.every((m) => m.home_goals !== null && m.away_goals !== null);
+  const localScoresComplete =
+    matches.length > 0 &&
+    matches.every((m) => {
+      const row = scores[m.id];
+      if (!row) return false;
+      const home = Number(row.home);
+      const away = Number(row.away);
+      return (
+        row.home !== "" &&
+        row.away !== "" &&
+        Number.isInteger(home) &&
+        Number.isInteger(away) &&
+        home >= 0 &&
+        away >= 0
+      );
+    });
   const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
+  const canCalculate = phase === "locked" && allScoresSaved;
 
   function run(
     action: () => Promise<{ error?: string; ok?: true }>,
@@ -193,16 +210,13 @@ export function AdminWeekControls({
         </section>
       ) : null}
 
-      {phase === "locked" || phase === "open" ? (
+      {phase === "locked" ? (
         <section className="panel reveal">
           <div className="section-head">
             <h2 className="section-title">Skorları gir</h2>
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-            Maçlar bitince skorları kaydet. Hepsi girilince puanları hesapla.
-            {phase === "open"
-              ? " (Tahminler hâlâ açıksa önce kilitlemen önerilir.)"
-              : null}
+            Tüm skorları doldur → Skorları Kaydet → Puanları Hesapla.
           </p>
 
           {matches.map((match) => (
@@ -243,48 +257,63 @@ export function AdminWeekControls({
                     }
                   />
                 </div>
-                <button
-                  className="btn btn-secondary"
-                  type="button"
-                  disabled={pending}
-                  onClick={() =>
-                    run(
-                      () =>
-                        enterScoreAction({
-                          matchId: match.id,
-                          weekId: week.id,
-                          homeGoals: Number(scores[match.id]?.home),
-                          awayGoals: Number(scores[match.id]?.away),
-                        }),
-                      "Skor kaydedildi.",
-                    )
-                  }
-                >
-                  Skoru Kaydet
-                </button>
               </div>
             </article>
           ))}
 
-          <button
-            className="btn btn-primary"
-            type="button"
-            disabled={pending || !allScoresEntered || phase === "open"}
-            onClick={() =>
-              run(() => calculateWeekPointsAction(week.id), "Puanlar hesaplandı.")
-            }
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.6rem",
+              marginTop: "0.35rem",
+            }}
           >
-            Puanları Hesapla
-          </button>
-          {phase === "open" ? (
+            <button
+              className="btn btn-secondary"
+              type="button"
+              disabled={pending || !localScoresComplete}
+              onClick={() =>
+                run(
+                  () =>
+                    saveWeekScoresAction({
+                      weekId: week.id,
+                      scores: matches.map((m) => ({
+                        matchId: m.id,
+                        homeGoals: Number(scores[m.id]?.home),
+                        awayGoals: Number(scores[m.id]?.away),
+                      })),
+                    }),
+                  "Skorlar kaydedildi. Şimdi puanları hesaplayabilirsin.",
+                )
+              }
+            >
+              Skorları Kaydet
+            </button>
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={pending || !canCalculate}
+              onClick={() =>
+                run(() => calculateWeekPointsAction(week.id), "Puanlar hesaplandı.")
+              }
+            >
+              Puanları Hesapla
+            </button>
+          </div>
+          {!localScoresComplete ? (
             <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
-              Puan hesaplamak için önce tahminleri kilitle.
+              Önce tüm maç skorlarını doldur.
             </p>
-          ) : !allScoresEntered ? (
+          ) : !allScoresSaved ? (
             <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
-              Hesaplama için tüm maç skorları girilmeli.
+              Skorları kaydettikten sonra puan hesaplama aktif olur.
             </p>
-          ) : null}
+          ) : (
+            <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
+              Skorlar kayıtlı. Puanları hesaplayabilirsin.
+            </p>
+          )}
         </section>
       ) : null}
 
