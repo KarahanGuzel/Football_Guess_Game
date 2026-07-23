@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   calculateWeekPointsAction,
+  clearWeekAction,
   deleteWeekAction,
   lockWeekAction,
   openWeekAction,
   saveWeekScoresAction,
   setBonusMatchAction,
+  unlockWeekAction,
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { formatKickoff } from "@/lib/format";
@@ -213,11 +215,27 @@ export function AdminWeekControls({
       {phase === "locked" ? (
         <section className="panel reveal">
           <div className="section-head">
-            <h2 className="section-title">Skorları gir</h2>
+            <h2 className="section-title">Kilit / Skor</h2>
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-            Tüm skorları doldur → Skorları Kaydet → Puanları Hesapla.
+            Tahminler kilitli. Gerekirse kilidi açabilirsin. Skor için: doldur →
+            Skorları Kaydet → Puanları Hesapla.
           </p>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            disabled={pending}
+            onClick={() =>
+              run(() => unlockWeekAction(week.id), "Kilit açıldı. Tahminler tekrar düzenlenebilir.")
+            }
+            style={{ marginBottom: "1rem" }}
+          >
+            Kilidi Aç
+          </button>
+
+          <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>
+            Skorları gir
+          </h3>
 
           {matches.map((match) => (
             <article key={match.id} className="score-block">
@@ -324,12 +342,30 @@ export function AdminWeekControls({
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             Puanlar hesaplandı. Sonuçları Geçmiş sayfasından görebilirsin.
+            Yanlışsa haftayı temizleyip yeniden girebilirsin.
           </p>
-          <div className="stack-xs">
+          <div className="stack-xs" style={{ marginBottom: "1rem" }}>
             {matches.map((match) => (
               <MatchRow key={match.id} match={match} showScores />
             ))}
           </div>
+          <button
+            className="btn btn-secondary"
+            type="button"
+            disabled={pending}
+            onClick={() => {
+              const confirmed = window.confirm(
+                `"${week.label}" temizlensin mi?\n\nSkorlar ve bu haftanın tahmin puanları silinir. Tahminler kalır; hafta tekrar kilitli duruma döner.`,
+              );
+              if (!confirmed) return;
+              run(
+                () => clearWeekAction(week.id),
+                "Hafta temizlendi. Skorları yeniden girebilirsin.",
+              );
+            }}
+          >
+            Haftayı Temizle
+          </button>
         </section>
       ) : null}
 
