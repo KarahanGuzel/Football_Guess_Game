@@ -11,7 +11,7 @@ export function CreateWeekForm() {
 
   return (
     <form
-      className="panel"
+      className="panel reveal"
       style={{ display: "grid", gap: "0.75rem" }}
       action={(formData) => {
         setError(null);
@@ -27,19 +27,22 @@ export function CreateWeekForm() {
         });
       }}
     >
+      <div className="section-head" style={{ marginBottom: 0 }}>
+        <h2 className="section-title">Yeni hafta ekle</h2>
+      </div>
       <div className="field">
-        <label htmlFor="label">Yeni hafta adı</label>
+        <label htmlFor="label">Hafta adı</label>
         <input
           id="label"
           name="label"
-          placeholder="Örn: 2025-26 12. Hafta"
+          placeholder="Örn: 2026-27 11. Hafta"
           required
         />
       </div>
       <button className="btn btn-primary" type="submit" disabled={pending}>
         {pending ? "Oluşturuluyor..." : "Hafta Oluştur"}
       </button>
-      {error ? <p style={{ color: "#ffb4b4", margin: 0 }}>{error}</p> : null}
+      {error ? <p className="flash flash-error">{error}</p> : null}
     </form>
   );
 }

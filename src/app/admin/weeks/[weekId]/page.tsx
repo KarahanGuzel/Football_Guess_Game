@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { AddMatchForm } from "@/components/admin/add-match-form";
 import { AdminWeekControls } from "@/components/admin/week-controls";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getMatchesForWeek, getWeek } from "@/lib/data";
+import { getMatchesForWeek, getWeek, listTeams } from "@/lib/data";
 
 const statusMeta: Record<string, { label: string; className: string }> = {
   draft: { label: "Taslak", className: "status-draft" },
@@ -21,7 +22,10 @@ export default async function AdminWeekPage({
   const week = await getWeek(weekId);
   if (!week) notFound();
 
-  const matches = await getMatchesForWeek(weekId);
+  const [matches, teams] = await Promise.all([
+    getMatchesForWeek(weekId),
+    listTeams(),
+  ]);
   const meta = statusMeta[week.status] ?? {
     label: week.status,
     className: "status-draft",
@@ -54,6 +58,11 @@ export default async function AdminWeekPage({
           </p>
         </header>
       </div>
+
+      {week.status === "draft" ? (
+        <AddMatchForm weekId={week.id} teams={teams} />
+      ) : null}
+
       <AdminWeekControls week={week} matches={matches} />
     </div>
   );

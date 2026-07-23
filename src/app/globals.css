@@ -382,3 +382,29 @@ select {
   border-color: var(--line);
   font-weight: 700;
 }
+
+.pick-chip {
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.pick-chip:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--text) 35%, var(--line));
+}
+
+.pick-chip-selected {
+  background: #ffffff;
+  color: #102016;
+  border-color: #ffffff;
+  font-weight: 700;
+}
+
+.pick-chip:disabled {
+  opacity: 0.85;
+}
