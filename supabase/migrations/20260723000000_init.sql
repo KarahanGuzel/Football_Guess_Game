@@ -400,12 +400,14 @@ insert into public.teams (name, short_name, is_derby_club, sort_order) values
   ('Göztepe', 'GÖZ', false, 6);
 
 -- ---------------------------------------------------------------------------
--- Seed: example players (replace names before production use)
+-- Seed: group players
 -- ---------------------------------------------------------------------------
 
 insert into public.players (display_name, slug, is_admin) values
-  ('Admin', 'admin', true),
-  ('Ali', 'ali', false),
-  ('Ayşe', 'ayse', false),
-  ('Mehmet', 'mehmet', false),
-  ('Zeynep', 'zeynep', false);
+  ('Karahan', 'karahan', true),
+  ('Batuhan', 'batuhan', false),
+  ('Buğra', 'bugra', false),
+  ('Baran', 'baran', false),
+  ('Atınç', 'atinc', false),
+  ('Emrah', 'emrah', false),
+  ('Kaan', 'kaan', false);
