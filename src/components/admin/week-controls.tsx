@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   calculateWeekPointsAction,
+  deleteWeekAction,
   enterScoreAction,
+  lockWeekAction,
   openWeekAction,
   setBonusMatchAction,
 } from "@/app/actions/admin";
@@ -12,12 +14,13 @@ import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { formatKickoff } from "@/lib/format";
 import type { MatchWithTeams, Week } from "@/types/database";
 
-type Phase = "prepare" | "published" | "done";
+type Phase = "prepare" | "open" | "locked" | "done";
 
 function getPhase(status: Week["status"]): Phase {
   if (status === "draft") return "prepare";
-  if (status === "scored") return "done";
-  return "published";
+  if (status === "open") return "open";
+  if (status === "locked") return "locked";
+  return "done";
 }
 
 export function AdminWeekControls({
@@ -54,7 +57,11 @@ export function AdminWeekControls({
     matches.every((m) => m.home_goals !== null && m.away_goals !== null);
   const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
 
-  function run(action: () => Promise<{ error?: string; ok?: true }>, success: string) {
+  function run(
+    action: () => Promise<{ error?: string; ok?: true }>,
+    success: string,
+    options?: { redirectTo?: string },
+  ) {
     setMessage(null);
     setError(null);
     startTransition(async () => {
@@ -63,29 +70,45 @@ export function AdminWeekControls({
         setError(result.error);
         return;
       }
+      if (options?.redirectTo) {
+        router.push(options.redirectTo);
+        router.refresh();
+        return;
+      }
       setMessage(success);
       router.refresh();
     });
   }
 
+  function onDeleteWeek() {
+    const confirmed = window.confirm(
+      `"${week.label}" silinsin mi?\n\nBu haftaya ait maçlar ve tahminler de silinir.`,
+    );
+    if (!confirmed) return;
+    run(() => deleteWeekAction(week.id), "Hafta silindi.", {
+      redirectTo: "/admin",
+    });
+  }
+
   return (
-    <div style={{ display: "grid", gap: "1rem" }}>
+    <div className="stack-md">
       <PhaseBanner phase={phase} />
 
       {phase === "prepare" ? (
         <>
-          <section className="panel" style={{ display: "grid", gap: "0.75rem" }}>
-            <h2 style={{ margin: 0, fontSize: "1.05rem" }}>1) Bonus maçı seç</h2>
-            <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
+          <section className="panel reveal">
+            <div className="section-head">
+              <h2 className="section-title">1) Bonus maçı seç</h2>
+            </div>
+            <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
               Derbi maçlar bonus olamaz. Tam olarak bir bonus seçmelisin.
             </p>
             {matches.length === 0 ? (
               <p className="muted" style={{ margin: 0 }}>
-                Bu haftaya henüz maç yüklenmemiş. Fikstür eklendikten sonra burada
-                görünecek.
+                Bu haftaya henüz maç yüklenmemiş.
               </p>
             ) : (
-              <div style={{ display: "grid", gap: "0.15rem" }}>
+              <div className="stack-xs">
                 {matches.map((match) => (
                   <MatchRow
                     key={match.id}
@@ -97,7 +120,7 @@ export function AdminWeekControls({
                         </span>
                       ) : (
                         <button
-                          className={match.is_bonus ? "btn btn-primary" : "btn btn-secondary"}
+                          className={match.is_bonus ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
                           type="button"
                           disabled={pending || match.is_bonus}
                           onClick={() =>
@@ -117,11 +140,12 @@ export function AdminWeekControls({
             )}
           </section>
 
-          <section className="panel" style={{ display: "grid", gap: "0.75rem" }}>
-            <h2 style={{ margin: 0, fontSize: "1.05rem" }}>2) Haftayı yayınla</h2>
-            <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
-              Yayınlanınca arkadaşlar tahmin girebilir. İlk maç başlayınca tahminler
-              otomatik kilitlenir.
+          <section className="panel reveal">
+            <div className="section-head">
+              <h2 className="section-title">2) Haftayı yayınla</h2>
+            </div>
+            <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
+              Yayınlanınca arkadaşlar tahmin girebilir.
             </p>
             <button
               className="btn btn-primary"
@@ -132,7 +156,7 @@ export function AdminWeekControls({
               {pending ? "Yayınlanıyor..." : "Haftayı Yayınla"}
             </button>
             {!canPublish ? (
-              <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
+              <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
                 {matches.length === 0
                   ? "Önce fikstür yüklenmeli."
                   : bonusCount !== 1
@@ -144,34 +168,47 @@ export function AdminWeekControls({
         </>
       ) : null}
 
-      {phase === "published" ? (
-        <section className="panel" style={{ display: "grid", gap: "0.85rem" }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: "1.05rem" }}>Skorları gir</h2>
-            <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
-              Maçlar bitince skorları kaydet. Hepsi girilince puanları hesapla.
-            </p>
+      {phase === "open" ? (
+        <section className="panel reveal">
+          <div className="section-head">
+            <h2 className="section-title">Tahminler açık</h2>
           </div>
+          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
+            İstediğin zaman tahminleri kilitleyebilirsin. Kilit sonrası kimse
+            değiştiremez.
+          </p>
+          <button
+            className="btn btn-primary"
+            type="button"
+            disabled={pending}
+            onClick={() => run(() => lockWeekAction(week.id), "Hafta kilitlendi.")}
+          >
+            Tahminleri Kilitle
+          </button>
+          <div className="stack-xs" style={{ marginTop: "1rem" }}>
+            {matches.map((match) => (
+              <MatchRow key={match.id} match={match} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {phase === "locked" || phase === "open" ? (
+        <section className="panel reveal">
+          <div className="section-head">
+            <h2 className="section-title">Skorları gir</h2>
+          </div>
+          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
+            Maçlar bitince skorları kaydet. Hepsi girilince puanları hesapla.
+            {phase === "open"
+              ? " (Tahminler hâlâ açıksa önce kilitlemen önerilir.)"
+              : null}
+          </p>
 
           {matches.map((match) => (
-            <article
-              key={match.id}
-              style={{
-                display: "grid",
-                gap: "0.65rem",
-                paddingTop: "0.75rem",
-                borderTop: "1px solid var(--line)",
-              }}
-            >
+            <article key={match.id} className="score-block">
               <MatchRow match={match} />
-              <div
-                style={{
-                  display: "grid",
-                  gap: "0.5rem",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
-                  alignItems: "end",
-                }}
-              >
+              <div className="score-grid">
                 <div className="field">
                   <label>Ev gol</label>
                   <input
@@ -232,15 +269,19 @@ export function AdminWeekControls({
           <button
             className="btn btn-primary"
             type="button"
-            disabled={pending || !allScoresEntered}
+            disabled={pending || !allScoresEntered || phase === "open"}
             onClick={() =>
               run(() => calculateWeekPointsAction(week.id), "Puanlar hesaplandı.")
             }
           >
             Puanları Hesapla
           </button>
-          {!allScoresEntered ? (
-            <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
+          {phase === "open" ? (
+            <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
+              Puan hesaplamak için önce tahminleri kilitle.
+            </p>
+          ) : !allScoresEntered ? (
+            <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
               Hesaplama için tüm maç skorları girilmeli.
             </p>
           ) : null}
@@ -248,12 +289,14 @@ export function AdminWeekControls({
       ) : null}
 
       {phase === "done" ? (
-        <section className="panel" style={{ display: "grid", gap: "0.75rem" }}>
-          <h2 style={{ margin: 0, fontSize: "1.05rem" }}>Hafta tamamlandı</h2>
-          <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
+        <section className="panel reveal">
+          <div className="section-head">
+            <h2 className="section-title">Hafta tamamlandı</h2>
+          </div>
+          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             Puanlar hesaplandı. Sonuçları Geçmiş sayfasından görebilirsin.
           </p>
-          <div style={{ display: "grid", gap: "0.15rem" }}>
+          <div className="stack-xs">
             {matches.map((match) => (
               <MatchRow key={match.id} match={match} showScores />
             ))}
@@ -261,8 +304,25 @@ export function AdminWeekControls({
         </section>
       ) : null}
 
-      {error ? <p style={{ color: "#ffb4b4", margin: 0 }}>{error}</p> : null}
-      {message ? <p style={{ color: "var(--accent)", margin: 0 }}>{message}</p> : null}
+      <section className="panel reveal danger-zone">
+        <div className="section-head">
+          <h2 className="section-title">Tehlikeli alan</h2>
+        </div>
+        <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
+          Haftayı silmek maçları ve tüm tahminleri de siler.
+        </p>
+        <button
+          className="btn btn-danger"
+          type="button"
+          disabled={pending}
+          onClick={onDeleteWeek}
+        >
+          Haftayı Sil
+        </button>
+      </section>
+
+      {error ? <p className="flash flash-error">{error}</p> : null}
+      {message ? <p className="flash flash-ok">{message}</p> : null}
     </div>
   );
 }
@@ -272,19 +332,27 @@ function PhaseBanner({ phase }: { phase: Phase }) {
     prepare: {
       title: "Hazırlık",
       text: "Fikstür yüklü. Bonus seçip haftayı yayınlaman yeterli.",
+      chip: "status-draft",
     },
-    published: {
-      title: "Yayında / Skor girişi",
-      text: "Tahminler alındı veya alınıyor. Maçlar bitince skor girip puanları hesapla.",
+    open: {
+      title: "Yayında",
+      text: "Tahminler alınıyor. İstediğinde kilitleyebilirsin.",
+      chip: "status-open",
+    },
+    locked: {
+      title: "Kilitli",
+      text: "Tahminler kilitli. Skor girip puanları hesapla.",
+      chip: "status-locked",
     },
     done: {
       title: "Tamamlandı",
       text: "Bu haftanın puanları hesaplandı.",
+      chip: "status-scored",
     },
   }[phase];
 
   return (
-    <div className="panel">
+    <div className={`panel reveal phase-banner ${copy.chip}`}>
       <div style={{ fontWeight: 800 }}>{copy.title}</div>
       <p className="muted" style={{ margin: "0.25rem 0 0", fontSize: "0.9rem" }}>
         {copy.text}
@@ -303,17 +371,7 @@ function MatchRow({
   showScores?: boolean;
 }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        gap: "0.5rem",
-        alignItems: "center",
-        padding: "0.55rem 0",
-        borderTop: "1px solid var(--line)",
-      }}
-    >
+    <div className="match-row">
       <div>
         <div style={{ fontWeight: 700 }}>
           {match.home_team.name}
