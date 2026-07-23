@@ -45,7 +45,7 @@ create temporary table tmp_fixtures (
 insert into tmp_fixtures (week_label, kickoff_at, home_name, away_name) values
   -- 1. Hafta
   ('2026-27 1. Hafta', '2026-08-16 19:00:00+03', 'Galatasaray', 'Çorum FK'),
-  ('2026-27 1. Hafta', '2026-08-16 19:00:00+03', 'Kasımpaşa', 'Beşiktaş'),
+  ('2026-27 1. Hafta', '2026-08-16 19:00:00+03', 'Eyüpspor', 'Beşiktaş'),
   ('2026-27 1. Hafta', '2026-08-16 19:00:00+03', 'Göztepe', 'Başakşehir'),
   ('2026-27 1. Hafta', '2026-08-16 19:00:00+03', 'Trabzonspor', 'Kocaelispor'),
   ('2026-27 1. Hafta', '2026-08-16 19:00:00+03', 'Fenerbahçe', 'Erzurumspor'),
