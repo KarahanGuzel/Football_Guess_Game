@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
-import { formatKickoff } from "@/lib/format";
+import { formatCountdownLabel, getCountdownParts } from "@/lib/countdown";
+import { formatDateTime, formatKickoff } from "@/lib/format";
 import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
 
 type Draft = Record<
@@ -15,16 +16,33 @@ type Draft = Record<
   }
 >;
 
+function useLockCountdown(lockAtIso: string | null, enabled: boolean) {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    if (!enabled || !lockAtIso) return;
+    const id = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(id);
+  }, [enabled, lockAtIso]);
+
+  return useMemo(() => {
+    if (!lockAtIso) return null;
+    return getCountdownParts(new Date(lockAtIso), now);
+  }, [lockAtIso, now]);
+}
+
 export function PredictionForm({
   weekId,
   matches,
   initialPredictions,
   locked,
+  lockAtIso = null,
 }: {
   weekId: string;
   matches: MatchWithTeams[];
   initialPredictions: Prediction[];
   locked: boolean;
+  lockAtIso?: string | null;
 }) {
   const initialDraft = useMemo(() => {
     const draft: Draft = {};
@@ -40,13 +58,17 @@ export function PredictionForm({
 
   const [draft, setDraft] = useState<Draft>(initialDraft);
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
   const [pending, startTransition] = useTransition();
+  const countdown = useLockCountdown(lockAtIso, !locked);
 
   const filledCount = matches.filter((m) => {
     const row = draft[m.id];
     return row?.result && row?.goalsMarket;
   }).length;
   const complete = filledCount === matches.length && matches.length > 0;
+  const fillRatio = matches.length === 0 ? 0 : filledCount / matches.length;
 
   function toggleResult(matchId: string, value: PredictResult) {
     setDraft((prev) => {
@@ -76,6 +98,7 @@ export function PredictionForm({
 
   function onSave() {
     setMessage(null);
+    setError(null);
     startTransition(async () => {
       const items = matches.map((m) => ({
         matchId: m.id,
@@ -84,21 +107,56 @@ export function PredictionForm({
       }));
       const result = await upsertPredictionsAction({ weekId, items });
       if ("error" in result && result.error) {
-        setMessage(result.error);
+        setError(result.error);
         return;
       }
       setMessage("Tahminlerin kaydedildi.");
+      setJustSaved(true);
+      window.setTimeout(() => setJustSaved(false), 1200);
     });
   }
 
   return (
-    <div className="prediction-form">
+    <div className={`prediction-form${justSaved ? " prediction-form-saved" : ""}`}>
+      {!locked && lockAtIso ? (
+        <div className="prediction-lock-banner">
+          <span className="prediction-lock-label">Kilit</span>
+          <strong className="prediction-lock-countdown">
+            {countdown ? formatCountdownLabel(countdown) : "—"}
+          </strong>
+          <span className="muted prediction-lock-absolute">
+            {formatDateTime(lockAtIso)}
+          </span>
+        </div>
+      ) : null}
+
       {matches.map((match) => {
         const row = draft[match.id] ?? { result: "", goalsMarket: "" };
+        const marketsFilled =
+          (row.result ? 1 : 0) + (row.goalsMarket ? 1 : 0);
+        const cardDone = marketsFilled === 2;
+        const toneClass = match.is_bonus
+          ? " prediction-card-bonus"
+          : match.is_derby
+            ? " prediction-card-derby"
+            : "";
+
         return (
-          <article key={match.id} className="panel prediction-card">
+          <article
+            key={match.id}
+            className={`panel prediction-card${toneClass}${
+              cardDone ? " prediction-card-done" : ""
+            }`}
+            data-fill={marketsFilled}
+          >
+            <span
+              className="prediction-card-progress"
+              style={{ transform: `scaleY(${marketsFilled / 2})` }}
+              aria-hidden="true"
+            />
+
             <div className="prediction-card-head">
-              <div>
+              <div className="prediction-card-meta">
                 <div className="prediction-card-teams">
                   <MatchTeamsLine match={match} size={11} />
                 </div>
@@ -107,63 +165,84 @@ export function PredictionForm({
                 </div>
               </div>
               <div className="prediction-card-badges">
+                {cardDone ? (
+                  <span className="prediction-card-check" aria-label="Tamam">
+                    ✓
+                  </span>
+                ) : null}
                 {match.is_bonus ? <BonusBadge /> : null}
                 {match.is_derby ? <DerbyBadge /> : null}
               </div>
             </div>
 
-            <div>
-              <div className="muted prediction-field-label">Maç sonucu</div>
-              <div className="pick-grid" role="group" aria-label="Maç sonucu">
-                {(
-                  [
-                    ["home", "1", match.home_team.short_name],
-                    ["draw", "X", "Beraber"],
-                    ["away", "2", match.away_team.short_name],
-                  ] as const
-                ).map(([value, shortLabel, longLabel]) => {
-                  const selected = row.result === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      disabled={locked}
-                      onClick={() => toggleResult(match.id, value)}
-                      className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
-                      aria-pressed={selected}
-                      title={longLabel}
-                    >
-                      <span className="pick-chip-short">{shortLabel}</span>
-                      <span className="pick-chip-long">{longLabel}</span>
-                    </button>
-                  );
-                })}
+            <div className="prediction-card-body">
+              <div>
+                <div className="muted prediction-field-label">Maç sonucu</div>
+                <div className="pick-grid" role="group" aria-label="Maç sonucu">
+                  {(
+                    [
+                      ["home", "1", match.home_team.short_name, "pick-chip-home"],
+                      ["draw", "X", "X", "pick-chip-draw"],
+                      ["away", "2", match.away_team.short_name, "pick-chip-away"],
+                    ] as const
+                  ).map(([value, code, teamLabel, tone]) => {
+                    const selected = row.result === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        disabled={locked}
+                        onClick={() => toggleResult(match.id, value)}
+                        className={`pick-chip ${tone}${
+                          selected ? " pick-chip-selected" : ""
+                        }${row.result && !selected ? " pick-chip-dim" : ""}`}
+                        aria-pressed={selected}
+                        title={
+                          value === "draw"
+                            ? "Berabere"
+                            : `${teamLabel} kazanır`
+                        }
+                      >
+                        <span className="pick-chip-short">{code}</span>
+                        <span className="pick-chip-long">{teamLabel}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <div className="muted prediction-field-label">Gol alt/üst 2.5</div>
-              <div className="pick-grid pick-grid-2" role="group" aria-label="Alt üst 2.5">
-                {(
-                  [
-                    ["under_25", "Alt 2.5"],
-                    ["over_25", "Üst 2.5"],
-                  ] as const
-                ).map(([value, label]) => {
-                  const selected = row.goalsMarket === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      disabled={locked}
-                      onClick={() => toggleGoals(match.id, value)}
-                      className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
-                      aria-pressed={selected}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
+              <div>
+                <div className="muted prediction-field-label">Gol alt/üst 2.5</div>
+                <div
+                  className="pick-grid pick-grid-2"
+                  role="group"
+                  aria-label="Alt üst 2.5"
+                >
+                  {(
+                    [
+                      ["under_25", "Alt", "2.5", "pick-chip-under"],
+                      ["over_25", "Üst", "2.5", "pick-chip-over"],
+                    ] as const
+                  ).map(([value, code, sub, tone]) => {
+                    const selected = row.goalsMarket === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        disabled={locked}
+                        onClick={() => toggleGoals(match.id, value)}
+                        className={`pick-chip ${tone}${
+                          selected ? " pick-chip-selected" : ""
+                        }${row.goalsMarket && !selected ? " pick-chip-dim" : ""}`}
+                        aria-pressed={selected}
+                        title={`${code} 2.5`}
+                      >
+                        <span className="pick-chip-short">{code}</span>
+                        <span className="pick-chip-long">{sub}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </article>
@@ -172,25 +251,34 @@ export function PredictionForm({
 
       {!locked ? (
         <div className="prediction-save-bar">
-          <button
-            className="btn btn-primary"
-            type="button"
-            disabled={!complete || pending}
-            onClick={onSave}
-          >
-            {pending ? "Kaydediliyor..." : "Tahminleri Kaydet"}
-          </button>
-          <span className="muted prediction-save-meta">
-            {complete
-              ? "Hazır — kaydedebilirsin."
-              : `${filledCount}/${matches.length} maç doldu`}
-          </span>
+          <div className="prediction-save-progress" aria-hidden="true">
+            <span
+              className="prediction-save-progress-fill"
+              style={{ width: `${Math.round(fillRatio * 100)}%` }}
+            />
+          </div>
+          <div className="prediction-save-row">
+            <span className="prediction-save-count">
+              {filledCount}/{matches.length}
+            </span>
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={!complete || pending}
+              onClick={onSave}
+            >
+              {pending ? "Kaydediliyor..." : "Kaydet"}
+            </button>
+          </div>
         </div>
       ) : (
-        <p className="muted">Tahminler kilitlendi. Karşılaştırma için Tahminler sayfasına bak.</p>
+        <p className="muted">
+          Tahminler kilitlendi. Karşılaştırma için Tahminler sayfasına bak.
+        </p>
       )}
 
-      {message ? <p className="prediction-flash">{message}</p> : null}
+      {message ? <p className="prediction-flash prediction-flash-ok">{message}</p> : null}
+      {error ? <p className="prediction-flash prediction-flash-error">{error}</p> : null}
     </div>
   );
 }

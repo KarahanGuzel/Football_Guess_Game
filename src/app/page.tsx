@@ -7,8 +7,6 @@ import {
   getPredictionsForPlayer,
   getStandings,
 } from "@/lib/data";
-import { formatDateTime } from "@/lib/format";
-
 export default async function HomePage() {
   const player = await requirePlayer();
 
@@ -55,15 +53,8 @@ export default async function HomePage() {
           {weekData ? (
             <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
               {locked
-                ? "Tahminler kilitli."
+                ? "Tahminler kilitli. Karşılaştırma için Tahminler sayfasına bak."
                 : "Tüm maçlar için sonuç ve alt/üst tahminini yap."}
-              {weekData.lockAt ? (
-                <>
-                  {" "}
-                  Kilit:{" "}
-                  <strong>{formatDateTime(weekData.lockAt.toISOString())}</strong>
-                </>
-              ) : null}
             </p>
           ) : null}
         </div>
@@ -83,6 +74,7 @@ export default async function HomePage() {
             matches={weekData.matches}
             initialPredictions={predictions}
             locked={locked}
+            lockAtIso={weekData.lockAt?.toISOString() ?? null}
           />
         )}
       </section>

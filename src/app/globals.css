@@ -603,7 +603,7 @@ html[data-theme="light"] .btn-primary {
   color: var(--text);
   font-weight: 500;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
-    transform 0.15s ease, box-shadow 0.15s ease;
+    transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
   min-height: 34px;
   cursor: pointer;
 }
@@ -613,12 +613,38 @@ html[data-theme="light"] .btn-primary {
   transform: translateY(-1px);
 }
 
+.pick-chip-dim {
+  opacity: 0.45;
+}
+
 .pick-chip-selected {
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.pick-chip-home.pick-chip-selected {
+  background: linear-gradient(180deg, #6adf9a, #2fba6f);
+  border-color: #2fba6f;
+  color: #062415;
+}
+
+.pick-chip-draw.pick-chip-selected {
+  background: linear-gradient(180deg, #d5dce4, #aeb8c4);
+  border-color: #9aa5b3;
+  color: #1c2430;
+}
+
+.pick-chip-away.pick-chip-selected {
+  background: linear-gradient(180deg, #ff8f98, #e25563);
+  border-color: #d64555;
+  color: #2a0a0e;
+}
+
+.pick-chip-under.pick-chip-selected,
+.pick-chip-over.pick-chip-selected {
   background: var(--chip-selected-bg);
   color: var(--chip-selected-text);
   border-color: var(--chip-selected-bg);
-  font-weight: 800;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--chip-selected-bg) 16%, transparent);
 }
 
 .pick-chip:disabled {
@@ -626,23 +652,100 @@ html[data-theme="light"] .btn-primary {
   cursor: default;
 }
 
-/* Prediction match cards (~7/10 of previous scale) */
+/* Prediction match cards (~7/10 + polish) */
 .prediction-form {
   display: grid;
   gap: 0.63rem;
-  padding-bottom: calc(4.2rem + var(--safe-bottom));
+  padding-bottom: calc(4.8rem + var(--safe-bottom));
+}
+
+.prediction-form-saved .prediction-card {
+  animation: prediction-pulse 0.85s ease;
+}
+
+@keyframes prediction-pulse {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.01);
+    border-color: color-mix(in srgb, var(--ok) 45%, var(--line));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.prediction-lock-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--bonus) 35%, var(--line));
+  background: color-mix(in srgb, var(--bonus) 10%, var(--bg-elevated));
+}
+
+.prediction-lock-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bonus);
+}
+
+.prediction-lock-countdown {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.prediction-lock-absolute {
+  font-size: 0.78rem;
 }
 
 .prediction-card {
+  position: relative;
   display: grid;
-  gap: 0.6rem;
-  padding: 0.8rem 0.85rem;
+  gap: 0;
+  padding: 0.8rem 0.85rem 0.8rem 1rem;
   border-radius: 14px;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
 }
 
 .prediction-card:hover {
   border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+}
+
+.prediction-card-bonus {
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--bonus) 14%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--bonus) 40%, var(--line));
+}
+
+.prediction-card-derby {
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--derby) 12%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--derby) 38%, var(--line));
+}
+
+.prediction-card-done {
+  border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
+}
+
+.prediction-card-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  transform-origin: top;
+  background: linear-gradient(180deg, var(--accent), var(--ok));
+  transition: transform 0.2s ease;
 }
 
 .prediction-card-head {
@@ -651,6 +754,13 @@ html[data-theme="light"] .btn-primary {
   justify-content: space-between;
   gap: 0.35rem;
   align-items: center;
+  padding-bottom: 0.55rem;
+  margin-bottom: 0.55rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+}
+
+.prediction-card-meta {
+  min-width: 0;
 }
 
 .prediction-card-teams {
@@ -664,12 +774,31 @@ html[data-theme="light"] .btn-primary {
 
 .prediction-card-badges {
   display: flex;
+  align-items: center;
   gap: 0.25rem;
 }
 
 .prediction-card-badges .badge {
   font-size: 0.62rem;
   padding: 0.14rem 0.5rem;
+}
+
+.prediction-card-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+  color: var(--ok);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.prediction-card-body {
+  display: grid;
+  gap: 0.55rem;
 }
 
 .prediction-field-label {
@@ -720,10 +849,8 @@ html[data-theme="light"] .btn-primary {
   position: sticky;
   bottom: calc(0.55rem + var(--safe-bottom));
   z-index: 12;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
+  display: grid;
+  gap: 0.45rem;
   padding: 0.55rem 0.7rem;
   border-radius: 12px;
   border: 1px solid var(--line);
@@ -732,21 +859,55 @@ html[data-theme="light"] .btn-primary {
   box-shadow: var(--shadow);
 }
 
+.prediction-save-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-soft) 80%, transparent);
+  overflow: hidden;
+}
+
+.prediction-save-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--ok));
+  transition: width 0.2s ease;
+}
+
+.prediction-save-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.prediction-save-count {
+  min-width: 2.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 .prediction-save-bar .btn-primary {
-  flex: 1 1 150px;
+  flex: 1;
   min-height: 40px;
   padding: 0.55rem 0.9rem;
   font-size: 0.92rem;
 }
 
-.prediction-save-meta {
-  font-size: 0.78rem;
-}
-
 .prediction-flash {
-  color: var(--accent);
   margin: 0;
   font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.prediction-flash-ok {
+  color: var(--ok);
+  animation: rise 0.35s ease both;
+}
+
+.prediction-flash-error {
+  color: var(--flash-error);
 }
 
 .predictions-hint {
