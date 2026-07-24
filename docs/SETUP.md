@@ -61,6 +61,8 @@ Doldur:
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+# opsiyonel: sabit WhatsApp numarası (yoksa buton sohbet seçici açar)
+# NEXT_PUBLIC_WHATSAPP_PHONE=905551112233
 SUPABASE_URL=...
 SUPABASE_SERVICE_ROLE_KEY=...
 SESSION_SECRET=en-az-32-karakter-rastgele-bir-string

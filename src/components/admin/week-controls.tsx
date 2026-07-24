@@ -32,10 +32,12 @@ export function AdminWeekControls({
   week,
   matches,
   appUrl,
+  whatsappPhone,
 }: {
   week: Week;
   matches: MatchWithTeams[];
   appUrl: string;
+  whatsappPhone?: string | null;
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -201,7 +203,8 @@ export function AdminWeekControls({
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             İstediğin zaman tahminleri kilitleyebilirsin. Kilit sonrası kimse
-            değiştiremez. WhatsApp butonu gruba hatırlatma mesajı açar.
+            değiştiremez. WhatsApp butonu mesajı hazırlar; sohbeti/grubu sen
+            seçersin.
           </p>
           <div className="admin-action-row">
             <button
@@ -216,6 +219,7 @@ export function AdminWeekControls({
               weekLabel={week.label}
               lockAtLabel={lockAtLabel}
               appUrl={appUrl}
+              phone={whatsappPhone}
             />
           </div>
           <div className="stack-xs" style={{ marginTop: "1rem" }}>

@@ -10,6 +10,7 @@ import {
   listWeeks,
 } from "@/lib/data";
 import { formatDateTime } from "@/lib/format";
+import { getConfiguredWhatsAppPhone } from "@/lib/whatsapp";
 
 export default async function AdminPage() {
   await requireAdmin();
@@ -19,6 +20,7 @@ export default async function AdminPage() {
     getCurrentPlayableWeek(),
   ]);
   const appUrl = getPublicAppUrl();
+  const whatsappPhone = getConfiguredWhatsAppPhone();
   const openWeek = playable?.status === "open" ? playable : null;
   const lockAtLabel = openWeek?.lockAt
     ? formatDateTime(openWeek.lockAt.toISOString())
@@ -39,8 +41,11 @@ export default async function AdminPage() {
           <h2 className="section-title">WhatsApp hatırlatma</h2>
         </div>
         <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-          Gruba “tahminler kilitleniyor” mesajını site linkiyle açar. Telefonda
-          WhatsApp paylaşım ekranı gelir.
+          Mesaj hazır gelir (kilit uyarısı + site linki). WhatsApp bir gruba
+          otomatik bağlanamaz — butona basınca{" "}
+          {whatsappPhone
+            ? `ayarlı numarayı (${whatsappPhone}) açar.`
+            : "sohbet seçici açılır; grup sohbetinizi sen seçersin."}
         </p>
         {openWeek ? (
           <div className="admin-action-row">
@@ -49,6 +54,7 @@ export default async function AdminPage() {
               weekLabel={openWeek.week.label}
               lockAtLabel={lockAtLabel}
               appUrl={appUrl}
+              phone={whatsappPhone}
             />
             <span className="muted" style={{ fontSize: "0.85rem" }}>
               {openWeek.week.label}
@@ -57,15 +63,19 @@ export default async function AdminPage() {
           </div>
         ) : (
           <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
-            Şu an yayında açık bir hafta yok. Haftayı yayınladıktan sonra buton
-            aktif mesajla gelir; yine de genel link göndermek için:
+            Şu an yayında açık bir hafta yok. Yine de genel hatırlatma için:
           </p>
         )}
         {!openWeek ? (
           <div className="admin-action-row" style={{ marginTop: "0.85rem" }}>
-            <WhatsAppReminderButton appUrl={appUrl} />
+            <WhatsAppReminderButton appUrl={appUrl} phone={whatsappPhone} />
           </div>
         ) : null}
+        <p className="muted" style={{ margin: "0.85rem 0 0", fontSize: "0.8rem" }}>
+          İstersen Vercel’de <code>NEXT_PUBLIC_WHATSAPP_PHONE</code> ile sabit bir
+          numara verebilirsin (örn. 905551112233). Grup için boş bırakıp her
+          seferinde grubu seçmek en kolayı.
+        </p>
       </section>
 
       <CreateWeekForm />

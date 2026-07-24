@@ -47,7 +47,6 @@ export default async function PredictionsPage() {
       ? await getPredictionsForMatches(focus.matches.map((m) => m.id))
       : [];
 
-  const revealPicks = focus ? focus.status !== "open" : false;
   const historyWeeks = pastWeeks.filter((w) => w.id !== focus?.week.id);
 
   return (
@@ -55,8 +54,8 @@ export default async function PredictionsPage() {
       <header className="page-header">
         <h1 className="page-title">Tahminler</h1>
         <p className="page-sub">
-          Kilit sonrası herkesin tahminlerini oyuncu oyuncu karşılaştır. Hafta
-          açıkken sadece kimlerin kaydettiğini görürsün.
+          Herkesin tahminlerini oyuncu oyuncu gör. Üstte kimlerin kaydettiği,
+          altta seçimler listelenir.
         </p>
       </header>
 
@@ -69,9 +68,11 @@ export default async function PredictionsPage() {
           <div>
             <h2 className="section-title">{focus.week.label}</h2>
             <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
-              {revealPicks
-                ? "Tahminler açık — herkesin seçimleri aşağıda."
-                : "Tahminler henüz kilitli değil."}
+              {focus.status === "open"
+                ? "Hafta açık — kayıtlı tahminler anlık görünür."
+                : focus.status === "locked"
+                  ? "Hafta kilitli — tahminler değiştirilemez."
+                  : "Hafta puanlandı."}
               {focus.lockAt ? (
                 <>
                   {" "}
@@ -89,7 +90,6 @@ export default async function PredictionsPage() {
               matches={focus.matches}
               predictions={predictions}
               players={players}
-              revealPicks={revealPicks}
               currentPlayerId={player.playerId}
             />
           )}

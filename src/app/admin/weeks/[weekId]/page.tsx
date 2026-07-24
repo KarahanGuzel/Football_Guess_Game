@@ -5,6 +5,7 @@ import { AdminWeekControls } from "@/components/admin/week-controls";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { getPublicAppUrl } from "@/lib/app-url";
 import { getMatchesForWeek, getWeek, listTeams } from "@/lib/data";
+import { getConfiguredWhatsAppPhone } from "@/lib/whatsapp";
 
 const statusMeta: Record<string, { label: string; className: string }> = {
   draft: { label: "Taslak", className: "status-draft" },
@@ -68,6 +69,7 @@ export default async function AdminWeekPage({
         week={week}
         matches={matches}
         appUrl={getPublicAppUrl()}
+        whatsappPhone={getConfiguredWhatsAppPhone()}
       />
     </div>
   );
