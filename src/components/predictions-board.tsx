@@ -120,8 +120,13 @@ export function PredictionsBoard({
                   <FanFlag slug={player.slug} displayName={player.display_name} size={12} />
                   {player.display_name}
                   {hasPicks ? (
-                    <span className="submission-chevron" aria-hidden="true">
-                      {isOpen ? "▾" : "▸"}
+                    <span
+                      className={`submission-chevron${isOpen ? " submission-chevron-open" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+                        <path d="M7.05 4.45a1 1 0 0 1 1.4-.1l5.2 4.55a1 1 0 0 1 0 1.5l-5.2 4.55a1 1 0 1 1-1.3-1.52L11.4 10 7.15 6.27a1 1 0 0 1-.1-1.82Z" />
+                      </svg>
                     </span>
                   ) : null}
                 </span>

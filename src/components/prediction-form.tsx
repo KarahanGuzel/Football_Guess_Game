@@ -181,9 +181,9 @@ export function PredictionForm({
                 <div className="pick-grid" role="group" aria-label="Maç sonucu">
                   {(
                     [
-                      ["home", "1", match.home_team.short_name, "pick-chip-home"],
-                      ["draw", "X", "X", "pick-chip-draw"],
-                      ["away", "2", match.away_team.short_name, "pick-chip-away"],
+                      ["home", "1", match.home_team.name, "pick-chip-home"],
+                      ["draw", "X", "Berabere", "pick-chip-draw"],
+                      ["away", "2", match.away_team.name, "pick-chip-away"],
                     ] as const
                   ).map(([value, code, teamLabel, tone]) => {
                     const selected = row.result === value;
@@ -262,7 +262,7 @@ export function PredictionForm({
               {filledCount}/{matches.length}
             </span>
             <button
-              className="btn btn-primary"
+              className="btn btn-save"
               type="button"
               disabled={!complete || pending}
               onClick={onSave}
