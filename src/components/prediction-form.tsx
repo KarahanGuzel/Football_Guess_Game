@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
+import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
 import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
 
@@ -105,8 +106,8 @@ export function PredictionForm({
               }}
             >
               <div>
-                <div style={{ fontWeight: 800, fontSize: "1.05rem" }}>
-                  {match.home_team.name} – {match.away_team.name}
+                <div style={{ fontSize: "1.05rem" }}>
+                  <MatchTeamsLine match={match} size={14} />
                 </div>
                 <div className="muted" style={{ fontSize: "0.85rem", marginTop: 2 }}>
                   {formatKickoff(match.kickoff_at)}
