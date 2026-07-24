@@ -450,6 +450,85 @@ html[data-theme="light"] .btn-primary {
   color: var(--accent);
 }
 
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.theme-switch-track {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 88%, transparent);
+  transition: background 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.theme-switch:hover .theme-switch-track {
+  border-color: color-mix(in srgb, var(--text) 30%, var(--line));
+}
+
+.theme-switch:focus-visible .theme-switch-track {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.theme-switch-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.theme-switch-sun {
+  left: 7px;
+  color: #c9a227;
+}
+
+.theme-switch-moon {
+  right: 7px;
+  color: #9bb0ff;
+}
+
+.theme-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--chip-selected-bg);
+  color: var(--chip-selected-text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.theme-switch-dark .theme-switch-thumb {
+  transform: translateX(22px);
+}
+
+.theme-switch-light .theme-switch-thumb {
+  transform: translateX(0);
+}
+
+.theme-switch-thumb .theme-icon {
+  width: 12px;
+  height: 12px;
+}
+
 .user-pill {
   display: inline-flex;
   align-items: center;
