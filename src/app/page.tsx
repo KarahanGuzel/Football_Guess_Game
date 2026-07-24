@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LockCountdown } from "@/components/lock-countdown";
 import { PredictionForm } from "@/components/prediction-form";
 import { StandingsTable } from "@/components/standings-table";
 import { requirePlayer } from "@/lib/auth/current-user";
@@ -7,6 +8,7 @@ import {
   getPredictionsForPlayer,
   getStandings,
 } from "@/lib/data";
+
 export default async function HomePage() {
   const player = await requirePlayer();
 
@@ -42,25 +44,24 @@ export default async function HomePage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Ana Sayfa</h1>
-        <p className="page-sub">Yayındaki haftanın maçları ve güncel puan durumu.</p>
+        <div className="page-sub-row">
+          <p className="page-sub">Yayındaki haftanın maçları ve güncel puan durumu.</p>
+          {weekData ? (
+            <LockCountdown
+              lockAtIso={weekData.lockAt?.toISOString() ?? null}
+              locked={locked}
+            />
+          ) : null}
+        </div>
       </header>
 
       <section className="stack-md reveal">
-        <div>
-          <h2 className="section-title">
-            {weekData ? weekData.week.label : "Bu Hafta"}
-          </h2>
-          {weekData ? (
-            <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
-              {locked
-                ? "Tahminler kilitli. Karşılaştırma için Tahminler sayfasına bak."
-                : "Tüm maçlar için sonuç ve alt/üst tahminini yap."}
-            </p>
-          ) : null}
-        </div>
+        <h2 className="section-title">
+          {weekData ? weekData.week.label : "Bu Hafta"}
+        </h2>
 
         {weekError ? (
-          <p style={{ color: "#ffb4b4" }}>{weekError}</p>
+          <p style={{ color: "var(--flash-error)" }}>{weekError}</p>
         ) : !weekData ? (
           <div className="panel muted">
             Şu an yayınlanmış bir tahmin haftası yok. Yönetici haftayı yayınlayınca
@@ -74,7 +75,6 @@ export default async function HomePage() {
             matches={weekData.matches}
             initialPredictions={predictions}
             locked={locked}
-            lockAtIso={weekData.lockAt?.toISOString() ?? null}
           />
         )}
       </section>
@@ -93,7 +93,7 @@ export default async function HomePage() {
         </div>
 
         {standingsError ? (
-          <p style={{ color: "#ffb4b4" }}>{standingsError}</p>
+          <p style={{ color: "var(--flash-error)" }}>{standingsError}</p>
         ) : (
           <StandingsTable rows={standings} compact />
         )}

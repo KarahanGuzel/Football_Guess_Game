@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
-import { formatCountdownLabel, getCountdownParts } from "@/lib/countdown";
-import { formatDateTime, formatKickoff } from "@/lib/format";
+import { formatKickoff } from "@/lib/format";
 import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
 
 type Draft = Record<
@@ -16,33 +15,16 @@ type Draft = Record<
   }
 >;
 
-function useLockCountdown(lockAtIso: string | null, enabled: boolean) {
-  const [now, setNow] = useState(() => new Date());
-
-  useEffect(() => {
-    if (!enabled || !lockAtIso) return;
-    const id = window.setInterval(() => setNow(new Date()), 1000);
-    return () => window.clearInterval(id);
-  }, [enabled, lockAtIso]);
-
-  return useMemo(() => {
-    if (!lockAtIso) return null;
-    return getCountdownParts(new Date(lockAtIso), now);
-  }, [lockAtIso, now]);
-}
-
 export function PredictionForm({
   weekId,
   matches,
   initialPredictions,
   locked,
-  lockAtIso = null,
 }: {
   weekId: string;
   matches: MatchWithTeams[];
   initialPredictions: Prediction[];
   locked: boolean;
-  lockAtIso?: string | null;
 }) {
   const initialDraft = useMemo(() => {
     const draft: Draft = {};
@@ -61,7 +43,6 @@ export function PredictionForm({
   const [error, setError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
   const [pending, startTransition] = useTransition();
-  const countdown = useLockCountdown(lockAtIso, !locked);
 
   const filledCount = matches.filter((m) => {
     const row = draft[m.id];
@@ -118,18 +99,6 @@ export function PredictionForm({
 
   return (
     <div className={`prediction-form${justSaved ? " prediction-form-saved" : ""}`}>
-      {!locked && lockAtIso ? (
-        <div className="prediction-lock-banner">
-          <span className="prediction-lock-label">Kilit</span>
-          <strong className="prediction-lock-countdown">
-            {countdown ? formatCountdownLabel(countdown) : "—"}
-          </strong>
-          <span className="muted prediction-lock-absolute">
-            {formatDateTime(lockAtIso)}
-          </span>
-        </div>
-      ) : null}
-
       {matches.map((match) => {
         const row = draft[match.id] ?? { result: "", goalsMarket: "" };
         const marketsFilled =
@@ -262,12 +231,12 @@ export function PredictionForm({
               {filledCount}/{matches.length}
             </span>
             <button
-              className="btn btn-save"
+              className={`btn-save-pill${complete ? " btn-save-pill-ready" : ""}`}
               type="button"
               disabled={!complete || pending}
               onClick={onSave}
             >
-              {pending ? "Kaydediliyor..." : "Kaydet"}
+              {pending ? "Kaydediliyor..." : "Tahminleri kaydet"}
             </button>
           </div>
         </div>
