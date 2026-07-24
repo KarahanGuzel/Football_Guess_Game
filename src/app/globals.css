@@ -596,7 +596,7 @@ html[data-theme="light"] .btn-primary {
 }
 
 .pick-chip {
-  padding: 0.52rem 0.9rem;
+  padding: 0.36rem 0.65rem;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: transparent;
@@ -604,7 +604,8 @@ html[data-theme="light"] .btn-primary {
   font-weight: 500;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
     transform 0.15s ease, box-shadow 0.15s ease;
-  min-height: 44px;
+  min-height: 34px;
+  cursor: pointer;
 }
 
 .pick-chip:hover:not(:disabled) {
@@ -617,29 +618,68 @@ html[data-theme="light"] .btn-primary {
   color: var(--chip-selected-text);
   border-color: var(--chip-selected-bg);
   font-weight: 800;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--chip-selected-bg) 18%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--chip-selected-bg) 16%, transparent);
 }
 
 .pick-chip:disabled {
   opacity: 0.85;
+  cursor: default;
 }
 
-/* Prediction match cards */
+/* Prediction match cards (~7/10 of previous scale) */
 .prediction-form {
-  padding-bottom: calc(5.5rem + var(--safe-bottom));
+  display: grid;
+  gap: 0.63rem;
+  padding-bottom: calc(4.2rem + var(--safe-bottom));
 }
 
-.prediction-form .panel {
+.prediction-card {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.8rem 0.85rem;
+  border-radius: 14px;
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-.prediction-form .panel:hover {
+.prediction-card:hover {
   border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+}
+
+.prediction-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.prediction-card-teams {
+  font-size: 0.92rem;
+}
+
+.prediction-card-kickoff {
+  font-size: 0.74rem;
+  margin-top: 2px;
+}
+
+.prediction-card-badges {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.prediction-card-badges .badge {
+  font-size: 0.62rem;
+  padding: 0.14rem 0.5rem;
+}
+
+.prediction-field-label {
+  font-size: 0.72rem;
+  margin-bottom: 0.3rem;
 }
 
 .pick-grid {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.32rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -650,23 +690,24 @@ html[data-theme="light"] .btn-primary {
 .pick-grid .pick-chip {
   width: 100%;
   justify-content: center;
-  border-radius: 14px;
-  padding-inline: 0.45rem;
-  font-size: 0.92rem;
+  border-radius: 10px;
+  padding-inline: 0.3rem;
+  font-size: 0.78rem;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
-  line-height: 1.15;
+  gap: 0.05rem;
+  line-height: 1.1;
+  min-height: 34px;
 }
 
 .pick-chip-short {
   font-weight: 800;
-  font-size: 1.05rem;
+  font-size: 0.92rem;
 }
 
 .pick-chip-long {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   font-weight: 600;
   opacity: 0.85;
   white-space: nowrap;
@@ -677,14 +718,14 @@ html[data-theme="light"] .btn-primary {
 
 .prediction-save-bar {
   position: sticky;
-  bottom: calc(0.75rem + var(--safe-bottom));
+  bottom: calc(0.55rem + var(--safe-bottom));
   z-index: 12;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.5rem;
   align-items: center;
-  padding: 0.75rem 0.85rem;
-  border-radius: 16px;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
   backdrop-filter: blur(14px) saturate(1.2);
@@ -692,8 +733,20 @@ html[data-theme="light"] .btn-primary {
 }
 
 .prediction-save-bar .btn-primary {
-  flex: 1 1 180px;
-  min-height: 48px;
+  flex: 1 1 150px;
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.92rem;
+}
+
+.prediction-save-meta {
+  font-size: 0.78rem;
+}
+
+.prediction-flash {
+  color: var(--accent);
+  margin: 0;
+  font-size: 0.9rem;
 }
 
 .predictions-hint {
@@ -1097,8 +1150,12 @@ html[data-theme="light"] .standings-row-top3 td {
     font-size: 0.84rem;
   }
 
-  .pick-chip {
-    min-height: 46px;
+  .prediction-card {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .pick-grid .pick-chip {
+    min-height: 36px;
   }
 
   .player-picks-drawer {

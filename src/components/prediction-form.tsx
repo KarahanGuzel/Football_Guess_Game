@@ -92,38 +92,28 @@ export function PredictionForm({
   }
 
   return (
-    <div className="prediction-form" style={{ display: "grid", gap: "0.9rem" }}>
+    <div className="prediction-form">
       {matches.map((match) => {
         const row = draft[match.id] ?? { result: "", goalsMarket: "" };
         return (
-          <article key={match.id} className="panel" style={{ display: "grid", gap: "0.85rem" }}>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-                gap: "0.5rem",
-                alignItems: "center",
-              }}
-            >
+          <article key={match.id} className="panel prediction-card">
+            <div className="prediction-card-head">
               <div>
-                <div style={{ fontSize: "1.05rem" }}>
-                  <MatchTeamsLine match={match} size={14} />
+                <div className="prediction-card-teams">
+                  <MatchTeamsLine match={match} size={11} />
                 </div>
-                <div className="muted" style={{ fontSize: "0.85rem", marginTop: 2 }}>
+                <div className="muted prediction-card-kickoff">
                   {formatKickoff(match.kickoff_at)}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: "0.35rem" }}>
+              <div className="prediction-card-badges">
                 {match.is_bonus ? <BonusBadge /> : null}
                 {match.is_derby ? <DerbyBadge /> : null}
               </div>
             </div>
 
             <div>
-              <div className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
-                Maç sonucu
-              </div>
+              <div className="muted prediction-field-label">Maç sonucu</div>
               <div className="pick-grid" role="group" aria-label="Maç sonucu">
                 {(
                   [
@@ -140,7 +130,6 @@ export function PredictionForm({
                       disabled={locked}
                       onClick={() => toggleResult(match.id, value)}
                       className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
-                      style={{ cursor: locked ? "default" : "pointer" }}
                       aria-pressed={selected}
                       title={longLabel}
                     >
@@ -153,9 +142,7 @@ export function PredictionForm({
             </div>
 
             <div>
-              <div className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
-                Gol alt/üst 2.5
-              </div>
+              <div className="muted prediction-field-label">Gol alt/üst 2.5</div>
               <div className="pick-grid pick-grid-2" role="group" aria-label="Alt üst 2.5">
                 {(
                   [
@@ -171,7 +158,6 @@ export function PredictionForm({
                       disabled={locked}
                       onClick={() => toggleGoals(match.id, value)}
                       className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
-                      style={{ cursor: locked ? "default" : "pointer" }}
                       aria-pressed={selected}
                     >
                       {label}
@@ -194,7 +180,7 @@ export function PredictionForm({
           >
             {pending ? "Kaydediliyor..." : "Tahminleri Kaydet"}
           </button>
-          <span className="muted" style={{ fontSize: "0.88rem" }}>
+          <span className="muted prediction-save-meta">
             {complete
               ? "Hazır — kaydedebilirsin."
               : `${filledCount}/${matches.length} maç doldu`}
@@ -204,7 +190,7 @@ export function PredictionForm({
         <p className="muted">Tahminler kilitlendi. Karşılaştırma için Tahminler sayfasına bak.</p>
       )}
 
-      {message ? <p style={{ color: "var(--accent)" }}>{message}</p> : null}
+      {message ? <p className="prediction-flash">{message}</p> : null}
     </div>
   );
 }
