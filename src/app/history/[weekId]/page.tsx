@@ -8,18 +8,8 @@ import {
   getWeek,
 } from "@/lib/data";
 import { formatKickoff } from "@/lib/format";
+import { goalsLabel, resultLabel } from "@/lib/prediction-labels";
 import { notFound } from "next/navigation";
-
-const resultLabel = {
-  home: "MS 1",
-  draw: "MS X",
-  away: "MS 2",
-} as const;
-
-const goalsLabel = {
-  under_25: "Alt 2.5",
-  over_25: "Üst 2.5",
-} as const;
 
 export default async function HistoryDetailPage({
   params,

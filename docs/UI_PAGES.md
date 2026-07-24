@@ -5,6 +5,7 @@
 
 ## Player
 - `/` — current week predictions
+- `/predictions` — who submitted + everyone’s picks by player (visible while week is open)
 - `/standings` — leaderboard
 - `/history` — past weeks list
 - `/history/[weekId]` — week results + everyone’s picks

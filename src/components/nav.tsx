@@ -4,11 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
 import { FanFlag } from "@/components/fan-flag";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionPlayer } from "@/types/session";
 
 const links = [
   { href: "/", label: "Ana Sayfa" },
-  { href: "/standings", label: "Puan Durumu" },
+  { href: "/predictions", label: "Tahminler" },
+  { href: "/standings", label: "Puan" },
   { href: "/history", label: "Geçmiş" },
   { href: "/fixtures", label: "Gelecek" },
 ];
@@ -55,6 +57,7 @@ export function AppNav({ player }: { player: SessionPlayer }) {
               Yönetim
             </Link>
           ) : null}
+          <ThemeToggle />
           <form action={logoutAction}>
             <button className="btn btn-secondary btn-sm" type="submit">
               Çıkış

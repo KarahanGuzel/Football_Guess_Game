@@ -1,8 +1,8 @@
-import { requireAdmin } from "@/lib/auth/current-user";
-import { getStandings, listWeeks } from "@/lib/data";
 import { AdminStandingsPanel } from "@/components/admin/standings-panel";
 import { AdminWeeksList } from "@/components/admin/weeks-list";
 import { CreateWeekForm } from "@/components/admin/create-week-form";
+import { requireAdmin } from "@/lib/auth/current-user";
+import { getStandings, listWeeks } from "@/lib/data";
 
 export default async function AdminPage() {
   await requireAdmin();
