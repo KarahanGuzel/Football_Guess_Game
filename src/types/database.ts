@@ -71,5 +71,6 @@ export type StandingRow = {
 export type SessionData = {
   playerId?: string;
   displayName?: string;
+  slug?: string;
   isAdmin?: boolean;
 };

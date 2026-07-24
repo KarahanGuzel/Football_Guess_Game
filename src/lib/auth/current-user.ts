@@ -2,6 +2,7 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSessionOptions, type SessionData } from "@/lib/auth/session";
+import { getPlayerById } from "@/lib/data";
 import type { SessionPlayer } from "@/types/session";
 
 export async function getSession() {
@@ -12,9 +13,17 @@ export async function getCurrentPlayer(): Promise<SessionPlayer | null> {
   try {
     const session = await getSession();
     if (!session.playerId || !session.displayName) return null;
+
+    let slug = session.slug ?? "";
+    if (!slug) {
+      const player = await getPlayerById(session.playerId).catch(() => null);
+      slug = player?.slug ?? "";
+    }
+
     return {
       playerId: session.playerId,
       displayName: session.displayName,
+      slug,
       isAdmin: Boolean(session.isAdmin),
     };
   } catch {

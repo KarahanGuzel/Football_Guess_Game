@@ -31,6 +31,7 @@ export async function loginAction(formData: FormData): Promise<{ error: string }
     const session = await getSession();
     session.playerId = player.id;
     session.displayName = player.display_name;
+    session.slug = player.slug;
     session.isAdmin = player.is_admin;
     await session.save();
   } catch (error) {

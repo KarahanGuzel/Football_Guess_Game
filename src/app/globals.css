@@ -396,6 +396,7 @@ select {
 .user-pill {
   display: inline-flex;
   align-items: center;
+  gap: 0.4rem;
   padding: 0.28rem 0.7rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
@@ -403,6 +404,10 @@ select {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 600;
+}
+
+.fan-flag {
+  box-sizing: border-box;
 }
 
 .nav-links {
