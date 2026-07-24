@@ -79,98 +79,94 @@ export function PredictionsBoard({
         </ul>
       </section>
 
-      {withPicks.length === 0 ? (
-        <div className="panel muted reveal">Bu hafta henüz kayıtlı tahmin yok.</div>
-      ) : (
-        withPicks.map(({ player, picks }) => {
-          const ordered = matches
-            .map((match) => picks.find((p) => p.match_id === match.id))
-            .filter((p): p is PredictionWithPlayer => Boolean(p));
+      {withPicks.map(({ player, picks }) => {
+        const ordered = matches
+          .map((match) => picks.find((p) => p.match_id === match.id))
+          .filter((p): p is PredictionWithPlayer => Boolean(p));
 
-          const weekPoints = ordered.reduce(
-            (sum, p) => sum + (p.points_earned ?? 0),
-            0,
-          );
-          const scored = ordered.some((p) => p.points_earned !== null);
+        const weekPoints = ordered.reduce(
+          (sum, p) => sum + (p.points_earned ?? 0),
+          0,
+        );
+        const scored = ordered.some((p) => p.points_earned !== null);
 
-          return (
-            <section key={player.id} className="panel reveal player-picks-card">
-              <div className="section-head" style={{ marginBottom: "0.65rem" }}>
-                <h2
-                  className="section-title"
-                  style={{ display: "flex", gap: "0.45rem", alignItems: "center" }}
-                >
-                  <FanFlag
-                    slug={player.slug}
-                    displayName={player.display_name}
-                    size={14}
-                  />
-                  {player.display_name}
-                </h2>
-                {scored ? (
-                  <span className="week-points-pill">{weekPoints} puan</span>
-                ) : (
-                  <span className="muted" style={{ fontSize: "0.85rem" }}>
-                    {ordered.length}/{requiredCount} maç
-                  </span>
-                )}
-              </div>
+        return (
+          <section key={player.id} className="panel reveal player-picks-card">
+            <div className="section-head" style={{ marginBottom: "0.65rem" }}>
+              <h2
+                className="section-title"
+                style={{ display: "flex", gap: "0.45rem", alignItems: "center" }}
+              >
+                <FanFlag
+                  slug={player.slug}
+                  displayName={player.display_name}
+                  size={14}
+                />
+                {player.display_name}
+              </h2>
+              {scored ? (
+                <span className="week-points-pill">{weekPoints} puan</span>
+              ) : (
+                <span className="muted" style={{ fontSize: "0.85rem" }}>
+                  {ordered.length}/{requiredCount} maç
+                </span>
+              )}
+            </div>
 
-              <ul className="player-pick-list">
-                {ordered.map((prediction) => {
-                  const match = matchById.get(prediction.match_id);
-                  if (!match) return null;
-                  return (
-                    <li key={prediction.id} className="player-pick-row">
-                      <div className="player-pick-match">
-                        <MatchTeamsLine match={match} size={12} />
-                        <div className="muted" style={{ fontSize: "0.78rem", marginTop: 2 }}>
-                          {formatKickoff(match.kickoff_at)}
-                          {match.is_bonus ? (
-                            <>
-                              {" "}
-                              <BonusBadge />
-                            </>
-                          ) : null}
-                          {match.is_derby ? (
-                            <>
-                              {" "}
-                              <DerbyBadge />
-                            </>
-                          ) : null}
-                        </div>
+            <ul className="player-pick-list">
+              {ordered.map((prediction) => {
+                const match = matchById.get(prediction.match_id);
+                if (!match) return null;
+                return (
+                  <li key={prediction.id} className="player-pick-row">
+                    <div className="player-pick-match">
+                      <MatchTeamsLine match={match} size={12} />
+                      <div className="muted" style={{ fontSize: "0.78rem", marginTop: 2 }}>
+                        {formatKickoff(match.kickoff_at)}
+                        {match.is_bonus ? (
+                          <>
+                            {" "}
+                            <BonusBadge />
+                          </>
+                        ) : null}
+                        {match.is_derby ? (
+                          <>
+                            {" "}
+                            <DerbyBadge />
+                          </>
+                        ) : null}
                       </div>
-                      <div className="player-pick-values">
-                        <span className="pick-pill">
-                          {resultLabelForMatch(
-                            prediction.result,
-                            match.home_team.short_name,
-                            match.away_team.short_name,
-                          )}
-                        </span>
-                        <span className="pick-pill">
-                          {goalsLabel[prediction.goals_market]}
-                        </span>
-                        <span
-                          className={
-                            prediction.points_earned != null
-                              ? "pick-points"
-                              : "pick-points muted"
-                          }
-                        >
-                          {prediction.points_earned != null
-                            ? `+${prediction.points_earned}`
-                            : "—"}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })
-      )}
+                    </div>
+                    <div className="player-pick-values">
+                      <span className="pick-pill">
+                        {resultLabelForMatch(
+                          prediction.result,
+                          match.home_team.short_name,
+                          match.away_team.short_name,
+                        )}
+                      </span>
+                      <span className="pick-pill">
+                        {goalsLabel[prediction.goals_market]}
+                      </span>
+                      <span
+                        className={
+                          prediction.points_earned != null
+                            ? "pick-points"
+                            : "pick-points muted"
+                        }
+                      >
+                        {prediction.points_earned != null
+                          ? `+${prediction.points_earned}`
+                          : "—"}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
     </div>
   );
 }
