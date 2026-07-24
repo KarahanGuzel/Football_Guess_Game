@@ -12,7 +12,7 @@ import { formatDateTime } from "@/lib/format";
 import { weekLockAt } from "@/lib/week-lock";
 
 export default async function PredictionsPage() {
-  const player = await requirePlayer();
+  await requirePlayer();
 
   const [playable, pastWeeks, players] = await Promise.all([
     getCurrentPlayableWeek(),
@@ -90,7 +90,6 @@ export default async function PredictionsPage() {
               matches={focus.matches}
               predictions={predictions}
               players={players}
-              currentPlayerId={player.playerId}
             />
           )}
         </section>
