@@ -1,3 +1,4 @@
+import { FanFlag } from "@/components/fan-flag";
 import type { StandingRow } from "@/types/database";
 
 export function StandingsTable({
@@ -43,7 +44,16 @@ export function StandingsTable({
               <tr key={row.player_id} style={{ borderTop: "1px solid var(--line)" }}>
                 <td style={{ padding: "0.65rem 0.5rem" }}>{index + 1}</td>
                 <td style={{ padding: "0.65rem 0.5rem", fontWeight: 700 }}>
-                  {row.display_name}
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.45rem",
+                    }}
+                  >
+                    <FanFlag slug={row.slug} displayName={row.display_name} size={13} />
+                    {row.display_name}
+                  </span>
                 </td>
                 <td style={{ padding: "0.65rem 0.5rem", color: "var(--accent)" }}>
                   {row.total_points}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
+import { FanFlag } from "@/components/fan-flag";
 import type { SessionPlayer } from "@/types/session";
 
 const links = [
@@ -27,7 +28,10 @@ export function AppNav({ player }: { player: SessionPlayer }) {
           <Link href="/" className="brand">
             Tahmin <span className="brand-accent">Ligi</span>
           </Link>
-          <span className="user-pill">{player.displayName}</span>
+          <span className="user-pill">
+            <FanFlag slug={player.slug} displayName={player.displayName} size={12} />
+            {player.displayName}
+          </span>
         </div>
 
         <nav className="nav-links" aria-label="Ana menü">
