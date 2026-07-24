@@ -11,12 +11,10 @@ export function PredictionsBoard({
   matches,
   predictions,
   players,
-  currentPlayerId,
 }: {
   matches: MatchWithTeams[];
   predictions: PredictionWithPlayer[];
   players: Player[];
-  currentPlayerId: string;
 }) {
   const matchIds = new Set(matches.map((m) => m.id));
   const requiredCount = matches.length;
@@ -72,11 +70,6 @@ export function PredictionsBoard({
               <span className="submission-player">
                 <FanFlag slug={player.slug} displayName={player.display_name} size={12} />
                 {player.display_name}
-                {player.id === currentPlayerId ? (
-                  <span className="muted" style={{ fontWeight: 500 }}>
-                    (sen)
-                  </span>
-                ) : null}
               </span>
               <span className={complete ? "status-dot status-dot-ok" : "status-dot"}>
                 {complete ? "Kaydetti" : "Bekleniyor"}
@@ -113,11 +106,6 @@ export function PredictionsBoard({
                     size={14}
                   />
                   {player.display_name}
-                  {player.id === currentPlayerId ? (
-                    <span className="muted" style={{ fontSize: "0.85rem", fontWeight: 500 }}>
-                      (sen)
-                    </span>
-                  ) : null}
                 </h2>
                 {scored ? (
                   <span className="week-points-pill">{weekPoints} puan</span>
