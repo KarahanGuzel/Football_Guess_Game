@@ -16,12 +16,16 @@ export default async function StandingsPage() {
   }
 
   return (
-    <div>
-      <h1 className="page-title">Puan Durumu</h1>
-      <p className="page-sub">Toplam puana göre sıralama.</p>
+    <div className="stack-lg">
+      <header className="page-header">
+        <h1 className="page-title">Puan Durumu</h1>
+        <p className="page-sub">
+          Sezon sıralaması: toplam puan önce, eşitlikte tam isabet sayısı.
+        </p>
+      </header>
 
       {errorMessage ? (
-        <p style={{ color: "#ffb4b4" }}>{errorMessage}</p>
+        <p style={{ color: "var(--flash-error)" }}>{errorMessage}</p>
       ) : (
         <StandingsTable rows={rows} />
       )}
