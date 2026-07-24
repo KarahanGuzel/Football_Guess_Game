@@ -1,4 +1,6 @@
 import { BonusBadge, DerbyBadge } from "@/components/badges";
+import { FanFlag } from "@/components/fan-flag";
+import { MatchTeamsLine } from "@/components/match-teams-line";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getMatchesForWeek,
@@ -56,9 +58,8 @@ export default async function HistoryDetailPage({
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: 800 }}>
-                    {match.home_team.name} {match.home_goals ?? "-"} :{" "}
-                    {match.away_goals ?? "-"} {match.away_team.name}
+                  <div>
+                    <MatchTeamsLine match={match} showScores size={14} />
                   </div>
                   <div className="muted" style={{ fontSize: "0.85rem" }}>
                     {formatKickoff(match.kickoff_at)}
@@ -94,7 +95,20 @@ export default async function HistoryDetailPage({
                           style={{ borderTop: "1px solid var(--line)" }}
                         >
                           <td style={{ padding: "0.45rem" }}>
-                            {prediction.player.display_name}
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.4rem",
+                              }}
+                            >
+                              <FanFlag
+                                slug={prediction.player.slug}
+                                displayName={prediction.player.display_name}
+                                size={12}
+                              />
+                              {prediction.player.display_name}
+                            </span>
                           </td>
                           <td style={{ padding: "0.45rem" }}>
                             {resultLabel[prediction.result]}

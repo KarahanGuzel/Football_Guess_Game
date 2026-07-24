@@ -13,6 +13,7 @@ import {
   unlockWeekAction,
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
+import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
 import type { MatchWithTeams, Week } from "@/types/database";
 
@@ -438,10 +439,8 @@ function MatchRow({
   return (
     <div className="match-row">
       <div>
-        <div style={{ fontWeight: 700 }}>
-          {match.home_team.name}
-          {showScores ? ` ${match.home_goals ?? "-"} : ${match.away_goals ?? "-"} ` : " – "}
-          {match.away_team.name}
+        <div>
+          <MatchTeamsLine match={match} showScores={showScores} size={13} />
         </div>
         <div className="muted" style={{ fontSize: "0.85rem" }}>
           {formatKickoff(match.kickoff_at)}

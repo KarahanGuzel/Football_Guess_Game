@@ -1,4 +1,5 @@
 import { BonusBadge, DerbyBadge } from "@/components/badges";
+import { MatchTeamsLine } from "@/components/match-teams-line";
 import { requirePlayer } from "@/lib/auth/current-user";
 import { getNextFixturesWeek } from "@/lib/data";
 import { formatKickoff } from "@/lib/format";
@@ -32,8 +33,8 @@ export default async function FixturesPage() {
               }}
             >
               <div>
-                <div style={{ fontWeight: 700 }}>
-                  {match.home_team.name} – {match.away_team.name}
+                <div>
+                  <MatchTeamsLine match={match} size={13} />
                 </div>
                 <div className="muted" style={{ fontSize: "0.85rem" }}>
                   {formatKickoff(match.kickoff_at)}
