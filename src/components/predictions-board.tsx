@@ -24,7 +24,7 @@ export function PredictionsBoard({
   predictions: PredictionWithPlayer[];
   players: Player[];
 }) {
-  const [openPlayerId, setOpenPlayerId] = useState<string | null>(null);
+  const [openPlayerIds, setOpenPlayerIds] = useState<Set<string>>(() => new Set());
 
   const { rows, submittedCount, matchById } = useMemo(() => {
     const matchIds = new Set(matches.map((m) => m.id));
@@ -67,7 +67,12 @@ export function PredictionsBoard({
 
   function togglePlayer(playerId: string, hasPicks: boolean) {
     if (!hasPicks) return;
-    setOpenPlayerId((current) => (current === playerId ? null : playerId));
+    setOpenPlayerIds((current) => {
+      const next = new Set(current);
+      if (next.has(playerId)) next.delete(playerId);
+      else next.add(playerId);
+      return next;
+    });
   }
 
   return (
@@ -85,7 +90,7 @@ export function PredictionsBoard({
       <ul className="submission-list">
         {rows.map(({ player, complete, picks }) => {
           const hasPicks = picks.length > 0;
-          const isOpen = openPlayerId === player.id;
+          const isOpen = openPlayerIds.has(player.id);
           const ordered = hasPicks
             ? matches
                 .map((match) => picks.find((p) => p.match_id === match.id))
