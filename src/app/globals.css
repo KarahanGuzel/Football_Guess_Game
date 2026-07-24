@@ -128,11 +128,24 @@ select {
 .badge-bonus {
   background: color-mix(in srgb, var(--bonus) 22%, transparent);
   color: var(--bonus);
+  border: 1px solid color-mix(in srgb, var(--bonus) 45%, transparent);
 }
 
 .badge-derby {
   background: color-mix(in srgb, var(--derby) 20%, transparent);
   color: #ffb4bc;
+  border: 1px solid color-mix(in srgb, var(--derby) 40%, transparent);
+}
+
+.badge-compact {
+  min-width: 1.45rem;
+  height: 1.45rem;
+  padding: 0 0.35rem;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 .btn {
@@ -802,13 +815,10 @@ html[data-theme="light"] .btn-primary {
 }
 
 .player-picks-match {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.player-picks-badges {
   display: inline-flex;
-  gap: 0.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .player-picks-points {
