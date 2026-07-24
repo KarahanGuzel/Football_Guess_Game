@@ -54,8 +54,7 @@ export default async function PredictionsPage() {
       <header className="page-header">
         <h1 className="page-title">Tahminler</h1>
         <p className="page-sub">
-          Herkesin tahminlerini oyuncu oyuncu gör. Üstte kimlerin kaydettiği,
-          altta seçimler listelenir.
+          Oyuncu listesinden bir isme dokunarak o haftanın tahminlerini gör.
         </p>
       </header>
 
