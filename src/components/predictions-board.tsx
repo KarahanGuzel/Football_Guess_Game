@@ -155,10 +155,8 @@ export function PredictionsBoard({
                               <td>
                                 <div className="player-picks-match">
                                   <MatchTeamsLine match={match} size={11} />
-                                  <span className="player-picks-badges">
-                                    {match.is_bonus ? <BonusBadge /> : null}
-                                    {match.is_derby ? <DerbyBadge /> : null}
-                                  </span>
+                                  {match.is_bonus ? <BonusBadge compact /> : null}
+                                  {match.is_derby ? <DerbyBadge compact /> : null}
                                 </div>
                               </td>
                               <td>
