@@ -137,15 +137,11 @@ export function PredictionsBoard({
 
               {isOpen && hasPicks ? (
                 <div className="player-picks-drawer">
-                  <div className="player-picks-drawer-meta">
-                    {scored ? (
+                  {scored ? (
+                    <div className="player-picks-drawer-meta">
                       <span className="week-points-pill">{weekPoints} puan</span>
-                    ) : (
-                      <span className="muted" style={{ fontSize: "0.8rem" }}>
-                        {ordered.length}/{matches.length} maç
-                      </span>
-                    )}
-                  </div>
+                    </div>
+                  ) : null}
                   <div className="player-picks-table-wrap">
                     <table className="player-picks-table">
                       <thead>
