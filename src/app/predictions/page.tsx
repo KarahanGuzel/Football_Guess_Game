@@ -96,22 +96,35 @@ export default async function PredictionsPage() {
       )}
 
       {historyWeeks.length > 0 ? (
-        <section className="panel reveal">
+        <section className="panel reveal past-weeks-panel">
           <div className="section-head">
-            <h2 className="section-title">Geçmiş haftalar</h2>
+            <div>
+              <h2 className="section-title">Geçmiş haftalar</h2>
+              <p className="muted past-weeks-sub">
+                Maç bazlı karşılaştırma için bir hafta seç.
+              </p>
+            </div>
+            <span className="past-weeks-count">{historyWeeks.length}</span>
           </div>
-          <p className="muted" style={{ margin: "0 0 0.75rem", fontSize: "0.9rem" }}>
-            Eski haftaların maç bazlı karşılaştırması Geçmiş’te.
-          </p>
-          <div className="stack-xs">
+          <div className="past-weeks-list">
             {historyWeeks.map((week) => (
-              <Link key={week.id} href={`/history/${week.id}`} className="week-row">
-                <div className="week-row-main">
-                  <span className="week-row-title">{week.label}</span>
+              <Link
+                key={week.id}
+                href={`/history/${week.id}`}
+                className="past-week-card"
+              >
+                <span className="past-week-card-main">
+                  <span className="past-week-label">{week.label}</span>
+                  <span className="past-week-hint">Detayları gör</span>
+                </span>
+                <span className="past-week-card-side">
                   <span className={`status-chip status-${week.status}`}>
                     {week.status === "scored" ? "Puanlandı" : "Kilitli"}
                   </span>
-                </div>
+                  <span className="past-week-arrow" aria-hidden="true">
+                    →
+                  </span>
+                </span>
               </Link>
             ))}
           </div>

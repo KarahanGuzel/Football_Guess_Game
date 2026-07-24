@@ -778,6 +778,226 @@ html[data-theme="light"] .btn-primary {
   font-weight: 800;
 }
 
+/* Past weeks on Tahminler */
+.past-weeks-panel .section-head {
+  align-items: flex-start;
+}
+
+.past-weeks-sub {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+}
+
+.past-weeks-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 80%, transparent);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.past-weeks-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.past-week-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 55%),
+    color-mix(in srgb, var(--bg-soft) 55%, transparent);
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+
+.past-week-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  transform: translateY(-1px);
+}
+
+.past-week-card-main {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.past-week-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.past-week-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.past-week-card-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+.past-week-arrow {
+  color: var(--accent);
+  font-weight: 800;
+  transition: transform 0.15s ease;
+}
+
+.past-week-card:hover .past-week-arrow {
+  transform: translateX(3px);
+}
+
+/* Standings podium */
+.standings-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 640px;
+}
+
+.standings-table-compact {
+  min-width: 360px;
+}
+
+.standings-table thead tr {
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.standings-table th,
+.standings-table td {
+  padding: 0.7rem 0.55rem;
+  vertical-align: middle;
+}
+
+.standings-table tbody tr {
+  border-top: 1px solid var(--line);
+}
+
+.standings-table tbody tr td {
+  border-top: 1px solid var(--line);
+}
+
+.standings-empty {
+  padding: 0.85rem 0.55rem;
+}
+
+.standings-rank-cell {
+  width: 3.2rem;
+}
+
+.standings-rank-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.55rem;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.standings-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 700;
+}
+
+.standings-points {
+  color: var(--accent);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 10px rgba(0, 0, 0, 0.16);
+  border: 1px solid transparent;
+}
+
+.rank-medal-1 {
+  background: linear-gradient(160deg, #ffe789 0%, #f0b429 48%, #c98912 100%);
+  color: #4a3200;
+  border-color: #e0a819;
+}
+
+.rank-medal-2 {
+  background: linear-gradient(160deg, #f3f5f8 0%, #c7ced8 48%, #9aa5b5 100%);
+  color: #2b3340;
+  border-color: #b7c0cd;
+}
+
+.rank-medal-3 {
+  background: linear-gradient(160deg, #f0c19a 0%, #d08a4e 48%, #a9622f 100%);
+  color: #3d2210;
+  border-color: #c17a3d;
+}
+
+.standings-row-top1 td {
+  background: color-mix(in srgb, #f0b429 12%, transparent);
+}
+
+.standings-row-top2 td {
+  background: color-mix(in srgb, #c7ced8 14%, transparent);
+}
+
+.standings-row-top3 td {
+  background: color-mix(in srgb, #d08a4e 12%, transparent);
+}
+
+.standings-row-top1 td:first-child,
+.standings-row-top2 td:first-child,
+.standings-row-top3 td:first-child {
+  border-left: 3px solid transparent;
+}
+
+.standings-row-top1 td:first-child {
+  border-left-color: #f0b429;
+}
+
+.standings-row-top2 td:first-child {
+  border-left-color: #b7c0cd;
+}
+
+.standings-row-top3 td:first-child {
+  border-left-color: #d08a4e;
+}
+
+html[data-theme="light"] .standings-row-top1 td {
+  background: color-mix(in srgb, #f0b429 16%, white);
+}
+
+html[data-theme="light"] .standings-row-top2 td {
+  background: color-mix(in srgb, #c7ced8 22%, white);
+}
+
+html[data-theme="light"] .standings-row-top3 td {
+  background: color-mix(in srgb, #d08a4e 14%, white);
+}
+
 @media (max-width: 720px) {
   .container {
     width: min(980px, calc(100% - 1.25rem));
