@@ -12,10 +12,6 @@ export default async function AdminPage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Yönetim</h1>
-        <p className="page-sub">
-          Manuel hafta ekleyebilir, bonus seçip yayınlayabilir, kilitleyip skor
-          girebilirsin.
-        </p>
       </header>
 
       <CreateWeekForm />

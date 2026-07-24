@@ -11,7 +11,6 @@ export default async function FixturesPage() {
   return (
     <div>
       <h1 className="page-title">Gelecek Hafta</h1>
-      <p className="page-sub">Salt okunur fikstür listesi.</p>
 
       {!data || data.matches.length === 0 ? (
         <div className="panel muted">Henüz gelecek hafta fikstürü yayınlanmadı.</div>

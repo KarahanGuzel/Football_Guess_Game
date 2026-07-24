@@ -83,9 +83,6 @@ export function PredictionsBoard({
           {submittedCount}/{players.length}
         </span>
       </div>
-      <p className="muted predictions-hint">
-        Tahmini olan isme dokununca maç seçimleri açılır.
-      </p>
 
       <ul className="submission-list">
         {rows.map(({ player, complete, picks }) => {

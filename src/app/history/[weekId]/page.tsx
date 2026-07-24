@@ -29,7 +29,6 @@ export default async function HistoryDetailPage({
   return (
     <div>
       <h1 className="page-title">{week.label}</h1>
-      <p className="page-sub">Maç sonuçları ve oyuncu tahminleri.</p>
 
       <div style={{ display: "grid", gap: "1rem" }}>
         {matches.map((match) => {

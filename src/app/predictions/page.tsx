@@ -8,7 +8,6 @@ import {
   getPredictionsForMatches,
   listActivePlayers,
 } from "@/lib/data";
-import { formatDateTime } from "@/lib/format";
 import { weekLockAt } from "@/lib/week-lock";
 
 export default async function PredictionsPage() {
@@ -53,9 +52,6 @@ export default async function PredictionsPage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Tahminler</h1>
-        <p className="page-sub">
-          Oyuncu listesinden bir isme dokunarak o haftanın tahminlerini gör.
-        </p>
       </header>
 
       {!focus ? (
@@ -64,23 +60,7 @@ export default async function PredictionsPage() {
         </div>
       ) : (
         <section className="stack-md">
-          <div>
-            <h2 className="section-title">{focus.week.label}</h2>
-            <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
-              {focus.status === "open"
-                ? "Hafta açık — kayıtlı tahminler anlık görünür."
-                : focus.status === "locked"
-                  ? "Hafta kilitli — tahminler değiştirilemez."
-                  : "Hafta puanlandı."}
-              {focus.lockAt ? (
-                <>
-                  {" "}
-                  Kilit:{" "}
-                  <strong>{formatDateTime(focus.lockAt.toISOString())}</strong>
-                </>
-              ) : null}
-            </p>
-          </div>
+          <h2 className="section-title">{focus.week.label}</h2>
 
           {focus.matches.length === 0 ? (
             <div className="panel muted">Bu haftaya henüz maç eklenmemiş.</div>
@@ -97,12 +77,7 @@ export default async function PredictionsPage() {
       {historyWeeks.length > 0 ? (
         <section className="panel reveal past-weeks-panel">
           <div className="section-head">
-            <div>
-              <h2 className="section-title">Geçmiş haftalar</h2>
-              <p className="muted past-weeks-sub">
-                Maç bazlı karşılaştırma için bir hafta seç.
-              </p>
-            </div>
+            <h2 className="section-title">Geçmiş haftalar</h2>
             <span className="past-weeks-count">{historyWeeks.length}</span>
           </div>
           <div className="past-weeks-list">
@@ -114,7 +89,6 @@ export default async function PredictionsPage() {
               >
                 <span className="past-week-card-main">
                   <span className="past-week-label">{week.label}</span>
-                  <span className="past-week-hint">Detayları gör</span>
                 </span>
                 <span className="past-week-card-side">
                   <span className={`status-chip status-${week.status}`}>
