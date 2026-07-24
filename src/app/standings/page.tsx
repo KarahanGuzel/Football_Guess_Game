@@ -19,9 +19,6 @@ export default async function StandingsPage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Puan Durumu</h1>
-        <p className="page-sub">
-          Sezon sıralaması: toplam puan önce, eşitlikte tam isabet sayısı.
-        </p>
       </header>
 
       {errorMessage ? (

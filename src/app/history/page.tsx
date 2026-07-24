@@ -14,7 +14,6 @@ export default async function HistoryPage() {
   return (
     <div>
       <h1 className="page-title">Geçmiş Haftalar</h1>
-      <p className="page-sub">Sonuçlar, tahminler ve puanlar.</p>
 
       <div style={{ display: "grid", gap: "0.65rem" }}>
         {weeks.length === 0 ? (

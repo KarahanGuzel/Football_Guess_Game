@@ -241,9 +241,7 @@ export function PredictionForm({
           </div>
         </div>
       ) : (
-        <p className="muted">
-          Tahminler kilitlendi. Karşılaştırma için Tahminler sayfasına bak.
-        </p>
+        <p className="muted">Tahminler kilitli.</p>
       )}
 
       {message ? <p className="prediction-flash prediction-flash-ok">{message}</p> : null}

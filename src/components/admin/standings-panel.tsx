@@ -34,12 +34,7 @@ export function AdminStandingsPanel({ rows }: { rows: StandingRow[] }) {
   return (
     <section className="panel reveal">
       <div className="section-head">
-        <div>
-          <h2 className="section-title">Puan Durumu</h2>
-          <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
-            Güncel sıralama
-          </p>
-        </div>
+        <h2 className="section-title">Puan Durumu</h2>
         <button
           type="button"
           className="btn btn-danger btn-sm"

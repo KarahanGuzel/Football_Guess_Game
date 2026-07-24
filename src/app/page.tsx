@@ -44,8 +44,13 @@ export default async function HomePage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Ana Sayfa</h1>
-        <div className="page-sub-row">
-          <p className="page-sub">Yayındaki haftanın maçları ve güncel puan durumu.</p>
+      </header>
+
+      <section className="stack-md reveal">
+        <div className="section-head week-head">
+          <h2 className="section-title">
+            {weekData ? weekData.week.label : "Bu Hafta"}
+          </h2>
           {weekData ? (
             <LockCountdown
               lockAtIso={weekData.lockAt?.toISOString() ?? null}
@@ -53,19 +58,12 @@ export default async function HomePage() {
             />
           ) : null}
         </div>
-      </header>
-
-      <section className="stack-md reveal">
-        <h2 className="section-title">
-          {weekData ? weekData.week.label : "Bu Hafta"}
-        </h2>
 
         {weekError ? (
           <p style={{ color: "var(--flash-error)" }}>{weekError}</p>
         ) : !weekData ? (
           <div className="panel muted">
-            Şu an yayınlanmış bir tahmin haftası yok. Yönetici haftayı yayınlayınca
-            burada görünecek.
+            Şu an yayınlanmış bir tahmin haftası yok.
           </div>
         ) : weekData.matches.length === 0 ? (
           <div className="panel muted">Bu haftaya henüz maç eklenmemiş.</div>
@@ -81,14 +79,9 @@ export default async function HomePage() {
 
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>
-          <div>
-            <h2 className="section-title">Puan Durumu</h2>
-            <p className="muted" style={{ margin: "0.35rem 0 0", fontSize: "0.9rem" }}>
-              Güncel sıralama
-            </p>
-          </div>
+          <h2 className="section-title">Puan Durumu</h2>
           <Link href="/standings" className="muted" style={{ fontSize: "0.9rem" }}>
-            Tüm istatistikler →
+            Tümü →
           </Link>
         </div>
 
