@@ -683,26 +683,58 @@ html[data-theme="light"] .btn-primary {
   min-height: 48px;
 }
 
+.predictions-hint {
+  margin: -0.35rem 0 0.75rem;
+  font-size: 0.85rem;
+}
+
 .submission-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.15rem;
 }
 
-.submission-row {
+.submission-item {
+  border-top: 1px solid var(--line);
+}
+
+.submission-item:first-child {
+  border-top: 0;
+}
+
+.submission-row-btn {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.55rem 0;
-  border-top: 1px solid var(--line);
+  padding: 0.65rem 0.15rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: default;
 }
 
-.submission-row:first-child {
-  border-top: 0;
-  padding-top: 0.1rem;
+.submission-item-clickable .submission-row-btn {
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.submission-item-clickable .submission-row-btn:hover {
+  background: color-mix(in srgb, var(--bg-soft) 70%, transparent);
+}
+
+.submission-item-open .submission-row-btn {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.submission-row-btn:disabled {
+  opacity: 1;
+  cursor: default;
 }
 
 .submission-player {
@@ -712,59 +744,78 @@ html[data-theme="light"] .btn-primary {
   font-weight: 600;
 }
 
+.submission-chevron {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-left: 0.15rem;
+}
+
 .status-dot {
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--muted);
+  flex-shrink: 0;
 }
 
 .status-dot-ok {
   color: var(--ok);
 }
 
-.player-pick-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.55rem;
-}
-
-.player-pick-row {
-  display: grid;
-  gap: 0.45rem;
-  padding: 0.65rem 0;
-  border-top: 1px solid var(--line);
-}
-
-.player-pick-row:first-child {
-  border-top: 0;
-  padding-top: 0.15rem;
-}
-
-.player-pick-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  align-items: center;
-}
-
-.pick-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.28rem 0.65rem;
-  border-radius: 999px;
+.player-picks-drawer {
+  margin: 0 0 0.65rem;
+  padding: 0.55rem 0.55rem 0.65rem;
+  border-radius: 12px;
   border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg-soft) 70%, transparent);
-  font-size: 0.82rem;
-  font-weight: 650;
+  background: color-mix(in srgb, var(--bg) 55%, var(--bg-elevated));
+  animation: rise 0.22s ease both;
 }
 
-.pick-points {
-  margin-left: auto;
+.player-picks-drawer-meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.4rem;
+}
+
+.player-picks-table-wrap {
+  overflow-x: auto;
+}
+
+.player-picks-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 280px;
+  font-size: 0.84rem;
+}
+
+.player-picks-table th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.35rem 0.45rem;
+}
+
+.player-picks-table td {
+  padding: 0.4rem 0.35rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  vertical-align: middle;
+}
+
+.player-picks-match {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.player-picks-badges {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.player-picks-points {
   font-weight: 800;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .week-points-pill {
@@ -1040,7 +1091,11 @@ html[data-theme="light"] .standings-row-top3 td {
     min-height: 46px;
   }
 
-  .player-pick-row {
-    gap: 0.55rem;
+  .player-picks-drawer {
+    padding: 0.45rem;
+  }
+
+  .player-picks-table {
+    font-size: 0.8rem;
   }
 }
