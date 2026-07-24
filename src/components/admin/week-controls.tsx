@@ -12,11 +12,9 @@ import {
   setBonusMatchAction,
   unlockWeekAction,
 } from "@/app/actions/admin";
-import { WhatsAppReminderButton } from "@/components/admin/whatsapp-reminder-button";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
-import { formatDateTime, formatKickoff } from "@/lib/format";
-import { weekLockAt } from "@/lib/week-lock";
+import { formatKickoff } from "@/lib/format";
 import type { MatchWithTeams, Week } from "@/types/database";
 
 type Phase = "prepare" | "open" | "locked" | "done";
@@ -31,13 +29,9 @@ function getPhase(status: Week["status"]): Phase {
 export function AdminWeekControls({
   week,
   matches,
-  appUrl,
-  whatsappPhone,
 }: {
   week: Week;
   matches: MatchWithTeams[];
-  appUrl: string;
-  whatsappPhone?: string | null;
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -82,8 +76,6 @@ export function AdminWeekControls({
     });
   const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
   const canCalculate = phase === "locked" && allScoresSaved;
-  const lockAt = weekLockAt(matches);
-  const lockAtLabel = lockAt ? formatDateTime(lockAt.toISOString()) : undefined;
 
   function run(
     action: () => Promise<{ error?: string; ok?: true }>,
@@ -203,25 +195,16 @@ export function AdminWeekControls({
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             İstediğin zaman tahminleri kilitleyebilirsin. Kilit sonrası kimse
-            değiştiremez. WhatsApp butonu mesajı hazırlar; sohbeti/grubu sen
-            seçersin.
+            değiştiremez.
           </p>
-          <div className="admin-action-row">
-            <button
-              className="btn btn-primary"
-              type="button"
-              disabled={pending}
-              onClick={() => run(() => lockWeekAction(week.id), "Hafta kilitlendi.")}
-            >
-              Tahminleri Kilitle
-            </button>
-            <WhatsAppReminderButton
-              weekLabel={week.label}
-              lockAtLabel={lockAtLabel}
-              appUrl={appUrl}
-              phone={whatsappPhone}
-            />
-          </div>
+          <button
+            className="btn btn-primary"
+            type="button"
+            disabled={pending}
+            onClick={() => run(() => lockWeekAction(week.id), "Hafta kilitlendi.")}
+          >
+            Tahminleri Kilitle
+          </button>
           <div className="stack-xs" style={{ marginTop: "1rem" }}>
             {matches.map((match) => (
               <MatchRow key={match.id} match={match} />
