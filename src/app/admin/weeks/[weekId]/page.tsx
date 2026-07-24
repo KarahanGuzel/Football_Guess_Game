@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AddMatchForm } from "@/components/admin/add-match-form";
 import { AdminWeekControls } from "@/components/admin/week-controls";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { getPublicAppUrl } from "@/lib/app-url";
 import { getMatchesForWeek, getWeek, listTeams } from "@/lib/data";
 
 const statusMeta: Record<string, { label: string; className: string }> = {
@@ -63,7 +64,11 @@ export default async function AdminWeekPage({
         <AddMatchForm weekId={week.id} teams={teams} />
       ) : null}
 
-      <AdminWeekControls week={week} matches={matches} />
+      <AdminWeekControls
+        week={week}
+        matches={matches}
+        appUrl={getPublicAppUrl()}
+      />
     </div>
   );
 }

@@ -42,10 +42,11 @@ export function PredictionForm({
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const complete = matches.every((m) => {
+  const filledCount = matches.filter((m) => {
     const row = draft[m.id];
     return row?.result && row?.goalsMarket;
-  });
+  }).length;
+  const complete = filledCount === matches.length && matches.length > 0;
 
   function toggleResult(matchId: string, value: PredictResult) {
     setDraft((prev) => {
@@ -123,14 +124,14 @@ export function PredictionForm({
               <div className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
                 Maç sonucu
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+              <div className="pick-grid" role="group" aria-label="Maç sonucu">
                 {(
                   [
-                    ["home", `${match.home_team.short_name} kazanır`],
-                    ["draw", "Berabere"],
-                    ["away", `${match.away_team.short_name} kazanır`],
+                    ["home", "1", match.home_team.short_name],
+                    ["draw", "X", "Beraber"],
+                    ["away", "2", match.away_team.short_name],
                   ] as const
-                ).map(([value, label]) => {
+                ).map(([value, shortLabel, longLabel]) => {
                   const selected = row.result === value;
                   return (
                     <button
@@ -140,8 +141,11 @@ export function PredictionForm({
                       onClick={() => toggleResult(match.id, value)}
                       className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
                       style={{ cursor: locked ? "default" : "pointer" }}
+                      aria-pressed={selected}
+                      title={longLabel}
                     >
-                      {label}
+                      <span className="pick-chip-short">{shortLabel}</span>
+                      <span className="pick-chip-long">{longLabel}</span>
                     </button>
                   );
                 })}
@@ -152,7 +156,7 @@ export function PredictionForm({
               <div className="muted" style={{ fontSize: "0.8rem", marginBottom: 6 }}>
                 Gol alt/üst 2.5
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+              <div className="pick-grid pick-grid-2" role="group" aria-label="Alt üst 2.5">
                 {(
                   [
                     ["under_25", "Alt 2.5"],
@@ -168,6 +172,7 @@ export function PredictionForm({
                       onClick={() => toggleGoals(match.id, value)}
                       className={`pick-chip${selected ? " pick-chip-selected" : ""}`}
                       style={{ cursor: locked ? "default" : "pointer" }}
+                      aria-pressed={selected}
                     >
                       {label}
                     </button>
@@ -180,7 +185,7 @@ export function PredictionForm({
       })}
 
       {!locked ? (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center" }}>
+        <div className="prediction-save-bar">
           <button
             className="btn btn-primary"
             type="button"
@@ -189,14 +194,14 @@ export function PredictionForm({
           >
             {pending ? "Kaydediliyor..." : "Tahminleri Kaydet"}
           </button>
-          {!complete ? (
-            <span className="muted" style={{ fontSize: "0.9rem" }}>
-              Tüm maçlar doldurulmadan kayıt yapılamaz.
-            </span>
-          ) : null}
+          <span className="muted" style={{ fontSize: "0.88rem" }}>
+            {complete
+              ? "Hazır — kaydedebilirsin."
+              : `${filledCount}/${matches.length} maç doldu`}
+          </span>
         </div>
       ) : (
-        <p className="muted">Tahminler kilitlendi.</p>
+        <p className="muted">Tahminler kilitlendi. Karşılaştırma için Tahminler sayfasına bak.</p>
       )}
 
       {message ? <p style={{ color: "var(--accent)" }}>{message}</p> : null}
