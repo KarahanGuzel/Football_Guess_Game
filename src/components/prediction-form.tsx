@@ -5,6 +5,7 @@ import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
+import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
 import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
 
 type Draft = Record<
@@ -14,6 +15,45 @@ type Draft = Record<
     goalsMarket: GoalsMarket | "";
   }
 >;
+
+function buildDraft(
+  matches: MatchWithTeams[],
+  predictions: Prediction[],
+): Draft {
+  const draft: Draft = {};
+  for (const match of matches) {
+    const existing = predictions.find((p) => p.match_id === match.id);
+    draft[match.id] = {
+      result: existing?.result ?? "",
+      goalsMarket: existing?.goals_market ?? "",
+    };
+  }
+  return draft;
+}
+
+function isDraftComplete(matches: MatchWithTeams[], draft: Draft) {
+  return (
+    matches.length > 0 &&
+    matches.every((m) => {
+      const row = draft[m.id];
+      return Boolean(row?.result && row?.goalsMarket);
+    })
+  );
+}
+
+function cloneDraft(draft: Draft): Draft {
+  return Object.fromEntries(
+    Object.entries(draft).map(([id, row]) => [id, { ...row }]),
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" fill="currentColor">
+      <path d="M14.1 2.6a1.8 1.8 0 0 1 2.55 2.55l-.5.5-2.55-2.55.5-.5ZM3 14.3V17h2.7l8.05-8.05-2.55-2.55L3 14.3Z" />
+    </svg>
+  );
+}
 
 export function PredictionForm({
   weekId,
@@ -26,19 +66,20 @@ export function PredictionForm({
   initialPredictions: Prediction[];
   locked: boolean;
 }) {
-  const initialDraft = useMemo(() => {
-    const draft: Draft = {};
-    for (const match of matches) {
-      const existing = initialPredictions.find((p) => p.match_id === match.id);
-      draft[match.id] = {
-        result: existing?.result ?? "",
-        goalsMarket: existing?.goals_market ?? "",
-      };
-    }
-    return draft;
-  }, [matches, initialPredictions]);
+  const seed = useMemo(
+    () => buildDraft(matches, initialPredictions),
+    [matches, initialPredictions],
+  );
+  const initiallySaved = useMemo(
+    () => isDraftComplete(matches, seed),
+    [matches, seed],
+  );
 
-  const [draft, setDraft] = useState<Draft>(initialDraft);
+  const [draft, setDraft] = useState<Draft>(seed);
+  const [savedDraft, setSavedDraft] = useState<Draft | null>(
+    initiallySaved ? cloneDraft(seed) : null,
+  );
+  const [editing, setEditing] = useState(!initiallySaved);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
@@ -48,8 +89,10 @@ export function PredictionForm({
     const row = draft[m.id];
     return row?.result && row?.goalsMarket;
   }).length;
-  const complete = filledCount === matches.length && matches.length > 0;
+  const complete = isDraftComplete(matches, draft);
   const fillRatio = matches.length === 0 ? 0 : filledCount / matches.length;
+  const showSummary = Boolean(savedDraft) && (!editing || locked);
+  const isUpdate = Boolean(savedDraft);
 
   function toggleResult(matchId: string, value: PredictResult) {
     setDraft((prev) => {
@@ -77,6 +120,22 @@ export function PredictionForm({
     });
   }
 
+  function startEditing() {
+    if (locked || !savedDraft) return;
+    setDraft(cloneDraft(savedDraft));
+    setEditing(true);
+    setMessage(null);
+    setError(null);
+  }
+
+  function cancelEditing() {
+    if (!savedDraft) return;
+    setDraft(cloneDraft(savedDraft));
+    setEditing(false);
+    setMessage(null);
+    setError(null);
+  }
+
   function onSave() {
     setMessage(null);
     setError(null);
@@ -91,10 +150,85 @@ export function PredictionForm({
         setError(result.error);
         return;
       }
-      setMessage("Tahminlerin kaydedildi.");
+      const nextSaved = cloneDraft(draft);
+      setSavedDraft(nextSaved);
+      setEditing(false);
+      setMessage(isUpdate ? "Tahminlerin güncellendi." : "Tahminlerin kaydedildi.");
       setJustSaved(true);
       window.setTimeout(() => setJustSaved(false), 1200);
     });
+  }
+
+  if (showSummary && savedDraft) {
+    return (
+      <div className={`prediction-summary${justSaved ? " prediction-form-saved" : ""}`}>
+        <div className="panel prediction-summary-card">
+          <div className="prediction-summary-head">
+            <h3 className="prediction-summary-title">Tahmin özetin</h3>
+            {!locked ? (
+              <button
+                type="button"
+                className="prediction-edit-btn"
+                onClick={startEditing}
+                aria-label="Tahminleri düzenle"
+                title="Düzenle"
+              >
+                <EditIcon />
+                <span>Düzenle</span>
+              </button>
+            ) : (
+              <span className="muted" style={{ fontSize: "0.82rem" }}>
+                Kilitli
+              </span>
+            )}
+          </div>
+
+          <div className="prediction-summary-table-wrap">
+            <table className="prediction-summary-table">
+              <thead>
+                <tr>
+                  <th>Maç</th>
+                  <th>Sonuç</th>
+                  <th>A/Ü</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matches.map((match) => {
+                  const row = savedDraft[match.id];
+                  if (!row?.result || !row.goalsMarket) return null;
+                  return (
+                    <tr key={match.id}>
+                      <td>
+                        <div className="prediction-summary-match">
+                          <MatchTeamsLine match={match} size={11} />
+                          <span className="prediction-summary-badges">
+                            {match.is_bonus ? <BonusBadge compact /> : null}
+                            {match.is_derby ? <DerbyBadge compact /> : null}
+                          </span>
+                        </div>
+                        <div className="muted prediction-summary-kickoff">
+                          {formatKickoff(match.kickoff_at)}
+                        </div>
+                      </td>
+                      <td>
+                        {resultLabelForMatch(
+                          row.result,
+                          match.home_team.short_name,
+                          match.away_team.short_name,
+                        )}
+                      </td>
+                      <td>{goalsLabel[row.goalsMarket]}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {message ? <p className="prediction-flash prediction-flash-ok">{message}</p> : null}
+      </div>
+    );
   }
 
   return (
@@ -230,13 +364,29 @@ export function PredictionForm({
             <span className="prediction-save-count">
               {filledCount}/{matches.length}
             </span>
+            {isUpdate ? (
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={cancelEditing}
+                disabled={pending}
+              >
+                Vazgeç
+              </button>
+            ) : null}
             <button
               className={`btn-save-pill${complete ? " btn-save-pill-ready" : ""}`}
               type="button"
               disabled={!complete || pending}
               onClick={onSave}
             >
-              {pending ? "Kaydediliyor..." : "Tahminleri kaydet"}
+              {pending
+                ? isUpdate
+                  ? "Güncelleniyor..."
+                  : "Kaydediliyor..."
+                : isUpdate
+                  ? "Tahminleri güncelle"
+                  : "Tahminleri kaydet"}
             </button>
           </div>
         </div>

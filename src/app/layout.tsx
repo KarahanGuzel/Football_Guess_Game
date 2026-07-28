@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Sora } from "next/font/google";
 import { AppNav } from "@/components/nav";
 import { themeInitScript } from "@/components/theme-toggle";
@@ -20,6 +20,16 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Tahmin Ligi",
   description: "Arkadaşlarla haftalık futbol tahmin oyunu",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a1210" },
+    { media: "(prefers-color-scheme: light)", color: "#f3f5f2" },
+  ],
 };
 
 export default async function RootLayout({

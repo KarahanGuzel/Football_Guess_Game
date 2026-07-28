@@ -15,17 +15,22 @@ export default async function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 440, margin: "3.5rem auto" }} className="reveal">
-      <header className="page-header" style={{ marginBottom: "1.25rem" }}>
-        <h1 className="page-title">Tahmin Ligi</h1>
-        <p className="page-sub">Kullanıcı adını seçip giriş yap.</p>
+    <div className="login-page reveal">
+      <header className="login-hero">
+        <p className="login-kicker">Haftalık tahmin</p>
+        <h1 className="login-brand">
+          Tahmin <span className="brand-accent">Ligi</span>
+        </h1>
+        <p className="login-sub">Arkadaşlarınla skor tut, sıralamada yüksel.</p>
       </header>
 
       {configError ? (
-        <div className="panel" style={{ color: "#ffb4b4" }}>
+        <div className="panel login-error-panel">
           <strong>Kurulum gerekli</strong>
           <p style={{ marginBottom: 0 }}>{configError}</p>
         </div>
+      ) : players.length === 0 ? (
+        <div className="panel muted">Henüz aktif oyuncu yok.</div>
       ) : (
         <LoginForm players={players} />
       )}
