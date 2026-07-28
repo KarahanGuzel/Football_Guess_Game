@@ -726,7 +726,96 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   padding-bottom: calc(4.8rem + var(--safe-bottom));
 }
 
-.prediction-form-saved .prediction-card {
+.prediction-summary {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.prediction-summary-card {
+  padding: 0.9rem 1rem;
+}
+
+.prediction-summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.prediction-summary-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.prediction-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 70%, transparent);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.prediction-edit-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elevated));
+  transform: translateY(-1px);
+}
+
+.prediction-summary-table-wrap {
+  overflow-x: auto;
+}
+
+.prediction-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 320px;
+  font-size: 0.88rem;
+}
+
+.prediction-summary-table th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.4rem 0.5rem;
+}
+
+.prediction-summary-table td {
+  padding: 0.55rem 0.4rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  vertical-align: middle;
+}
+
+.prediction-summary-match {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.prediction-summary-badges {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.prediction-summary-kickoff {
+  margin-top: 0.2rem;
+  font-size: 0.74rem;
+}
+
+.prediction-form-saved .prediction-card,
+.prediction-form-saved.prediction-summary .prediction-summary-card {
   animation: prediction-pulse 0.85s ease;
 }
 
