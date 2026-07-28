@@ -1288,6 +1288,53 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   gap: 0.55rem;
 }
 
+.past-weeks-accordion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.past-week-item {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 55%),
+    color-mix(in srgb, var(--bg-soft) 55%, transparent);
+  overflow: hidden;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.past-week-item-open {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+}
+
+.past-week-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.past-week-toggle:hover {
+  background: color-mix(in srgb, var(--bg-soft) 45%, transparent);
+}
+
+.past-week-item-open .past-week-toggle {
+  border-bottom: 1px solid var(--line);
+}
+
 .past-week-card {
   display: flex;
   align-items: center;
@@ -1331,6 +1378,27 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   flex-shrink: 0;
 }
 
+.past-week-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 8px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--bg-elevated) 70%, transparent);
+  border: 1px solid var(--line);
+  transition: transform 0.18s ease, color 0.15s ease, background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.past-week-chevron-open {
+  transform: rotate(90deg);
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 .past-week-arrow {
   color: var(--accent);
   font-weight: 800;
@@ -1339,6 +1407,97 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 
 .past-week-card:hover .past-week-arrow {
   transform: translateX(3px);
+}
+
+.past-week-drawer {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem 0.85rem;
+}
+
+.past-week-empty {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.past-week-points-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.past-week-points-row {
+  display: grid;
+  grid-template-columns: 1.4rem 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.35rem;
+  border-radius: 10px;
+}
+
+.past-week-points-row:nth-child(odd) {
+  background: color-mix(in srgb, var(--bg-soft) 45%, transparent);
+}
+
+.past-week-points-rank {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.past-week-points-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.past-week-points-value {
+  font-weight: 800;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.past-week-points-unit {
+  margin-left: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.past-week-drawer-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.15rem;
+}
+
+.past-week-details-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 700;
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+
+.past-week-details-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  transform: translateX(2px);
+  color: var(--accent);
 }
 
 /* Standings */
