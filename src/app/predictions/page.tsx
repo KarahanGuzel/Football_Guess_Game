@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { PastWeeksAccordion } from "@/components/past-weeks-accordion";
 import { PredictionsBoard } from "@/components/predictions-board";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
@@ -9,6 +9,60 @@ import {
   listActivePlayers,
 } from "@/lib/data";
 import { weekLockAt } from "@/lib/week-lock";
+import type { Player, Prediction } from "@/types/database";
+
+type PredictionWithPlayer = Prediction & { player: Player };
+
+function buildWeekPointRows(
+  players: Player[],
+  predictions: PredictionWithPlayer[],
+) {
+  const totals = new Map<
+    string,
+    { player: Player; points: number; hasPicks: boolean; scoredAny: boolean }
+  >();
+
+  for (const player of players) {
+    totals.set(player.id, {
+      player,
+      points: 0,
+      hasPicks: false,
+      scoredAny: false,
+    });
+  }
+
+  for (const prediction of predictions) {
+    let bucket = totals.get(prediction.player_id);
+    if (!bucket) {
+      bucket = {
+        player: prediction.player,
+        points: 0,
+        hasPicks: false,
+        scoredAny: false,
+      };
+      totals.set(prediction.player_id, bucket);
+    }
+    bucket.hasPicks = true;
+    if (prediction.points_earned !== null) {
+      bucket.scoredAny = true;
+      bucket.points += prediction.points_earned;
+    }
+  }
+
+  return [...totals.values()]
+    .filter((row) => row.hasPicks)
+    .map((row) => ({
+      player: row.player,
+      points: row.scoredAny ? row.points : null,
+      hasPicks: row.hasPicks,
+    }))
+    .sort((a, b) => {
+      const ap = a.points ?? -1;
+      const bp = b.points ?? -1;
+      if (bp !== ap) return bp - ap;
+      return a.player.display_name.localeCompare(b.player.display_name, "tr");
+    });
+}
 
 export default async function PredictionsPage() {
   await requirePlayer();
@@ -48,6 +102,19 @@ export default async function PredictionsPage() {
 
   const historyWeeks = pastWeeks.filter((w) => w.id !== focus?.week.id);
 
+  const historySummaries = await Promise.all(
+    historyWeeks.map(async (week) => {
+      const matches = await getMatchesForWeek(week.id);
+      const weekPredictions = await getPredictionsForMatches(
+        matches.map((m) => m.id),
+      );
+      return {
+        week,
+        rows: buildWeekPointRows(players, weekPredictions),
+      };
+    }),
+  );
+
   return (
     <div className="stack-lg">
       <header className="page-header">
@@ -74,33 +141,13 @@ export default async function PredictionsPage() {
         </section>
       )}
 
-      {historyWeeks.length > 0 ? (
+      {historySummaries.length > 0 ? (
         <section className="panel reveal past-weeks-panel">
           <div className="section-head">
             <h2 className="section-title">Geçmiş haftalar</h2>
-            <span className="past-weeks-count">{historyWeeks.length}</span>
+            <span className="past-weeks-count">{historySummaries.length}</span>
           </div>
-          <div className="past-weeks-list">
-            {historyWeeks.map((week) => (
-              <Link
-                key={week.id}
-                href={`/history/${week.id}`}
-                className="past-week-card"
-              >
-                <span className="past-week-card-main">
-                  <span className="past-week-label">{week.label}</span>
-                </span>
-                <span className="past-week-card-side">
-                  <span className={`status-chip status-${week.status}`}>
-                    {week.status === "scored" ? "Puanlandı" : "Kilitli"}
-                  </span>
-                  <span className="past-week-arrow" aria-hidden="true">
-                    →
-                  </span>
-                </span>
-              </Link>
-            ))}
-          </div>
+          <PastWeeksAccordion weeks={historySummaries} />
         </section>
       ) : null}
     </div>

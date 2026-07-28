@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HistoryWeekContent } from "@/components/history-week-content";
 import type { MatchWithTeams, Player, Prediction, Week } from "@/types/database";
 
@@ -17,8 +17,28 @@ const statusLabel: Record<string, string> = {
   scored: "Puanlandı",
 };
 
-export function HistoryWeeksAccordion({ weeks }: { weeks: HistoryWeekBundle[] }) {
-  const [openIds, setOpenIds] = useState<Set<string>>(() => new Set());
+export function HistoryWeeksAccordion({
+  weeks,
+  initialOpenId = null,
+}: {
+  weeks: HistoryWeekBundle[];
+  initialOpenId?: string | null;
+}) {
+  const [openIds, setOpenIds] = useState<Set<string>>(
+    () => new Set(initialOpenId ? [initialOpenId] : []),
+  );
+
+  useEffect(() => {
+    if (!initialOpenId) return;
+    setOpenIds((current) => {
+      if (current.has(initialOpenId)) return current;
+      const next = new Set(current);
+      next.add(initialOpenId);
+      return next;
+    });
+    const node = document.getElementById(`history-week-${initialOpenId}`);
+    node?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [initialOpenId]);
 
   function toggle(weekId: string) {
     setOpenIds((current) => {
@@ -38,6 +58,7 @@ export function HistoryWeeksAccordion({ weeks }: { weeks: HistoryWeekBundle[] })
         return (
           <li
             key={week.id}
+            id={`history-week-${week.id}`}
             className={`panel history-week-item${isOpen ? " history-week-item-open" : ""}`}
           >
             <button
