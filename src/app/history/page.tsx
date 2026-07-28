@@ -1,42 +1,35 @@
-import Link from "next/link";
+import { HistoryWeeksAccordion } from "@/components/history-weeks-accordion";
 import { requirePlayer } from "@/lib/auth/current-user";
-import { getPastWeeks } from "@/lib/data";
-
-const statusLabel: Record<string, string> = {
-  locked: "Kilitli",
-  scored: "Puanlandı",
-};
+import {
+  getMatchesForWeek,
+  getPastWeeks,
+  getPredictionsForMatches,
+} from "@/lib/data";
 
 export default async function HistoryPage() {
   await requirePlayer();
   const weeks = await getPastWeeks();
 
-  return (
-    <div>
-      <h1 className="page-title">Geçmiş Haftalar</h1>
+  const bundles = await Promise.all(
+    weeks.map(async (week) => {
+      const matches = await getMatchesForWeek(week.id);
+      const predictions = await getPredictionsForMatches(matches.map((m) => m.id));
+      return { week, matches, predictions };
+    }),
+  );
 
-      <div style={{ display: "grid", gap: "0.65rem" }}>
-        {weeks.length === 0 ? (
-          <div className="panel muted">Henüz geçmiş hafta yok.</div>
-        ) : (
-          weeks.map((week) => (
-            <Link
-              key={week.id}
-              href={`/history/${week.id}`}
-              className="panel"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "0.75rem",
-                alignItems: "center",
-              }}
-            >
-              <span style={{ fontWeight: 700 }}>{week.label}</span>
-              <span className="muted">{statusLabel[week.status] ?? week.status}</span>
-            </Link>
-          ))
-        )}
-      </div>
+  return (
+    <div className="stack-md">
+      <header className="page-header">
+        <h1 className="page-title">Geçmiş Haftalar</h1>
+        <p className="page-sub">Haftayı açıp maç sonuçlarını ve tahminleri incele.</p>
+      </header>
+
+      {bundles.length === 0 ? (
+        <div className="panel muted">Henüz geçmiş hafta yok.</div>
+      ) : (
+        <HistoryWeeksAccordion weeks={bundles} />
+      )}
     </div>
   );
 }
