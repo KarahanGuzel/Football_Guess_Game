@@ -32,7 +32,7 @@ export function AppNav({ player }: { player: SessionPlayer }) {
           </Link>
           <span className="user-pill">
             <FanFlag slug={player.slug} displayName={player.displayName} size={12} />
-            {player.displayName}
+            <span className="user-pill-name">{player.displayName}</span>
           </span>
         </div>
 
