@@ -30,14 +30,13 @@ export function LoginForm({ players }: { players: Player[] }) {
       }}
     >
       <div className="login-form-head">
-        <p className="login-form-label">Kimsin?</p>
-        <p className="muted login-form-hint">Adını seç, lig başlasın.</p>
+        <p className="login-form-label">Kullanıcını Seç</p>
       </div>
 
       <div
         className="login-player-cloud"
         role="radiogroup"
-        aria-label="Kullanıcı seç"
+        aria-label="Kullanıcını seç"
       >
         {players.map((player) => {
           const selected = selectedId === player.id;
@@ -63,6 +62,11 @@ export function LoginForm({ players }: { players: Player[] }) {
               }}
               title={player.is_admin ? `${player.display_name} (yönetici)` : player.display_name}
             >
+              {player.is_admin ? (
+                <span className="login-player-admin" aria-label="Yönetici">
+                  Admin
+                </span>
+              ) : null}
               <span className="login-player-flag" aria-hidden="true">
                 <FanFlag
                   slug={player.slug}
@@ -71,9 +75,6 @@ export function LoginForm({ players }: { players: Player[] }) {
                 />
               </span>
               <span className="login-player-name">{player.display_name}</span>
-              {player.is_admin ? (
-                <span className="login-player-admin">Yön.</span>
-              ) : null}
             </button>
           );
         })}
