@@ -35,7 +35,7 @@ export function LoginForm({ players }: { players: Player[] }) {
       </div>
 
       <div
-        className="login-player-grid"
+        className="login-player-cloud"
         role="radiogroup"
         aria-label="Kullanıcı seç"
       >
@@ -48,7 +48,7 @@ export function LoginForm({ players }: { players: Player[] }) {
               type="button"
               role="radio"
               aria-checked={selected}
-              className={`login-player-card${selected ? " login-player-card-selected" : ""}`}
+              className={`login-player-tile${selected ? " login-player-tile-selected" : ""}`}
               style={
                 palette
                   ? {
@@ -61,32 +61,19 @@ export function LoginForm({ players }: { players: Player[] }) {
                 setSelectedId(player.id);
                 setError(null);
               }}
+              title={player.is_admin ? `${player.display_name} (yönetici)` : player.display_name}
             >
               <span className="login-player-flag" aria-hidden="true">
                 <FanFlag
                   slug={player.slug}
                   displayName={player.display_name}
-                  size={22}
+                  size={20}
                 />
               </span>
-              <span className="login-player-meta">
-                <span className="login-player-name">{player.display_name}</span>
-                {player.is_admin ? (
-                  <span className="login-player-role">Yönetici</span>
-                ) : (
-                  <span className="login-player-role muted">Oyuncu</span>
-                )}
-              </span>
-              <span
-                className={`login-player-check${selected ? " login-player-check-on" : ""}`}
-                aria-hidden="true"
-              >
-                {selected ? (
-                  <svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor">
-                    <path d="M7.7 13.3 4.4 10l-1.4 1.4 4.7 4.7 9-9-1.4-1.4-7.6 7.6Z" />
-                  </svg>
-                ) : null}
-              </span>
+              <span className="login-player-name">{player.display_name}</span>
+              {player.is_admin ? (
+                <span className="login-player-admin">Yön.</span>
+              ) : null}
             </button>
           );
         })}
