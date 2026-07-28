@@ -242,15 +242,29 @@ html[data-theme="light"] .btn-primary {
 }
 
 .page-header {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.85rem;
 }
 
 .page-title {
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3.4vw, 2.15rem);
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.75rem;
   letter-spacing: -0.04em;
   line-height: 1.12;
+  display: inline-block;
+  position: relative;
+  padding-bottom: 0.55rem;
+}
+
+.page-title::after {
+  content: "";
+  position: absolute;
+  left: -4px;
+  bottom: 0;
+  width: calc(100% + 8px);
+  height: 3px;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .page-sub {
@@ -1559,43 +1573,12 @@ html[data-theme="light"] .standings-row-top3 {
 }
 
 .login-brand-ball {
-  width: 0.7em;
-  height: 0.7em;
+  width: 0.72em;
+  height: 0.72em;
   flex-shrink: 0;
   display: block;
-  transform: translateY(0.05em);
-  overflow: visible;
-}
-
-.login-brand-ball-skin {
-  fill: #f2f2f2;
-  stroke: #141414;
-  stroke-width: 2.4;
-}
-
-.login-brand-ball-patch {
-  fill: #141414;
-}
-
-.login-brand-ball-seam {
-  fill: none;
-  stroke: #141414;
-  stroke-width: 2;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-html[data-theme="light"] .login-brand-ball-skin {
-  fill: #ffffff;
-  stroke: #111111;
-}
-
-html[data-theme="light"] .login-brand-ball-patch {
-  fill: #111111;
-}
-
-html[data-theme="light"] .login-brand-ball-seam {
-  stroke: #111111;
+  object-fit: contain;
+  transform: translateY(0.06em);
 }
 
 .login-sub {
