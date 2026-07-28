@@ -1,32 +1,59 @@
 import { LoginForm } from "@/components/login-form";
 import { listActivePlayers } from "@/lib/data";
 
+/** Classic black-and-white football, sized via em to match the brand font. */
 function FootballIcon() {
   return (
     <svg
       className="login-brand-ball"
-      viewBox="0 0 24 24"
+      viewBox="0 0 64 64"
       width="1em"
       height="1em"
       aria-hidden="true"
-      fill="none"
     >
-      <circle cx="12" cy="12" r="9.25" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="32" cy="32" r="29" className="login-brand-ball-skin" />
+
+      {/* Center black pentagon */}
       <path
-        d="M12 6.2 14.6 8.1 13.7 11.1h-3.4L9.4 8.1 12 6.2Z"
-        fill="currentColor"
-        opacity="0.92"
+        className="login-brand-ball-patch"
+        d="M32 20.5 39.2 25.7 36.5 34.2H27.5L24.8 25.7Z"
+      />
+
+      {/* White hex ring seams around center */}
+      <path
+        className="login-brand-ball-seam"
+        d="M32 20.5 39.2 25.7 36.5 34.2 32 38.2 27.5 34.2 24.8 25.7Z"
+      />
+
+      {/* Rays to outer patches */}
+      <path
+        className="login-brand-ball-seam"
+        d="M32 20.5V8.5M39.2 25.7l9.3-5.8M36.5 34.2l7.4 10.6M27.5 34.2 20.1 44.8M24.8 25.7l-9.3-5.8"
+      />
+
+      {/* Outer black pentagon tips */}
+      <path className="login-brand-ball-patch" d="M32 8.5 37.4 12.4 32 15.8 26.6 12.4Z" />
+      <path
+        className="login-brand-ball-patch"
+        d="m48.5 19.9 2.9 7.8-5.2 3.4-2.1-6.8Z"
       />
       <path
-        d="M8.15 9.05 6.4 11.4l1.35 3.05 2.85-.2.9-3.15-1.85-2.05ZM15.85 9.05l1.75 2.35-1.35 3.05-2.85-.2-.9-3.15 1.85-2.05ZM9.55 15.05l-.55 2.85L12 19.3l3-.1.55-2.85-2.95-.25-3.05.25Z"
-        fill="currentColor"
-        opacity="0.55"
+        className="login-brand-ball-patch"
+        d="m43.9 44.8 1.9 7.2-6.8 2.9-2.3-5.8Z"
       />
       <path
-        d="M12 6.2 14.6 8.1 13.7 11.1h-3.4L9.4 8.1 12 6.2Zm-3.85 2.85L6.4 11.4l1.35 3.05 2.85-.2.9-3.15-1.85-2.05Zm7.7 0 1.75 2.35-1.35 3.05-2.85-.2-.9-3.15 1.85-2.05ZM9.55 15.05l-.55 2.85L12 19.3l3-.1.55-2.85-2.95-.25Z"
-        stroke="currentColor"
-        strokeWidth="1.15"
-        strokeLinejoin="round"
+        className="login-brand-ball-patch"
+        d="m20.1 44.8-1.9 7.2 6.8 2.9 2.3-5.8Z"
+      />
+      <path
+        className="login-brand-ball-patch"
+        d="M15.5 19.9 12.6 27.7l5.2 3.4 2.1-6.8Z"
+      />
+
+      {/* Soft equator seams for roundness */}
+      <path
+        className="login-brand-ball-seam"
+        d="M12.6 27.7 20.1 44.8M51.4 27.7 43.9 44.8M15.5 19.9 26.6 12.4M48.5 19.9 37.4 12.4"
       />
     </svg>
   );

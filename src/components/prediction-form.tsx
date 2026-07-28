@@ -188,7 +188,7 @@ export function PredictionForm({
               <thead>
                 <tr>
                   <th>Maç</th>
-                  <th>Sonuç</th>
+                  <th>Maç Sonucu</th>
                   <th>A/Ü</th>
                 </tr>
               </thead>
