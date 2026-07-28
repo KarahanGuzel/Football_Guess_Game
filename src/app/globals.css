@@ -1920,6 +1920,7 @@ html[data-theme="light"] .standings-row-top3 {
 .history-week-item {
   padding: 0;
   overflow: hidden;
+  scroll-margin-top: 5.5rem;
 }
 
 .history-week-toggle {
