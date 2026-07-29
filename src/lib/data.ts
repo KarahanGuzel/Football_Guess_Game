@@ -111,19 +111,39 @@ export async function getNextFixturesWeek(): Promise<{
   week: Week;
   matches: MatchWithTeams[];
 } | null> {
+  const weeks = await getNextFixturesWeeks(1);
+  return weeks[0] ?? null;
+}
+
+/** Upcoming draft weeks with matches, soonest first (default 3). */
+export async function getNextFixturesWeeks(
+  limit = 3,
+): Promise<{ week: Week; matches: MatchWithTeams[] }[]> {
   const { data: weeks, error } = await getSupabaseAdmin()
     .from("weeks")
     .select("*")
     .eq("status", "draft")
-    .order("created_at", { ascending: false })
-    .limit(1);
+    .order("created_at", { ascending: true });
 
   if (error) throw error;
-  const week = weeks?.[0];
-  if (!week) return null;
+  if (!weeks?.length) return [];
 
-  const matches = await getMatchesForWeek(week.id);
-  return { week, matches };
+  const bundles: { week: Week; matches: MatchWithTeams[]; sortKey: string }[] =
+    [];
+
+  for (const week of weeks) {
+    const matches = await getMatchesForWeek(week.id);
+    if (matches.length === 0) continue;
+    bundles.push({
+      week,
+      matches,
+      sortKey: matches[0]?.kickoff_at ?? week.created_at,
+    });
+  }
+
+  bundles.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+  return bundles.slice(0, limit).map(({ week, matches }) => ({ week, matches }));
 }
 
 export async function getPastWeeks(): Promise<Week[]> {
