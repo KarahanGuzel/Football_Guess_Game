@@ -2,11 +2,18 @@ import { AdminStandingsPanel } from "@/components/admin/standings-panel";
 import { AdminWeeksList } from "@/components/admin/weeks-list";
 import { CreateWeekForm } from "@/components/admin/create-week-form";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getStandings, listWeeks } from "@/lib/data";
+import { getMatchesForWeek, getStandings, listWeeks } from "@/lib/data";
 
 export default async function AdminPage() {
   await requireAdmin();
   const [weeks, standings] = await Promise.all([listWeeks(), getStandings()]);
+
+  const weekBundles = await Promise.all(
+    weeks.map(async (week) => ({
+      week,
+      matches: await getMatchesForWeek(week.id),
+    })),
+  );
 
   return (
     <div className="stack-lg">
@@ -23,7 +30,7 @@ export default async function AdminPage() {
             {weeks.length} hafta
           </span>
         </div>
-        <AdminWeeksList weeks={weeks} />
+        <AdminWeeksList weeks={weekBundles} />
       </section>
 
       <AdminStandingsPanel rows={standings} />

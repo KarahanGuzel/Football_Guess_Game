@@ -425,6 +425,251 @@ html[data-theme="light"] .btn-primary {
   color: var(--accent);
 }
 
+/* Fixtures accordion */
+.fixtures-accordion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.fixtures-week-item {
+  padding: 0;
+  overflow: hidden;
+}
+
+.fixtures-week-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.fixtures-week-toggle:hover {
+  background: color-mix(in srgb, var(--bg-soft) 55%, transparent);
+}
+
+.fixtures-week-item-open .fixtures-week-toggle {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+
+.fixtures-week-toggle-main {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.fixtures-week-label {
+  font-family: var(--font-display);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  font-size: 1.02rem;
+}
+
+.fixtures-week-meta {
+  font-size: 0.82rem;
+}
+
+.fixtures-week-chevron,
+.admin-week-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--bg-soft) 80%, transparent);
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+  transition: transform 0.18s ease, color 0.15s ease, background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.fixtures-week-chevron-open,
+.admin-week-chevron-open {
+  transform: rotate(90deg);
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.fixtures-week-body {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.8rem 0.9rem 0.95rem;
+}
+
+.fixtures-match-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 42%, transparent);
+}
+
+.fixtures-match-kickoff {
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.fixtures-match-badges {
+  display: flex;
+  gap: 0.3rem;
+}
+
+/* Admin weeks accordion */
+.admin-weeks-accordion {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.admin-week-item {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 40%, transparent);
+  overflow: hidden;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.admin-week-item-open {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+}
+
+.admin-week-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.45rem 0.35rem 0.2rem;
+}
+
+.admin-week-toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.55rem 0.55rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.admin-week-toggle:hover {
+  background: color-mix(in srgb, var(--bg-soft) 55%, transparent);
+}
+
+.admin-week-toggle-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+  min-width: 0;
+}
+
+.admin-week-drawer {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0 0.85rem 0.9rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.75rem;
+}
+
+.admin-week-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.admin-week-notes {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.admin-week-match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.admin-week-match-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  padding: 0.45rem 0.4rem;
+  border-radius: 10px;
+}
+
+.admin-week-match-row:nth-child(odd) {
+  background: color-mix(in srgb, var(--bg-soft) 45%, transparent);
+}
+
+.admin-week-match-main {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.admin-week-match-kickoff {
+  font-size: 0.75rem;
+}
+
+.admin-week-match-badges {
+  display: inline-flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.admin-week-drawer-foot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-week-manage-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  font-size: 0.84rem;
+  font-weight: 700;
+  transition: border-color 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.admin-week-manage-link:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  transform: translateX(2px);
+  color: var(--accent);
+}
+
 .match-row {
   display: flex;
   flex-wrap: wrap;
