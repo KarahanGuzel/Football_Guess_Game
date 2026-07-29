@@ -30,14 +30,14 @@ export default async function StandingsPage() {
       {errorMessage ? (
         <p style={{ color: "var(--flash-error)" }}>{errorMessage}</p>
       ) : (
-        <>
-          <div className="standings-shrink-wrap">
-            <div className="standings-shrink">
-              <StandingsTable rows={rows} />
-            </div>
+        <div className="standings-page-stack">
+          <div className="standings-page-block standings-page-table">
+            <StandingsTable rows={rows} />
           </div>
-          <StandingsPointsChart data={progress} />
-        </>
+          <div className="standings-page-block">
+            <StandingsPointsChart data={progress} />
+          </div>
+        </div>
       )}
     </div>
   );

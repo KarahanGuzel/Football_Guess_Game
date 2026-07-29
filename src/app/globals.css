@@ -1746,50 +1746,51 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 }
 
 /* Standings */
-.standings-shrink-wrap {
-  display: flex;
-  justify-content: center;
+.standings-page-stack {
+  width: min(78%, 100%);
+  margin-inline: auto;
+  display: grid;
+  gap: 1rem;
 }
 
-.standings-shrink {
-  width: 65%;
-  max-width: 65%;
-  min-width: min(100%, 420px);
+.standings-page-block {
+  width: 100%;
+  min-width: 0;
 }
 
-.standings-shrink .standings-panel {
-  padding: 0.55rem 0.6rem 0.5rem;
+.standings-page-table .standings-panel {
+  padding: 0.65rem 0.7rem 0.55rem;
 }
 
-.standings-shrink .standings-table {
+.standings-page-table .standings-table {
   min-width: 0;
   width: 100%;
-  border-spacing: 0 0.22rem;
-  font-size: 0.85em;
+  border-spacing: 0 0.25rem;
+  font-size: 0.9em;
 }
 
-.standings-shrink .standings-th-main {
-  font-size: 0.72rem;
+.standings-page-table .standings-th-main {
+  font-size: 0.76rem;
 }
 
-.standings-shrink .standings-th-sub {
-  font-size: 0.58rem;
+.standings-page-table .standings-th-sub {
+  font-size: 0.62rem;
 }
 
-.standings-shrink .standings-table th {
-  padding: 0.15rem 0.35rem 0.3rem;
+.standings-page-table .standings-table th {
+  padding: 0.15rem 0.4rem 0.32rem;
 }
 
-.standings-shrink .standings-table td {
-  padding: 0.45rem 0.35rem;
+.standings-page-table .standings-table td {
+  padding: 0.5rem 0.4rem;
 }
 
-.standings-shrink .standings-points {
-  font-size: 0.95rem;
+.standings-page-table .standings-points {
+  font-size: 0.98rem;
 }
 
-.standings-shrink .standings-legend {
-  font-size: 0.72rem;
+.standings-page-table .standings-legend {
+  font-size: 0.74rem;
   margin-top: 0.35rem;
 }
 
@@ -2697,13 +2698,12 @@ html[data-theme="light"] .standings-row-top3 {
     padding: 0.7rem 0.65rem 0.6rem;
   }
 
-  .standings-shrink {
+  .standings-page-stack {
     width: 100%;
-    max-width: 100%;
   }
 
-  .standings-shrink .standings-table {
-    font-size: 0.8em;
+  .standings-page-table .standings-table {
+    font-size: 0.84em;
   }
 
   .standings-chart-tooltip {
