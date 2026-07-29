@@ -79,7 +79,7 @@ export default async function HomePage() {
 
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>
-          <h2 className="section-title">Puan Durumu</h2>
+          <h2 className="section-title">Sıralama</h2>
           <Link href="/standings" className="muted" style={{ fontSize: "0.9rem" }}>
             Tümü →
           </Link>

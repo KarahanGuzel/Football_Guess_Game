@@ -10,7 +10,7 @@ import type { SessionPlayer } from "@/types/session";
 const links = [
   { href: "/", label: "Ana Sayfa" },
   { href: "/predictions", label: "Tahminler" },
-  { href: "/standings", label: "Puan" },
+  { href: "/standings", label: "Sıralama" },
   { href: "/history", label: "Geçmiş" },
   { href: "/fixtures", label: "Gelecek" },
 ];
