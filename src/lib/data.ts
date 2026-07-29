@@ -198,3 +198,89 @@ export async function getStandings(): Promise<StandingRow[]> {
   if (error) throw error;
   return data ?? [];
 }
+
+export type StandingsProgressWeek = {
+  id: string;
+  label: string;
+};
+
+export type StandingsProgressSeries = {
+  playerId: string;
+  displayName: string;
+  slug: string;
+  totals: number[];
+};
+
+export type StandingsProgress = {
+  weeks: StandingsProgressWeek[];
+  series: StandingsProgressSeries[];
+};
+
+/** Cumulative total points after each scored week, for all active players. */
+export async function getStandingsProgress(): Promise<StandingsProgress> {
+  const players = await listActivePlayers();
+
+  const { data: scoredWeeks, error } = await getSupabaseAdmin()
+    .from("weeks")
+    .select("*")
+    .eq("status", "scored")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  const weeks = scoredWeeks ?? [];
+  if (weeks.length === 0) {
+    return {
+      weeks: [],
+      series: players.map((p) => ({
+        playerId: p.id,
+        displayName: p.display_name,
+        slug: p.slug,
+        totals: [],
+      })),
+    };
+  }
+
+  const running = new Map(players.map((p) => [p.id, 0]));
+  const totalsByPlayer = new Map(players.map((p) => [p.id, [] as number[]]));
+
+  for (const week of weeks) {
+    const matches = await getMatchesForWeek(week.id);
+    const predictions = await getPredictionsForMatches(matches.map((m) => m.id));
+    const weekPoints = new Map<string, number>();
+
+    for (const prediction of predictions) {
+      if (prediction.points_earned == null) continue;
+      weekPoints.set(
+        prediction.player_id,
+        (weekPoints.get(prediction.player_id) ?? 0) + prediction.points_earned,
+      );
+    }
+
+    for (const player of players) {
+      const next = (running.get(player.id) ?? 0) + (weekPoints.get(player.id) ?? 0);
+      running.set(player.id, next);
+      totalsByPlayer.get(player.id)!.push(next);
+    }
+  }
+
+  // Keep chart ordered like current standings (highest final total first)
+  const series = players
+    .map((player) => ({
+      playerId: player.id,
+      displayName: player.display_name,
+      slug: player.slug,
+      totals: totalsByPlayer.get(player.id) ?? [],
+    }))
+    .sort((a, b) => {
+      const at = a.totals[a.totals.length - 1] ?? 0;
+      const bt = b.totals[b.totals.length - 1] ?? 0;
+      if (bt !== at) return bt - at;
+      return a.displayName.localeCompare(b.displayName, "tr");
+    });
+
+  return {
+    weeks: weeks.map((w) => ({ id: w.id, label: w.label })),
+    series,
+  };
+}
