@@ -23,22 +23,26 @@ function shortWeekLabel(label: string, index: number) {
 
 export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
   const [hover, setHover] = useState<{
-    weekIndex: number;
+    pointIndex: number;
     x: number;
   } | null>(null);
 
   const chart = useMemo(() => {
+    // Start at origin (0 pts) before the first scored week.
+    const labels = ["0", ...data.weeks.map((w, i) => shortWeekLabel(w.label, i))];
+    const titleLabels = ["Başlangıç", ...data.weeks.map((w) => w.label)];
+    const pointCount = labels.length;
+
     const width = 640;
     const height = 280;
     const pad = { top: 18, right: 16, bottom: 36, left: 36 };
     const innerW = width - pad.left - pad.right;
     const innerH = height - pad.top - pad.bottom;
-    const weekCount = Math.max(data.weeks.length, 1);
     const maxY = Math.max(1, ...data.series.flatMap((s) => s.totals));
     const niceMax = Math.ceil(maxY / 5) * 5 || 5;
 
     const xAt = (i: number) =>
-      pad.left + (weekCount <= 1 ? innerW / 2 : (i / (weekCount - 1)) * innerW);
+      pad.left + (pointCount <= 1 ? innerW / 2 : (i / (pointCount - 1)) * innerW);
     const yAt = (v: number) => pad.top + innerH - (v / niceMax) * innerH;
 
     const gridYs = [0, 0.25, 0.5, 0.75, 1].map((t) => ({
@@ -47,7 +51,8 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
     }));
 
     const paths = data.series.map((series, seriesIndex) => {
-      const points = series.totals.map((total, i) => ({
+      const totals = [0, ...series.totals];
+      const points = totals.map((total, i) => ({
         x: xAt(i),
         y: yAt(total),
         total,
@@ -57,13 +62,25 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
         .join(" ");
       return {
         ...series,
+        totals,
         color: SERIES_COLORS[seriesIndex % SERIES_COLORS.length],
         d,
         points,
       };
     });
 
-    return { width, height, pad, innerW, innerH, xAt, gridYs, paths };
+    return {
+      width,
+      height,
+      pad,
+      innerH,
+      xAt,
+      gridYs,
+      paths,
+      labels,
+      titleLabels,
+      pointCount,
+    };
   }, [data]);
 
   if (data.weeks.length === 0) {
@@ -87,7 +104,7 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
           name: path.displayName,
           slug: path.slug,
           color: path.color,
-          total: path.totals[hover.weekIndex] ?? 0,
+          total: path.totals[hover.pointIndex] ?? 0,
         }));
 
   return (
@@ -125,15 +142,15 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
             </g>
           ))}
 
-          {data.weeks.map((week, i) => (
+          {chart.labels.map((label, i) => (
             <text
-              key={week.id}
+              key={`${label}-${i}`}
               x={chart.xAt(i)}
               y={chart.height - 12}
               textAnchor="middle"
               className="standings-chart-axis"
             >
-              {shortWeekLabel(week.label, i)}
+              {label}
             </text>
           ))}
 
@@ -156,29 +173,29 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
                 key={`${path.playerId}-${i}`}
                 cx={point.x}
                 cy={point.y}
-                r={hover?.weekIndex === i ? 4.2 : 3}
+                r={hover?.pointIndex === i ? 4.2 : 3}
                 fill={path.color}
                 className="standings-chart-dot"
               />
             )),
           )}
 
-          {data.weeks.map((week, i) => {
+          {chart.labels.map((label, i) => {
             const x = chart.xAt(i);
             const prev = i === 0 ? chart.pad.left : (chart.xAt(i - 1) + x) / 2;
             const next =
-              i === data.weeks.length - 1
+              i === chart.pointCount - 1
                 ? chart.width - chart.pad.right
                 : (x + chart.xAt(i + 1)) / 2;
             return (
               <rect
-                key={`hit-${week.id}`}
+                key={`hit-${label}-${i}`}
                 x={prev}
                 y={chart.pad.top}
                 width={Math.max(next - prev, 1)}
                 height={chart.innerH}
                 fill="transparent"
-                onMouseEnter={() => setHover({ weekIndex: i, x })}
+                onMouseEnter={() => setHover({ pointIndex: i, x })}
               />
             );
           })}
@@ -200,7 +217,7 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
             style={{ left: `${(hover.x / chart.width) * 100}%` }}
           >
             <div className="standings-chart-tooltip-title">
-              {data.weeks[hover.weekIndex]?.label}
+              {chart.titleLabels[hover.pointIndex]}
             </div>
             <ul className="standings-chart-tooltip-list">
               {[...hoverTotals]
