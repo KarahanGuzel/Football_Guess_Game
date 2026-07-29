@@ -24,9 +24,10 @@ export default async function LoginPage() {
             className="login-brand-ball"
             src="/football-ball.png"
             alt=""
-            width={48}
-            height={48}
+            width={64}
+            height={64}
             priority
+            unoptimized
             aria-hidden="true"
           />
         </h1>
