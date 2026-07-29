@@ -27,6 +27,7 @@ const FAN_BY_KEY: Record<string, FanPalette["id"]> = {
   atinc: "fenerbahce",
   "atınç": "fenerbahce",
   baran: "fenerbahce",
+  ismail: "fenerbahce",
   emrah: "galatasaray",
   bugra: "galatasaray",
   "buğra": "galatasaray",
