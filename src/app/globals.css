@@ -1732,15 +1732,18 @@ html[data-theme="light"] .standings-row-top3 {
 }
 
 .login-brand-ball {
-  width: 0.82em;
-  height: 0.82em;
+  width: 0.78em;
+  height: 0.78em;
   flex-shrink: 0;
   display: block;
   object-fit: cover;
   border-radius: 50%;
-  transform: translateY(0.05em);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  transform: translateY(0.04em);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
   background: transparent;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .login-sub {
