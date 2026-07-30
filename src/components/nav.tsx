@@ -8,11 +8,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionPlayer } from "@/types/session";
 
 const links = [
-  { href: "/", label: "Ana Sayfa" },
-  { href: "/predictions", label: "Tahminler" },
-  { href: "/standings", label: "Sıralama" },
-  { href: "/history", label: "Geçmiş" },
-  { href: "/fixtures", label: "Gelecek" },
+  { href: "/", label: "Ana Sayfa", shortLabel: "Ana" },
+  { href: "/predictions", label: "Tahminler", shortLabel: "Tahmin" },
+  { href: "/standings", label: "Sıralama", shortLabel: "Sıra" },
+  { href: "/history", label: "Geçmiş", shortLabel: "Geçmiş" },
+  { href: "/fixtures", label: "Gelecek", shortLabel: "Gelecek" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -45,7 +45,8 @@ export function AppNav({ player }: { player: SessionPlayer }) {
                 href={link.href}
                 className={`nav-link${active ? " nav-link-active" : ""}`}
               >
-                {link.label}
+                <span className="nav-link-full">{link.label}</span>
+                <span className="nav-link-short">{link.shortLabel}</span>
               </Link>
             );
           })}
@@ -54,15 +55,18 @@ export function AppNav({ player }: { player: SessionPlayer }) {
               href="/admin"
               className={`nav-link${isActive(pathname, "/admin") ? " nav-link-active" : ""}`}
             >
-              Yönetim
+              <span className="nav-link-full">Yönetim</span>
+              <span className="nav-link-short">Admin</span>
             </Link>
           ) : null}
-          <ThemeToggle />
-          <form action={logoutAction}>
-            <button className="btn btn-secondary btn-sm" type="submit">
-              Çıkış
-            </button>
-          </form>
+          <div className="nav-actions">
+            <ThemeToggle />
+            <form action={logoutAction}>
+              <button className="btn btn-secondary btn-sm nav-logout" type="submit">
+                Çıkış
+              </button>
+            </form>
+          </div>
         </nav>
       </div>
     </header>

@@ -22,13 +22,12 @@ function shortWeekLabel(label: string, index: number) {
 }
 
 export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
-  const [hover, setHover] = useState<{
+  const [active, setActive] = useState<{
     pointIndex: number;
     x: number;
   } | null>(null);
 
   const chart = useMemo(() => {
-    // Start at origin (0 pts) before the first scored week.
     const labels = ["0", ...data.weeks.map((w, i) => shortWeekLabel(w.label, i))];
     const titleLabels = ["0. hafta", ...data.weeks.map((w) => w.label)];
     const pointCount = labels.length;
@@ -83,6 +82,20 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
     };
   }, [data]);
 
+  // Mobile summary defaults to latest week; desktop tooltip only on hover/tap
+  const fallback =
+    chart.pointCount > 0
+      ? {
+          pointIndex: chart.pointCount - 1,
+          x: chart.xAt(chart.pointCount - 1),
+        }
+      : null;
+  const selected = active ?? fallback;
+
+  function selectPoint(pointIndex: number) {
+    setActive({ pointIndex, x: chart.xAt(pointIndex) });
+  }
+
   if (data.weeks.length === 0) {
     return (
       <div className="panel standings-chart-panel">
@@ -99,14 +112,14 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
     );
   }
 
-  const hoverTotals =
-    hover == null
+  const selectedTotals =
+    selected == null
       ? null
       : chart.paths.map((path) => ({
           name: path.displayName,
           slug: path.slug,
           color: path.color,
-          total: path.totals[hover.pointIndex] ?? 0,
+          total: path.totals[selected.pointIndex] ?? 0,
         }));
 
   return (
@@ -118,13 +131,34 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
         </p>
       </div>
 
+      <div
+        className="standings-chart-weeks"
+        role="tablist"
+        aria-label="Hafta seç"
+      >
+        {chart.labels.map((label, i) => (
+          <button
+            key={`${label}-${i}`}
+            type="button"
+            role="tab"
+            className={`standings-chart-week-chip${
+              selected?.pointIndex === i ? " standings-chart-week-chip-active" : ""
+            }`}
+            aria-selected={selected?.pointIndex === i}
+            onClick={() => selectPoint(i)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="standings-chart-wrap">
         <svg
           className="standings-chart-svg"
           viewBox={`0 0 ${chart.width} ${chart.height}`}
           role="img"
           aria-label="Sezon boyunca kümülatif toplam puan grafiği"
-          onMouseLeave={() => setHover(null)}
+          onMouseLeave={() => setActive(null)}
         >
           {chart.gridYs.map((g) => (
             <g key={g.value}>
@@ -177,7 +211,7 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
                 key={`${path.playerId}-${i}`}
                 cx={point.x}
                 cy={point.y}
-                r={hover?.pointIndex === i ? 4.2 : 3}
+                r={selected?.pointIndex === i ? 4.2 : 3}
                 fill={path.color}
                 className="standings-chart-dot"
               />
@@ -199,15 +233,20 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
                 width={Math.max(next - prev, 1)}
                 height={chart.innerH}
                 fill="transparent"
-                onMouseEnter={() => setHover({ pointIndex: i, x })}
+                className="standings-chart-hit"
+                onMouseEnter={() => selectPoint(i)}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  selectPoint(i);
+                }}
               />
             );
           })}
 
-          {hover ? (
+          {active ? (
             <line
-              x1={hover.x}
-              x2={hover.x}
+              x1={active.x}
+              x2={active.x}
               y1={chart.pad.top}
               y2={chart.pad.top + chart.innerH}
               className="standings-chart-hover-line"
@@ -215,16 +254,16 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
           ) : null}
         </svg>
 
-        {hover && hoverTotals ? (
+        {active && selectedTotals ? (
           <div
-            className="standings-chart-tooltip"
-            style={{ left: `${(hover.x / chart.width) * 100}%` }}
+            className="standings-chart-tooltip standings-chart-tooltip-desktop"
+            style={{ left: `${(active.x / chart.width) * 100}%` }}
           >
             <div className="standings-chart-tooltip-title">
-              {chart.titleLabels[hover.pointIndex]}
+              {chart.titleLabels[active.pointIndex]}
             </div>
             <ul className="standings-chart-tooltip-list">
-              {[...hoverTotals]
+              {[...selectedTotals]
                 .sort((a, b) => b.total - a.total)
                 .map((row) => (
                   <li key={row.name}>
@@ -240,6 +279,28 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
           </div>
         ) : null}
       </div>
+
+      {selected && selectedTotals ? (
+        <div className="standings-chart-mobile-summary">
+          <div className="standings-chart-tooltip-title">
+            {chart.titleLabels[selected.pointIndex]}
+          </div>
+          <ul className="standings-chart-tooltip-list">
+            {[...selectedTotals]
+              .sort((a, b) => b.total - a.total)
+              .map((row) => (
+                <li key={row.name}>
+                  <span
+                    className="standings-chart-swatch"
+                    style={{ background: row.color }}
+                  />
+                  <span>{row.name}</span>
+                  <strong>{row.total}</strong>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ) : null}
 
       <ul className="standings-chart-legend">
         {chart.paths.map((path) => (
