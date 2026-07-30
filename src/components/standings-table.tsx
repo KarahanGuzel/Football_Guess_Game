@@ -14,12 +14,24 @@ function missRate(row: StandingRow) {
 export function StandingsTable({
   rows,
   compact = false,
+  titled = false,
 }: {
   rows: StandingRow[];
   compact?: boolean;
+  /** Show "Genel sıralama" section header (standings page). */
+  titled?: boolean;
 }) {
   return (
-    <div className="panel standings-panel">
+    <div className={`panel standings-panel${titled ? " standings-panel-titled" : ""}`}>
+      {titled ? (
+        <div className="standings-panel-head">
+          <h2 className="section-title">Genel sıralama</h2>
+          <p className="muted standings-panel-sub">
+            Toplam puan ve isabet özeti
+          </p>
+        </div>
+      ) : null}
+
       <div className="standings-scroll">
         <table className={`standings-table${compact ? " standings-table-compact" : ""}`}>
           <thead>
@@ -31,40 +43,40 @@ export function StandingsTable({
                 <span className="standings-th-main">Oyuncu</span>
               </th>
               <th scope="col">
-                <span className="standings-th-main">Toplam</span>
-                <span className="standings-th-sub">puan</span>
+                <span className="standings-th-main">Puan</span>
+                <span className="standings-th-sub">toplam</span>
               </th>
               {!compact ? (
                 <>
                   <th scope="col">
-                    <span className="standings-th-main">MS</span>
-                    <span className="standings-th-sub">doğru sonuç</span>
+                    <span className="standings-th-main">Sonuç</span>
+                    <span className="standings-th-sub">doğru MS</span>
                   </th>
                   <th scope="col">
-                    <span className="standings-th-main">A/Ü</span>
-                    <span className="standings-th-sub">doğru alt-üst</span>
+                    <span className="standings-th-main">Alt/Üst</span>
+                    <span className="standings-th-sub">doğru 2.5</span>
                   </th>
                   <th scope="col">
-                    <span className="standings-th-main">Tam isabet</span>
-                    <span className="standings-th-sub">ikisi de doğru</span>
+                    <span className="standings-th-main">Çift</span>
+                    <span className="standings-th-sub">tam isabet</span>
                   </th>
                   <th scope="col">
-                    <span className="standings-th-main">Tahmin</span>
+                    <span className="standings-th-main">Maç</span>
                     <span className="standings-th-sub">puanlanan</span>
                   </th>
                   <th scope="col">
-                    <span className="standings-th-main">İsabet %</span>
-                    <span className="standings-th-sub">tam isabet oranı</span>
+                    <span className="standings-th-main">İsabet</span>
+                    <span className="standings-th-sub">çift oran</span>
                   </th>
                 </>
               ) : (
                 <>
                   <th scope="col">
-                    <span className="standings-th-main">Tam</span>
+                    <span className="standings-th-main">Çift</span>
                     <span className="standings-th-sub">isabet</span>
                   </th>
                   <th scope="col">
-                    <span className="standings-th-main">İsabet %</span>
+                    <span className="standings-th-main">İsabet</span>
                   </th>
                 </>
               )}
@@ -83,7 +95,8 @@ export function StandingsTable({
             ) : (
               rows.map((row, index) => {
                 const rank = index + 1;
-                const podium = rank <= 3 ? `standings-row-top standings-row-top${rank}` : "";
+                const podium =
+                  rank <= 3 ? `standings-row-top standings-row-top${rank}` : "";
                 return (
                   <tr key={row.player_id} className={podium}>
                     <td className="standings-rank-cell">
@@ -107,10 +120,14 @@ export function StandingsTable({
                     {!compact ? (
                       <>
                         <td>
-                          <span className="standings-stat">{row.correct_result_count}</span>
+                          <span className="standings-stat">
+                            {row.correct_result_count}
+                          </span>
                         </td>
                         <td>
-                          <span className="standings-stat">{row.correct_goals_count}</span>
+                          <span className="standings-stat">
+                            {row.correct_goals_count}
+                          </span>
                         </td>
                         <td>
                           <span className="standings-stat standings-stat-strong">
@@ -154,8 +171,8 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          MS = maç sonucu · A/Ü = alt/üst 2.5 · Tam isabet = ikisi birden doğru ·
-          İsabet % = tam isabet / puanlanan tahmin
+          Sonuç = maç sonucu · Alt/Üst = 2.5 · Çift = ikisi birden doğru · İsabet =
+          çift / puanlanan maç
         </p>
       ) : null}
     </div>
