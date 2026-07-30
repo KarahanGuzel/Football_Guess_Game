@@ -30,7 +30,7 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
   const chart = useMemo(() => {
     // Start at origin (0 pts) before the first scored week.
     const labels = ["0", ...data.weeks.map((w, i) => shortWeekLabel(w.label, i))];
-    const titleLabels = ["Başlangıç", ...data.weeks.map((w) => w.label)];
+    const titleLabels = ["0. hafta", ...data.weeks.map((w) => w.label)];
     const pointCount = labels.length;
 
     const width = 640;
@@ -87,11 +87,13 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
     return (
       <div className="panel standings-chart-panel">
         <div className="standings-chart-head">
-          <h2 className="section-title">Puan grafiği</h2>
-          <p className="muted standings-chart-sub">Hafta · kümülatif toplam</p>
+          <h2 className="section-title">Sezon grafiği</h2>
+          <p className="muted standings-chart-sub">
+            0. haftadan bugüne toplam puan
+          </p>
         </div>
         <p className="muted" style={{ margin: 0 }}>
-          Henüz puanlanmış hafta yok. Grafik ilk skor sonrası dolacak.
+          Henüz puanlanmış hafta yok. İlk skor sonrası grafik dolacak.
         </p>
       </div>
     );
@@ -110,8 +112,10 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
   return (
     <div className="panel standings-chart-panel">
       <div className="standings-chart-head">
-        <h2 className="section-title">Puan grafiği</h2>
-        <p className="muted standings-chart-sub">Hafta · kümülatif toplam puan</p>
+        <h2 className="section-title">Sezon grafiği</h2>
+        <p className="muted standings-chart-sub">
+          0. haftadan bugüne toplam puan
+        </p>
       </div>
 
       <div className="standings-chart-wrap">
@@ -119,7 +123,7 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
           className="standings-chart-svg"
           viewBox={`0 0 ${chart.width} ${chart.height}`}
           role="img"
-          aria-label="Oyuncuların haftalara göre toplam puan grafiği"
+          aria-label="Sezon boyunca kümülatif toplam puan grafiği"
           onMouseLeave={() => setHover(null)}
         >
           {chart.gridYs.map((g) => (

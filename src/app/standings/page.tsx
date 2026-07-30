@@ -24,7 +24,7 @@ export default async function StandingsPage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Sıralama</h1>
-        <p className="page-sub">Lig tablosu ve haftalık puan grafiği.</p>
+        <p className="page-sub">Genel tablo ve sezon boyunca puan yarışı.</p>
       </header>
 
       {errorMessage ? (
@@ -32,7 +32,7 @@ export default async function StandingsPage() {
       ) : (
         <div className="standings-page-stack">
           <div className="standings-page-block standings-page-table">
-            <StandingsTable rows={rows} />
+            <StandingsTable rows={rows} titled />
           </div>
           <div className="standings-page-block">
             <StandingsPointsChart data={progress} />
