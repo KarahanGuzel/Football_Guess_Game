@@ -52,7 +52,7 @@ export function StandingsTable({
                     <span className="standings-th-main">Sonuç</span>
                     <span className="standings-th-sub">doğru MS</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-secondary">
                     <span className="standings-th-main">Alt/Üst</span>
                     <span className="standings-th-sub">doğru 2.5</span>
                   </th>
@@ -60,7 +60,7 @@ export function StandingsTable({
                     <span className="standings-th-main">Çift</span>
                     <span className="standings-th-sub">tam isabet</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-secondary">
                     <span className="standings-th-main">Maç</span>
                     <span className="standings-th-sub">puanlanan</span>
                   </th>
@@ -124,7 +124,7 @@ export function StandingsTable({
                             {row.correct_result_count}
                           </span>
                         </td>
-                        <td>
+                        <td className="standings-col-secondary">
                           <span className="standings-stat">
                             {row.correct_goals_count}
                           </span>
@@ -134,7 +134,7 @@ export function StandingsTable({
                             {row.perfect_prediction_count}
                           </span>
                         </td>
-                        <td>
+                        <td className="standings-col-secondary">
                           <span className="standings-stat muted">
                             {row.scored_prediction_count}
                           </span>
