@@ -9,6 +9,7 @@ export type Team = {
   short_name: string;
   is_derby_club: boolean;
   sort_order: number;
+  api_football_id?: number | null;
 };
 
 export type Player = {
@@ -38,6 +39,23 @@ export type Match = {
   home_goals: number | null;
   away_goals: number | null;
   status: MatchStatus;
+  api_football_fixture_id?: number | null;
+};
+
+export type MatchPreview = {
+  match_id: string;
+  api_football_fixture_id: number;
+  winner_name: string | null;
+  winner_comment: string | null;
+  win_or_draw: boolean | null;
+  under_over: string | null;
+  goals_home: string | null;
+  goals_away: string | null;
+  advice: string | null;
+  percent_home: number | null;
+  percent_draw: number | null;
+  percent_away: number | null;
+  fetched_at: string;
 };
 
 export type MatchWithTeams = Match & {

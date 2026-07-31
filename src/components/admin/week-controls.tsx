@@ -10,6 +10,7 @@ import {
   openWeekAction,
   saveWeekScoresAction,
   setBonusMatchAction,
+  syncWeekPreviewsAction,
   unlockWeekAction,
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
@@ -78,7 +79,7 @@ export function AdminWeekControls({
   const canCalculate = phase === "locked" && allScoresSaved;
 
   function run(
-    action: () => Promise<{ error?: string; ok?: true }>,
+    action: () => Promise<{ error?: string; ok?: true; message?: string }>,
     success: string,
     options?: { redirectTo?: string },
   ) {
@@ -95,7 +96,7 @@ export function AdminWeekControls({
         router.refresh();
         return;
       }
-      setMessage(success);
+      setMessage(result.message ?? success);
       router.refresh();
     });
   }
@@ -113,6 +114,50 @@ export function AdminWeekControls({
   return (
     <div className="stack-md">
       <PhaseBanner phase={phase} />
+
+      {matches.length > 0 ? (
+        <section className="panel reveal">
+          <div className="section-head">
+            <h2 className="section-title">Maç öncesi ipuçları</h2>
+          </div>
+          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
+            API-Football predictions ile Ev/X/Dep yüzdeleri ve kısa tavsiye çeker.
+            Eksik olanları doldurur (~1 + maç sayısı request).
+          </p>
+          <div className="admin-action-row">
+            <button
+              className="btn btn-secondary"
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                run(async () => {
+                  const result = await syncWeekPreviewsAction(week.id);
+                  if (result.error) return { error: result.error };
+                  return { ok: true, message: result.message };
+                }, "Önizlemeler güncellendi.")
+              }
+            >
+              {pending ? "Çekiliyor..." : "İpuçlarını çek"}
+            </button>
+            <button
+              className="btn btn-secondary btn-sm"
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                run(async () => {
+                  const result = await syncWeekPreviewsAction(week.id, {
+                    force: true,
+                  });
+                  if (result.error) return { error: result.error };
+                  return { ok: true, message: result.message };
+                }, "Önizlemeler yenilendi.")
+              }
+            >
+              Yeniden çek
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       {phase === "prepare" ? (
         <>

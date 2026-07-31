@@ -512,15 +512,20 @@ html[data-theme="light"] .btn-primary {
 }
 
 .fixtures-match-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 42%, transparent);
+}
+
+.fixtures-match-top {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.45rem;
   align-items: center;
-  padding: 0.7rem 0.75rem;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg-soft) 42%, transparent);
 }
 
 .fixtures-match-kickoff {
@@ -531,6 +536,81 @@ html[data-theme="light"] .btn-primary {
 .fixtures-match-badges {
   display: flex;
   gap: 0.3rem;
+}
+
+.match-preview {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+.match-preview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.match-preview-kicker {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.match-preview-chip {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.match-preview-bar {
+  display: flex;
+  height: 0.35rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.match-preview-bar-home {
+  background: color-mix(in srgb, var(--accent) 85%, #2f6f3e);
+}
+
+.match-preview-bar-draw {
+  background: color-mix(in srgb, var(--muted) 55%, var(--line));
+}
+
+.match-preview-bar-away {
+  background: color-mix(in srgb, var(--derby, #c45c26) 70%, #8a4b2a);
+}
+
+.match-preview-percents {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.match-preview-percents strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.match-preview-advice {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--text);
 }
 
 /* Admin weeks accordion */
