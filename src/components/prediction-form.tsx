@@ -3,10 +3,17 @@
 import { useMemo, useState, useTransition } from "react";
 import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
+import { MatchPreviewCard } from "@/components/match-preview-card";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
 import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
-import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
+import type {
+  GoalsMarket,
+  MatchPreview,
+  MatchWithTeams,
+  PredictResult,
+  Prediction,
+} from "@/types/database";
 
 type Draft = Record<
   string,
@@ -59,13 +66,20 @@ export function PredictionForm({
   weekId,
   matches,
   initialPredictions,
+  previews = [],
   locked,
 }: {
   weekId: string;
   matches: MatchWithTeams[];
   initialPredictions: Prediction[];
+  previews?: MatchPreview[];
   locked: boolean;
 }) {
+  const previewByMatch = useMemo(() => {
+    const map = new Map<string, MatchPreview>();
+    for (const preview of previews) map.set(preview.match_id, preview);
+    return map;
+  }, [previews]);
   const seed = useMemo(
     () => buildDraft(matches, initialPredictions),
     [matches, initialPredictions],
@@ -279,6 +293,10 @@ export function PredictionForm({
             </div>
 
             <div className="prediction-card-body">
+              {previewByMatch.get(match.id) ? (
+                <MatchPreviewCard preview={previewByMatch.get(match.id)!} />
+              ) : null}
+
               <div>
                 <div className="muted prediction-field-label">Maç sonucu</div>
                 <div className="pick-grid" role="group" aria-label="Maç sonucu">

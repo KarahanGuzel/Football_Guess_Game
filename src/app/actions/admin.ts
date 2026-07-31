@@ -439,3 +439,42 @@ export async function deleteWeekAction(weekId: string) {
   revalidateAll();
   return { ok: true as const };
 }
+
+export async function syncWeekPreviewsAction(
+  weekId: string,
+  options?: { force?: boolean },
+) {
+  await requireAdmin();
+  const week = await getWeek(weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+
+  const { syncWeekPreviews } = await import("@/lib/match-preview-sync");
+  const result = await syncWeekPreviews({
+    weekId,
+    force: options?.force ?? false,
+  });
+
+  if ("error" in result) return { error: result.error };
+
+  revalidateAll();
+  revalidatePath(`/admin/weeks/${weekId}`);
+  revalidatePath("/");
+  revalidatePath("/fixtures");
+  revalidatePath("/predictions");
+
+  const parts = [
+    `${result.synced} önizleme kaydedildi`,
+    `${result.requestsUsed} request`,
+  ];
+  if (result.skippedExisting > 0) {
+    parts.push(`${result.skippedExisting} zaten vardı`);
+  }
+  if (result.unmatched.length > 0) {
+    parts.push(`eşleşmeyen: ${result.unmatched.join(", ")}`);
+  }
+  if (result.missingPrediction.length > 0) {
+    parts.push(`prediction yok: ${result.missingPrediction.join(", ")}`);
+  }
+
+  return { ok: true as const, message: parts.join(" · ") };
+}

@@ -530,8 +530,9 @@ No `NEXT_PUBLIC_SUPABASE_ANON_KEY` required if the browser never calls Supabase.
 - Recalculate after score edits
 - Export week results
 - Simple dark/light theme
+- **API-Football week fixture sync (later):** one league fixtures request for our pool teams → auto-create draft week + matches; then attach previews. Keep behind admin action to stay within free 100 req/day.
 
-**Out of scope for hobby MVP:** public registration, payments, live odds APIs, push notifications, multi-league support, complex RLS per-user policies.
+**Out of scope for hobby MVP:** public registration, payments, live odds APIs (except cached previews), push notifications, multi-league support, complex RLS per-user policies.
 
 ---
 
