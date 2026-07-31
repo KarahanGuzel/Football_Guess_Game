@@ -32,4 +32,8 @@ create table if not exists public.match_previews (
 create index if not exists match_previews_fetched_at_idx
   on public.match_previews (fetched_at desc);
 
+-- Same pattern as init.sql: RLS on, no anon/authenticated policies.
+-- service_role (server) bypasses RLS.
+alter table public.match_previews enable row level security;
+
 -- api_football_id is filled when a fixture is matched during preview sync.
