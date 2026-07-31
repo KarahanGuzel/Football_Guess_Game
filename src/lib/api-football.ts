@@ -1,5 +1,6 @@
 /**
- * Minimal API-Football (api-sports.io) client for match previews.
+ * Minimal API-Football client for match previews.
+ * Supports both API-Sports dashboard keys and RapidAPI keys.
  * Server-only — never import from client components.
  */
 
@@ -28,55 +29,113 @@ export type ApiFootballPrediction = {
 
 type ApiEnvelope<T> = {
   errors?: unknown;
+  message?: string;
   response?: T;
 };
+
+type Provider = "apisports" | "rapidapi";
 
 function getConfig() {
   const key = process.env.API_FOOTBALL_KEY?.trim();
   if (!key) {
     throw new Error("API_FOOTBALL_KEY tanımlı değil.");
   }
+
+  const providerEnv = process.env.API_FOOTBALL_PROVIDER?.trim().toLowerCase();
+  const baseUrlEnv = process.env.API_FOOTBALL_BASE_URL?.trim();
+
+  let provider: Provider = "apisports";
+  if (providerEnv === "rapidapi" || providerEnv === "rapid") {
+    provider = "rapidapi";
+  } else if (
+    baseUrlEnv?.includes("rapidapi.com") ||
+    baseUrlEnv?.includes("rapidapi")
+  ) {
+    provider = "rapidapi";
+  }
+
   const baseUrl = (
-    process.env.API_FOOTBALL_BASE_URL?.trim() ||
-    "https://v3.football.api-sports.io"
+    baseUrlEnv ||
+    (provider === "rapidapi"
+      ? "https://api-football-v1.p.rapidapi.com/v3"
+      : "https://v3.football.api-sports.io")
   ).replace(/\/$/, "");
+
   const leagueId = Number(process.env.API_FOOTBALL_LEAGUE_ID ?? "203");
   const season = Number(
     process.env.API_FOOTBALL_SEASON ?? new Date().getUTCFullYear(),
   );
-  return { key, baseUrl, leagueId, season };
+  return { key, baseUrl, leagueId, season, provider };
+}
+
+function authHeaders(
+  key: string,
+  provider: Provider,
+  baseUrl: string,
+): Record<string, string> {
+  if (provider === "rapidapi") {
+    let host = process.env.API_FOOTBALL_RAPIDAPI_HOST?.trim();
+    if (!host) {
+      try {
+        host = new URL(baseUrl).host;
+      } catch {
+        host = "api-football-v1.p.rapidapi.com";
+      }
+    }
+    return {
+      "x-rapidapi-key": key,
+      "x-rapidapi-host": host,
+    };
+  }
+  return {
+    "x-apisports-key": key,
+  };
 }
 
 async function apiGet<T>(
   path: string,
   params: Record<string, string | number>,
 ): Promise<T> {
-  const { key, baseUrl } = getConfig();
-  const url = new URL(`${baseUrl}${path}`);
+  const { key, baseUrl, provider } = getConfig();
+  const url = new URL(`${baseUrl}${path.startsWith("/") ? path : `/${path}`}`);
   for (const [k, v] of Object.entries(params)) {
     url.searchParams.set(k, String(v));
   }
 
   const res = await fetch(url, {
-    headers: {
-      "x-apisports-key": key,
-    },
+    headers: authHeaders(key, provider, baseUrl),
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    throw new Error(`API-Football HTTP ${res.status}`);
+  const text = await res.text();
+  let body: ApiEnvelope<T> | null = null;
+  try {
+    body = text ? (JSON.parse(text) as ApiEnvelope<T>) : null;
+  } catch {
+    body = null;
   }
 
-  const body = (await res.json()) as ApiEnvelope<T> & {
-    message?: string;
-  };
+  if (!res.ok) {
+    const detail =
+      body?.message ||
+      (body?.errors ? JSON.stringify(body.errors) : null) ||
+      text.slice(0, 240) ||
+      res.statusText;
+    if (res.status === 403) {
+      throw new Error(
+        `API-Football HTTP 403 — key/provider uyuşmuyor veya güvenlik engeli. ` +
+          `Dashboard key ise API_FOOTBALL_PROVIDER=apisports + base api-sports.io; ` +
+          `RapidAPI key ise API_FOOTBALL_PROVIDER=rapidapi. Detay: ${detail}`,
+      );
+    }
+    throw new Error(`API-Football HTTP ${res.status}: ${detail}`);
+  }
 
-  if (body.errors && Object.keys(body.errors as object).length > 0) {
+  if (body?.errors && Object.keys(body.errors as object).length > 0) {
     throw new Error(`API-Football: ${JSON.stringify(body.errors)}`);
   }
 
-  return (body.response ?? []) as T;
+  return (body?.response ?? []) as T;
 }
 
 export function getApiFootballLeagueConfig() {
