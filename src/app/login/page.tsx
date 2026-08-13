@@ -55,7 +55,7 @@ export default async function LoginPage() {
         <ul className="login-rules-list">
           <li>
             <span className="login-rules-label">Normal</span>
-            Sonuç 2 · Alt/Üst 1 · ikisi doğru 4 puan
+            Sonuç ve Alt/Üst — ikisi doğru 4, biri doğru 2 puan
           </li>
           <li>
             <span className="login-rules-label">Derbi</span>
