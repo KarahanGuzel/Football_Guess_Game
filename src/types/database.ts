@@ -61,9 +61,11 @@ export type StandingRow = {
   display_name: string;
   slug: string;
   total_points: number;
+  weeks_played: number;
   correct_result_count: number;
   correct_goals_count: number;
   perfect_prediction_count: number;
+  derby_correct_count: number;
   scored_prediction_count: number;
   success_percentage: number;
 };
