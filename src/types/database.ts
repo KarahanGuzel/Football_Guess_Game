@@ -56,6 +56,20 @@ export type Prediction = {
   points_earned: number | null;
 };
 
+/** Comment on a player's weekly prediction slip (küpür), not a single match. */
+export type SlipComment = {
+  id: string;
+  week_id: string;
+  target_player_id: string;
+  author_player_id: string;
+  body: string;
+  created_at: string;
+};
+
+export type SlipCommentWithAuthor = SlipComment & {
+  author: Player;
+};
+
 export type StandingRow = {
   player_id: string;
   display_name: string;

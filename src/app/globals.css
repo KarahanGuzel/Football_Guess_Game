@@ -1506,6 +1506,115 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   overflow-x: auto;
 }
 
+.slip-comments {
+  margin-top: 0.75rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.slip-comments-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.slip-comments-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.slip-comments-count {
+  font-size: 0.78rem;
+}
+
+.slip-comments-empty {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.slip-comments-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.slip-comment-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.slip-comment-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.slip-comment-author {
+  font-weight: 750;
+  color: color-mix(in srgb, var(--text) 88%, var(--accent));
+}
+
+.slip-comment-body {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--text) 92%, var(--muted));
+}
+
+.slip-comment-delete {
+  flex-shrink: 0;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.slip-comment-delete:hover:not(:disabled) {
+  color: var(--danger, #e85d5d);
+  background: color-mix(in srgb, var(--danger, #e85d5d) 12%, transparent);
+}
+
+.slip-comment-compose {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.slip-comment-input {
+  flex: 1;
+  min-width: 0;
+  height: 2.15rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 70%, var(--bg-elevated));
+  color: var(--text);
+  padding: 0 0.7rem;
+  font-size: 0.9rem;
+}
+
+.slip-comment-input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.slip-comment-input::placeholder {
+  color: var(--muted);
+}
+
 .player-picks-table {
   width: 100%;
   border-collapse: collapse;

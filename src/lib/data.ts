@@ -4,6 +4,7 @@ import type {
   MatchWithTeams,
   Player,
   Prediction,
+  SlipCommentWithAuthor,
   StandingRow,
   Team,
   Week,
@@ -371,4 +372,18 @@ export async function getStandingsProgress(): Promise<StandingsProgress> {
     weeks: weeks.map((w) => ({ id: w.id, label: w.label })),
     series,
   };
+}
+
+/** All slip comments for a week, oldest first, with author player. */
+export async function getSlipCommentsForWeek(
+  weekId: string,
+): Promise<SlipCommentWithAuthor[]> {
+  const { data, error } = await getSupabaseAdmin()
+    .from("slip_comments")
+    .select("*, author:players!slip_comments_author_player_id_fkey(*)")
+    .eq("week_id", weekId)
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as SlipCommentWithAuthor[];
 }
