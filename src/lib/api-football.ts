@@ -139,7 +139,92 @@ async function apiGet<T>(
 }
 
 export function getApiFootballLeagueConfig() {
-  return getConfig();
+  const config = getConfig();
+  return {
+    baseUrl: config.baseUrl,
+    leagueId: config.leagueId,
+    season: config.season,
+    provider: config.provider,
+  };
+}
+
+export function getApiFootballKeyFingerprint(): string | null {
+  const key = process.env.API_FOOTBALL_KEY?.trim();
+  if (!key) return null;
+  if (key.length <= 8) return "••••";
+  return `${key.slice(0, 4)}…${key.slice(-4)}`;
+}
+
+/** Lightweight account check — uses 1 request against /status. */
+export async function fetchApiFootballStatus(): Promise<{
+  provider: Provider;
+  baseUrl: string;
+  leagueId: number;
+  season: number;
+  keyFingerprint: string;
+  account: {
+    firstname: string | null;
+    lastname: string | null;
+    email: string | null;
+  } | null;
+  subscription: {
+    plan: string | null;
+    end: string | null;
+    active: boolean | null;
+  } | null;
+  requests: {
+    current: number | null;
+    limitDay: number | null;
+  } | null;
+}> {
+  const config = getConfig();
+  const rows = await apiGet<
+    Array<{
+      account?: {
+        firstname?: string | null;
+        lastname?: string | null;
+        email?: string | null;
+      };
+      subscription?: {
+        plan?: string | null;
+        end?: string | null;
+        active?: boolean | null;
+      };
+      requests?: {
+        current?: number | null;
+        limit_day?: number | null;
+      };
+    }>
+  >("/status", {});
+
+  const row = rows[0];
+  return {
+    provider: config.provider,
+    baseUrl: config.baseUrl,
+    leagueId: config.leagueId,
+    season: config.season,
+    keyFingerprint: getApiFootballKeyFingerprint() ?? "••••",
+    account: row?.account
+      ? {
+          firstname: row.account.firstname ?? null,
+          lastname: row.account.lastname ?? null,
+          email: row.account.email ?? null,
+        }
+      : null,
+    subscription: row?.subscription
+      ? {
+          plan: row.subscription.plan ?? null,
+          end: row.subscription.end ?? null,
+          active: row.subscription.active ?? null,
+        }
+      : null,
+    requests: row?.requests
+      ? {
+          current: row.requests.current ?? null,
+          limitDay: row.requests.limit_day ?? null,
+        }
+      : null,
+  };
 }
 
 export async function fetchLeagueFixturesInRange(params: {

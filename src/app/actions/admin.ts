@@ -440,6 +440,51 @@ export async function deleteWeekAction(weekId: string) {
   return { ok: true as const };
 }
 
+export async function testApiFootballConnectionAction() {
+  await requireAdmin();
+
+  try {
+    const { fetchApiFootballStatus, getApiFootballKeyFingerprint } =
+      await import("@/lib/api-football");
+
+    if (!getApiFootballKeyFingerprint()) {
+      return {
+        error:
+          "API_FOOTBALL_KEY Vercel Production env’de yok. Branch’siz Production olarak ekleyip Redeploy et.",
+      };
+    }
+
+    const status = await fetchApiFootballStatus();
+    const plan = status.subscription?.plan ?? "?";
+    const active =
+      status.subscription?.active == null
+        ? "?"
+        : status.subscription.active
+          ? "aktif"
+          : "pasif";
+    const used = status.requests?.current ?? "?";
+    const limit = status.requests?.limitDay ?? "?";
+
+    return {
+      ok: true as const,
+      message: [
+        `OK · ${status.provider}`,
+        `plan ${plan} (${active})`,
+        `request ${used}/${limit}`,
+        `lig ${status.leagueId} sezon ${status.season}`,
+        `key ${status.keyFingerprint}`,
+      ].join(" · "),
+    };
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "API-Football bağlantı testi başarısız.",
+    };
+  }
+}
+
 export async function syncWeekPreviewsAction(
   weekId: string,
   options?: { force?: boolean },

@@ -11,6 +11,7 @@ import {
   saveWeekScoresAction,
   setBonusMatchAction,
   syncWeekPreviewsAction,
+  testApiFootballConnectionAction,
   unlockWeekAction,
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
@@ -122,9 +123,23 @@ export function AdminWeekControls({
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             API-Football predictions ile Ev/X/Dep yüzdeleri ve kısa tavsiye çeker.
-            Eksik olanları doldurur (~1 + maç sayısı request).
+            Eksik olanları doldurur (~1 + maç sayısı request). Önce bağlantıyı test et.
           </p>
           <div className="admin-action-row">
+            <button
+              className="btn btn-secondary btn-sm"
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                run(async () => {
+                  const result = await testApiFootballConnectionAction();
+                  if (result.error) return { error: result.error };
+                  return { ok: true, message: result.message };
+                }, "Bağlantı OK.")
+              }
+            >
+              Bağlantıyı test et
+            </button>
             <button
               className="btn btn-secondary"
               type="button"
