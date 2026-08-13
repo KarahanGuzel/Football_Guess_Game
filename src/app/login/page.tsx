@@ -44,6 +44,32 @@ export default async function LoginPage() {
       ) : (
         <LoginForm players={players} />
       )}
+
+      <section className="login-rules" aria-label="Nasıl oynanır">
+        <h2 className="login-rules-title">Nasıl oynanır?</h2>
+        <p className="login-rules-lead">
+          Her hafta maçlara sonuç (1 / X / 2) ve Alt-Üst 2.5 tahmini girersin.
+          Skorlar girilince puanlar otomatik hesaplanır; sezon boyunca sıralamada
+          yarışırsınız.
+        </p>
+        <ul className="login-rules-list">
+          <li>
+            <span className="login-rules-label">Normal</span>
+            Sonuç 2 · Alt/Üst 1 · ikisi doğru 4 puan
+          </li>
+          <li>
+            <span className="login-rules-label">Derbi</span>
+            Normal puanların 2 katı (maks. 8)
+          </li>
+          <li>
+            <span className="login-rules-label">Bonus</span>
+            İkisi de doğruysa 6, aksi halde 0
+          </li>
+        </ul>
+        <p className="login-rules-note">
+          Tahminler ilk maç başlayınca kilitlenir. Derbi maç bonus olamaz.
+        </p>
+      </section>
     </div>
   );
 }

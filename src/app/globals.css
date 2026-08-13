@@ -2671,6 +2671,64 @@ html[data-theme="light"] .standings-row-top3 {
   color: var(--flash-error);
 }
 
+.login-rules {
+  width: min(100%, 26rem);
+  margin: 0.35rem auto 0;
+  padding: 0.15rem 0.35rem 0.25rem;
+  display: grid;
+  gap: 0.55rem;
+  text-align: left;
+}
+
+.login-rules-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.login-rules-lead {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.login-rules-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.login-rules-list li {
+  display: grid;
+  grid-template-columns: 4.1rem 1fr;
+  gap: 0.45rem;
+  align-items: baseline;
+  font-size: 0.84rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
+}
+
+.login-rules-label {
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.login-rules-note {
+  margin: 0.1rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
 /* History accordion */
 .history-accordion {
   list-style: none;
