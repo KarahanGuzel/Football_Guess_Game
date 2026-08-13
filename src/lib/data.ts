@@ -199,6 +199,94 @@ export async function getStandings(): Promise<StandingRow[]> {
   return data ?? [];
 }
 
+/** Season leaders (tied #1). Empty until someone has points. */
+export function getSeasonLeaderIds(rows: StandingRow[]): string[] {
+  if (rows.length === 0) return [];
+  const top = rows[0]?.total_points ?? 0;
+  if (top <= 0) return [];
+  return rows
+    .filter((row) => row.total_points === top)
+    .map((row) => row.player_id);
+}
+
+export type WeekKingPlayer = {
+  playerId: string;
+  displayName: string;
+  slug: string;
+};
+
+export type WeekKingRow = {
+  weekId: string;
+  weekLabel: string;
+  points: number;
+  kings: WeekKingPlayer[];
+};
+
+/** Per scored week: player(s) with the highest week points (ties kept). */
+export async function getWeekKings(): Promise<WeekKingRow[]> {
+  const { data: scoredWeeks, error } = await getSupabaseAdmin()
+    .from("weeks")
+    .select("*")
+    .eq("status", "scored")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  const weeks = scoredWeeks ?? [];
+  if (weeks.length === 0) return [];
+
+  const result: WeekKingRow[] = [];
+
+  for (const week of weeks) {
+    const matches = await getMatchesForWeek(week.id);
+    if (matches.length === 0) continue;
+
+    const predictions = await getPredictionsForMatches(
+      matches.map((m) => m.id),
+    );
+    const pointsByPlayer = new Map<
+      string,
+      { points: number; player: Player }
+    >();
+
+    for (const prediction of predictions) {
+      if (prediction.points_earned == null) continue;
+      const current = pointsByPlayer.get(prediction.player_id);
+      if (current) {
+        current.points += prediction.points_earned;
+      } else {
+        pointsByPlayer.set(prediction.player_id, {
+          points: prediction.points_earned,
+          player: prediction.player,
+        });
+      }
+    }
+
+    if (pointsByPlayer.size === 0) continue;
+
+    const ranked = [...pointsByPlayer.values()].sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points;
+      return a.player.display_name.localeCompare(b.player.display_name, "tr");
+    });
+    const topPoints = ranked[0].points;
+    const kings = ranked
+      .filter((row) => row.points === topPoints)
+      .map((row) => ({
+        playerId: row.player.id,
+        displayName: row.player.display_name,
+        slug: row.player.slug,
+      }));
+
+    result.push({
+      weekId: week.id,
+      weekLabel: week.label,
+      points: topPoints,
+      kings,
+    });
+  }
+
+  return result;
+}
+
 export type StandingsProgressWeek = {
   id: string;
   label: string;

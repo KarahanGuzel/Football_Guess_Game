@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
-import { FanFlag } from "@/components/fan-flag";
 import { MatchTeamsLine } from "@/components/match-teams-line";
+import { PlayerChip } from "@/components/player-chip";
 import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
 import type { MatchWithTeams, Player, Prediction } from "@/types/database";
 
@@ -19,12 +19,15 @@ export function PredictionsBoard({
   matches,
   predictions,
   players,
+  leaderIds = [],
 }: {
   matches: MatchWithTeams[];
   predictions: PredictionWithPlayer[];
   players: Player[];
+  leaderIds?: string[];
 }) {
   const [openPlayerIds, setOpenPlayerIds] = useState<Set<string>>(() => new Set());
+  const leaders = useMemo(() => new Set(leaderIds), [leaderIds]);
 
   const { rows, submittedCount, matchById } = useMemo(() => {
     const matchIds = new Set(matches.map((m) => m.id));
@@ -114,8 +117,12 @@ export function PredictionsBoard({
                 aria-expanded={hasPicks ? isOpen : undefined}
               >
                 <span className="submission-player">
-                  <FanFlag slug={player.slug} displayName={player.display_name} size={12} />
-                  {player.display_name}
+                  <PlayerChip
+                    slug={player.slug}
+                    displayName={player.display_name}
+                    size={12}
+                    crowned={leaders.has(player.id)}
+                  />
                   {hasPicks ? (
                     <span
                       className={`submission-chevron${isOpen ? " submission-chevron-open" : ""}`}
