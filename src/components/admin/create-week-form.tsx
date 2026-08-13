@@ -35,7 +35,7 @@ export function CreateWeekForm() {
         <input
           id="label"
           name="label"
-          placeholder="Örn: 2026-27 11. Hafta"
+          placeholder="Örn: SüperLig 11.Hafta"
           required
         />
       </div>

@@ -17,4 +17,6 @@ Bu SQL dosyasını Supabase → **SQL Editor** → yapıştır → **Run**:
 
 1. Yukarıdaki SQL’i Supabase’te çalıştır
 2. PR #3 (yönetim sadeleştirme) merge’li değilse onu da mergele
-3. Sitede **Yönetim** → `2026-27 1. Hafta` → bonus seç → **Haftayı Yayınla**
+3. Sitede **Yönetim** → `SüperLig 1.Hafta` → bonus seç → **Haftayı Yayınla**
+
+Hafta adları yarışma önekli (`SüperLig 1.Hafta`, ileride `Şampiyonlar Ligi 1.Hafta`). Yönetim → hafta sayfasından ad düzenlenebilir.
