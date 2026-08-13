@@ -2,11 +2,14 @@ import Link from "next/link";
 import { LockCountdown } from "@/components/lock-countdown";
 import { PredictionForm } from "@/components/prediction-form";
 import { StandingsTable } from "@/components/standings-table";
+import { WeekKingsTable } from "@/components/week-kings-table";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getCurrentPlayableWeek,
   getPredictionsForPlayer,
+  getSeasonLeaderIds,
   getStandings,
+  getWeekKings,
 } from "@/lib/data";
 
 export default async function HomePage() {
@@ -15,6 +18,7 @@ export default async function HomePage() {
   let weekData: Awaited<ReturnType<typeof getCurrentPlayableWeek>> = null;
   let weekError: string | null = null;
   let standings: Awaited<ReturnType<typeof getStandings>> = [];
+  let weekKings: Awaited<ReturnType<typeof getWeekKings>> = [];
   let standingsError: string | null = null;
 
   try {
@@ -24,7 +28,10 @@ export default async function HomePage() {
   }
 
   try {
-    standings = await getStandings();
+    [standings, weekKings] = await Promise.all([
+      getStandings(),
+      getWeekKings(),
+    ]);
   } catch (error) {
     standingsError =
       error instanceof Error ? error.message : "Puan durumu alınamadı.";
@@ -39,6 +46,7 @@ export default async function HomePage() {
       : [];
 
   const locked = weekData ? weekData.status !== "open" : true;
+  const leaderIds = getSeasonLeaderIds(standings);
 
   return (
     <div className="stack-lg">
@@ -79,7 +87,7 @@ export default async function HomePage() {
 
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>
-          <h2 className="section-title">Sıralama</h2>
+          <h2 className="section-title">Lig özeti</h2>
           <Link href="/standings" className="muted" style={{ fontSize: "0.9rem" }}>
             Tümü →
           </Link>
@@ -88,7 +96,18 @@ export default async function HomePage() {
         {standingsError ? (
           <p style={{ color: "var(--flash-error)" }}>{standingsError}</p>
         ) : (
-          <StandingsTable rows={standings} compact />
+          <div className="home-rank-grid">
+            <div className="home-rank-block">
+              <StandingsTable
+                rows={standings}
+                compact
+                leaderIds={leaderIds}
+              />
+            </div>
+            <div className="home-rank-block">
+              <WeekKingsTable rows={weekKings} compact />
+            </div>
+          </div>
         )}
       </section>
     </div>

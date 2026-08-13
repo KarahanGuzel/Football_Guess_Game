@@ -1,18 +1,23 @@
-import { FanFlag } from "@/components/fan-flag";
+import { PlayerChip } from "@/components/player-chip";
 import { RankMedal } from "@/components/rank-medal";
+import { getSeasonLeaderIds } from "@/lib/data";
 import type { StandingRow } from "@/types/database";
 
 export function StandingsTable({
   rows,
   compact = false,
   titled = false,
+  leaderIds,
 }: {
   rows: StandingRow[];
   compact?: boolean;
   /** Show "Genel sıralama" section header (standings page). */
   titled?: boolean;
+  /** Season leader ids for crown. Defaults from rows. */
+  leaderIds?: string[];
 }) {
   const colCount = compact ? 6 : 9;
+  const leaders = new Set(leaderIds ?? getSeasonLeaderIds(rows));
 
   return (
     <div className={`panel standings-panel${titled ? " standings-panel-titled" : ""}`}>
@@ -100,14 +105,13 @@ export function StandingsTable({
                       )}
                     </td>
                     <td className="standings-player-cell">
-                      <span className="standings-player">
-                        <FanFlag
-                          slug={row.slug}
-                          displayName={row.display_name}
-                          size={13}
-                        />
-                        {row.display_name}
-                      </span>
+                      <PlayerChip
+                        slug={row.slug}
+                        displayName={row.display_name}
+                        size={compact ? 12 : 13}
+                        crowned={leaders.has(row.player_id)}
+                        className="standings-player"
+                      />
                     </td>
                     <td className="standings-col-num standings-points">
                       {row.total_points}
@@ -166,8 +170,8 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Taraf = maç sonucu · Alt/Üst = 2.5 · Strike = ikisi birden · Derbi =
-          derbide strike · Oran = strike / puanlanan maç
+          Taç = sezon puan 1.’si · Taraf = maç sonucu · Alt/Üst = 2.5 · Strike =
+          ikisi birden · Derbi = derbide strike · Oran = strike / puanlanan maç
         </p>
       ) : null}
     </div>
