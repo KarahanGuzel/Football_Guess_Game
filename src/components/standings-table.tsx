@@ -57,7 +57,7 @@ export function StandingsTable({
                     <span className="standings-th-sub">doğru 2.5</span>
                   </th>
                   <th scope="col">
-                    <span className="standings-th-main">Çift</span>
+                    <span className="standings-th-main">Strike</span>
                     <span className="standings-th-sub">tam isabet</span>
                   </th>
                   <th scope="col" className="standings-col-secondary">
@@ -66,14 +66,14 @@ export function StandingsTable({
                   </th>
                   <th scope="col">
                     <span className="standings-th-main">İsabet</span>
-                    <span className="standings-th-sub">çift oran</span>
+                    <span className="standings-th-sub">strike oran</span>
                   </th>
                 </>
               ) : (
                 <>
                   <th scope="col">
-                    <span className="standings-th-main">Çift</span>
-                    <span className="standings-th-sub">isabet</span>
+                    <span className="standings-th-main">Strike</span>
+                    <span className="standings-th-sub">tam isabet</span>
                   </th>
                   <th scope="col">
                     <span className="standings-th-main">İsabet</span>
@@ -171,8 +171,8 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Sonuç = maç sonucu · Alt/Üst = 2.5 · Çift = ikisi birden doğru · İsabet =
-          çift / puanlanan maç
+          Sonuç = maç sonucu · Alt/Üst = 2.5 · Strike = ikisi birden doğru
+          (bowling) · İsabet = strike / puanlanan maç
         </p>
       ) : null}
     </div>
