@@ -49,6 +49,34 @@ export async function createWeekAction(formData: FormData) {
   return { ok: true as const, weekId: data.id as string };
 }
 
+export async function updateWeekLabelAction(formData: FormData) {
+  await requireAdmin();
+  const weekId = String(formData.get("weekId") ?? "").trim();
+  const label = String(formData.get("label") ?? "").trim();
+
+  if (!weekId) return { error: "Hafta bulunamadı." };
+  if (!label) return { error: "Hafta adı gerekli." };
+  if (label.length > 80) return { error: "Hafta adı en fazla 80 karakter olabilir." };
+
+  const week = await getWeek(weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+
+  if (week.label === label) {
+    return { ok: true as const };
+  }
+
+  const { error } = await getSupabaseAdmin()
+    .from("weeks")
+    .update({ label })
+    .eq("id", weekId);
+
+  if (error) return { error: error.message };
+  revalidateAll();
+  revalidatePath(`/admin/weeks/${weekId}`);
+  revalidatePath(`/history/${weekId}`);
+  return { ok: true as const };
+}
+
 export async function openWeekAction(weekId: string) {
   await requireAdmin();
   const matches = await getMatchesForWeek(weekId);

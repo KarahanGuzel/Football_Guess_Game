@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { AddMatchForm } from "@/components/admin/add-match-form";
+import { EditWeekLabelForm } from "@/components/admin/edit-week-label-form";
 import { AdminWeekControls } from "@/components/admin/week-controls";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { getMatchesForWeek, getWeek, listTeams } from "@/lib/data";
@@ -58,6 +59,8 @@ export default async function AdminWeekPage({
           </p>
         </header>
       </div>
+
+      <EditWeekLabelForm weekId={week.id} initialLabel={week.label} />
 
       {week.status === "draft" ? (
         <AddMatchForm weekId={week.id} teams={teams} />
