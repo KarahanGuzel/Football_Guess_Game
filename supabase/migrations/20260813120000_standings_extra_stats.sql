@@ -20,7 +20,9 @@ select
     where pr.result_correct and pr.goals_correct
   )::int as perfect_prediction_count,
   count(pr.id) filter (
-    where coalesce(m.is_derby, false) and pr.result_correct
+    where coalesce(m.is_derby, false)
+      and pr.result_correct
+      and pr.goals_correct
   )::int as derby_correct_count,
   count(pr.id) filter (where pr.points_earned is not null)::int as scored_prediction_count,
   case

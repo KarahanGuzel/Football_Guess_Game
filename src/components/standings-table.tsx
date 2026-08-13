@@ -29,49 +29,49 @@ export function StandingsTable({
         <table className={`standings-table${compact ? " standings-table-compact" : ""}`}>
           <thead>
             <tr>
-              <th scope="col">
+              <th scope="col" className="standings-col-rank">
                 <span className="standings-th-main">Sıra</span>
               </th>
-              <th scope="col">
+              <th scope="col" className="standings-col-player">
                 <span className="standings-th-main">Oyuncu</span>
               </th>
-              <th scope="col">
+              <th scope="col" className="standings-col-num">
                 <span className="standings-th-main">Puan</span>
                 <span className="standings-th-sub">toplam</span>
               </th>
-              <th scope="col">
+              <th scope="col" className="standings-col-num">
                 <span className="standings-th-main">Hafta</span>
                 <span className="standings-th-sub">oynanan</span>
               </th>
               {!compact ? (
                 <>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Taraf</span>
                     <span className="standings-th-sub">doğru</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Alt/Üst</span>
                     <span className="standings-th-sub">doğru</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Strike</span>
                     <span className="standings-th-sub">tam isabet</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Derbi</span>
-                    <span className="standings-th-sub">taraf doğru</span>
+                    <span className="standings-th-sub">strike</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Oran</span>
                     <span className="standings-th-sub">isabet %</span>
                   </th>
                 </>
               ) : (
                 <>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Strike</span>
                   </th>
-                  <th scope="col">
+                  <th scope="col" className="standings-col-num">
                     <span className="standings-th-main">Oran</span>
                   </th>
                 </>
@@ -109,49 +109,49 @@ export function StandingsTable({
                         {row.display_name}
                       </span>
                     </td>
-                    <td className="standings-points">{row.total_points}</td>
-                    <td>
-                      <span className="standings-stat">
-                        {row.weeks_played ?? 0}
-                      </span>
+                    <td className="standings-col-num standings-points">
+                      {row.total_points}
+                    </td>
+                    <td className="standings-col-num">
+                      <span className="standings-stat">{row.weeks_played ?? 0}</span>
                     </td>
                     {!compact ? (
                       <>
-                        <td>
+                        <td className="standings-col-num">
                           <span className="standings-stat">
                             {row.correct_result_count}
                           </span>
                         </td>
-                        <td>
+                        <td className="standings-col-num">
                           <span className="standings-stat">
                             {row.correct_goals_count}
                           </span>
                         </td>
-                        <td>
-                          <span className="standings-stat standings-stat-strong">
+                        <td className="standings-col-num">
+                          <span className="standings-stat standings-stat-strike">
                             {row.perfect_prediction_count}
                           </span>
                         </td>
-                        <td>
-                          <span className="standings-stat">
+                        <td className="standings-col-num">
+                          <span className="standings-stat standings-stat-derby">
                             {row.derby_correct_count ?? 0}
                           </span>
                         </td>
-                        <td>
-                          <span className="standings-stat">
+                        <td className="standings-col-num">
+                          <span className="standings-stat standings-stat-rate">
                             {Number(row.success_percentage).toFixed(1)}%
                           </span>
                         </td>
                       </>
                     ) : (
                       <>
-                        <td>
-                          <span className="standings-stat standings-stat-strong">
+                        <td className="standings-col-num">
+                          <span className="standings-stat standings-stat-strike">
                             {row.perfect_prediction_count}
                           </span>
                         </td>
-                        <td>
-                          <span className="standings-stat">
+                        <td className="standings-col-num">
+                          <span className="standings-stat standings-stat-rate">
                             {Number(row.success_percentage).toFixed(1)}%
                           </span>
                         </td>
@@ -167,7 +167,7 @@ export function StandingsTable({
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
           Taraf = maç sonucu · Alt/Üst = 2.5 · Strike = ikisi birden · Derbi =
-          derbide taraf doğru · Oran = strike / puanlanan maç
+          derbide strike · Oran = strike / puanlanan maç
         </p>
       ) : null}
     </div>

@@ -2000,11 +2000,11 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 0.35rem;
-  min-width: 760px;
+  min-width: 820px;
 }
 
 .standings-table-compact {
-  min-width: 360px;
+  min-width: 420px;
   border-spacing: 0 0.28rem;
 }
 
@@ -2014,30 +2014,39 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 }
 
 .standings-table th {
-  padding: 0.2rem 0.55rem 0.45rem;
+  padding: 0.2rem 0.45rem 0.5rem;
   vertical-align: bottom;
   font-weight: 600;
 }
 
 .standings-th-main {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .standings-th-sub {
   display: block;
-  margin-top: 0.12rem;
-  font-size: 0.68rem;
+  margin-top: 0.1rem;
+  font-size: 0.66rem;
   font-weight: 500;
   color: var(--muted);
   line-height: 1.2;
 }
 
+.standings-col-num {
+  text-align: right;
+}
+
+.standings-col-num .standings-th-main,
+.standings-col-num .standings-th-sub {
+  text-align: right;
+}
+
 .standings-table td {
-  padding: 0.72rem 0.55rem;
+  padding: 0.7rem 0.45rem;
   vertical-align: middle;
   background: color-mix(in srgb, var(--bg-soft) 35%, transparent);
 }
@@ -2053,10 +2062,12 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 .standings-empty {
   padding: 0.85rem 0.55rem;
   background: transparent !important;
+  text-align: left;
 }
 
 .standings-rank-cell {
-  width: 3.2rem;
+  width: 3rem;
+  padding-left: 0.65rem !important;
 }
 
 .standings-rank-num {
@@ -2069,6 +2080,10 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   font-variant-numeric: tabular-nums;
 }
 
+.standings-player-cell {
+  padding-right: 0.75rem !important;
+}
+
 .standings-player {
   display: inline-flex;
   align-items: center;
@@ -2079,13 +2094,28 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 .standings-points {
   color: var(--accent);
   font-weight: 800;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
 }
 
 .standings-stat {
   font-variant-numeric: tabular-nums;
   font-weight: 650;
+}
+
+.standings-stat-strike {
+  color: var(--ok);
+  font-weight: 800;
+}
+
+.standings-stat-derby {
+  color: var(--derby);
+  font-weight: 800;
+}
+
+.standings-stat-rate {
+  font-weight: 700;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
 }
 
 .standings-stat-strong {
@@ -2100,9 +2130,9 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 }
 
 .standings-legend {
-  margin: 0.55rem 0 0;
-  font-size: 0.78rem;
-  line-height: 1.4;
+  margin: 0.65rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
 
 .rank-medal {
