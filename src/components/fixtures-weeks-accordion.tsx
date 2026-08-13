@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
-import { MatchPreviewCard } from "@/components/match-preview-card";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
-import type { MatchPreview, MatchWithTeams, Week } from "@/types/database";
+import type { MatchWithTeams, Week } from "@/types/database";
 
 export type FixtureWeekBundle = {
   week: Week;
@@ -25,19 +24,7 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-export function FixturesWeeksAccordion({
-  weeks,
-  previews = [],
-}: {
-  weeks: FixtureWeekBundle[];
-  previews?: MatchPreview[];
-}) {
-  const previewByMatch = useMemo(() => {
-    const map = new Map<string, MatchPreview>();
-    for (const preview of previews) map.set(preview.match_id, preview);
-    return map;
-  }, [previews]);
-
+export function FixturesWeeksAccordion({ weeks }: { weeks: FixtureWeekBundle[] }) {
   const [openIds, setOpenIds] = useState<Set<string>>(
     () => new Set(weeks[0] ? [weeks[0].week.id] : []),
   );
@@ -77,28 +64,22 @@ export function FixturesWeeksAccordion({
 
             {isOpen ? (
               <div className="fixtures-week-body">
-                {matches.map((match) => {
-                  const preview = previewByMatch.get(match.id);
-                  return (
-                    <article key={match.id} className="fixtures-match-card">
-                      <div className="fixtures-match-top">
-                        <div>
-                          <div className="fixtures-match-teams">
-                            <MatchTeamsLine match={match} size={13} />
-                          </div>
-                          <div className="muted fixtures-match-kickoff">
-                            {formatKickoff(match.kickoff_at)}
-                          </div>
-                        </div>
-                        <div className="fixtures-match-badges">
-                          {match.is_bonus ? <BonusBadge compact /> : null}
-                          {match.is_derby ? <DerbyBadge compact /> : null}
-                        </div>
+                {matches.map((match) => (
+                  <article key={match.id} className="fixtures-match-card">
+                    <div>
+                      <div className="fixtures-match-teams">
+                        <MatchTeamsLine match={match} size={13} />
                       </div>
-                      {preview ? <MatchPreviewCard preview={preview} /> : null}
-                    </article>
-                  );
-                })}
+                      <div className="muted fixtures-match-kickoff">
+                        {formatKickoff(match.kickoff_at)}
+                      </div>
+                    </div>
+                    <div className="fixtures-match-badges">
+                      {match.is_bonus ? <BonusBadge compact /> : null}
+                      {match.is_derby ? <DerbyBadge compact /> : null}
+                    </div>
+                  </article>
+                ))}
               </div>
             ) : null}
           </li>

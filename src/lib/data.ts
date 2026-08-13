@@ -1,7 +1,6 @@
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { effectiveWeekStatus, weekLockAt } from "@/lib/week-lock";
 import type {
-  MatchPreview,
   MatchWithTeams,
   Player,
   Prediction,
@@ -156,22 +155,6 @@ export async function getPastWeeks(): Promise<Week[]> {
 
   if (error) throw error;
   return data ?? [];
-}
-
-export async function getPreviewsForMatches(
-  matchIds: string[],
-): Promise<MatchPreview[]> {
-  if (matchIds.length === 0) return [];
-
-  const { data, error } = await getSupabaseAdmin()
-    .from("match_previews")
-    .select(
-      "match_id, api_football_fixture_id, winner_name, winner_comment, win_or_draw, under_over, goals_home, goals_away, advice, percent_home, percent_draw, percent_away, fetched_at",
-    )
-    .in("match_id", matchIds);
-
-  if (error) throw error;
-  return (data ?? []) as MatchPreview[];
 }
 
 export async function getPredictionsForPlayer(

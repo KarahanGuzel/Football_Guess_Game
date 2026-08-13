@@ -6,7 +6,6 @@ import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getCurrentPlayableWeek,
   getPredictionsForPlayer,
-  getPreviewsForMatches,
   getStandings,
 } from "@/lib/data";
 
@@ -31,15 +30,13 @@ export default async function HomePage() {
       error instanceof Error ? error.message : "Puan durumu alınamadı.";
   }
 
-  const matchIds = weekData?.matches.map((m) => m.id) ?? [];
-  const [predictions, previews] = await Promise.all([
-    matchIds.length > 0
-      ? getPredictionsForPlayer(player.playerId, matchIds)
-      : Promise.resolve([]),
-    matchIds.length > 0
-      ? getPreviewsForMatches(matchIds)
-      : Promise.resolve([]),
-  ]);
+  const predictions =
+    weekData && weekData.matches.length > 0
+      ? await getPredictionsForPlayer(
+          player.playerId,
+          weekData.matches.map((m) => m.id),
+        )
+      : [];
 
   const locked = weekData ? weekData.status !== "open" : true;
 
@@ -75,7 +72,6 @@ export default async function HomePage() {
             weekId={weekData.week.id}
             matches={weekData.matches}
             initialPredictions={predictions}
-            previews={previews}
             locked={locked}
           />
         )}
