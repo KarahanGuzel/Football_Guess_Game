@@ -1,13 +1,10 @@
 import { FixturesWeeksAccordion } from "@/components/fixtures-weeks-accordion";
 import { requirePlayer } from "@/lib/auth/current-user";
-import { getNextFixturesWeeks, getPreviewsForMatches } from "@/lib/data";
+import { getNextFixturesWeeks } from "@/lib/data";
 
 export default async function FixturesPage() {
   await requirePlayer();
   const weeks = await getNextFixturesWeeks(3);
-  const matchIds = weeks.flatMap((w) => w.matches.map((m) => m.id));
-  const previews =
-    matchIds.length > 0 ? await getPreviewsForMatches(matchIds) : [];
 
   return (
     <div className="stack-md">
@@ -19,7 +16,7 @@ export default async function FixturesPage() {
       {weeks.length === 0 ? (
         <div className="panel muted">Henüz gelecek hafta fikstürü yayınlanmadı.</div>
       ) : (
-        <FixturesWeeksAccordion weeks={weeks} previews={previews} />
+        <FixturesWeeksAccordion weeks={weeks} />
       )}
     </div>
   );
