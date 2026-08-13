@@ -4,8 +4,14 @@ import { useMemo, useState } from "react";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { PlayerChip } from "@/components/player-chip";
+import { SlipComments } from "@/components/slip-comments";
 import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
-import type { MatchWithTeams, Player, Prediction } from "@/types/database";
+import type {
+  MatchWithTeams,
+  Player,
+  Prediction,
+  SlipCommentWithAuthor,
+} from "@/types/database";
 
 type PredictionWithPlayer = Prediction & { player: Player };
 
@@ -16,18 +22,35 @@ type PlayerRow = {
 };
 
 export function PredictionsBoard({
+  weekId,
   matches,
   predictions,
   players,
+  comments = [],
+  currentPlayerId,
+  isAdmin = false,
   leaderIds = [],
 }: {
+  weekId: string;
   matches: MatchWithTeams[];
   predictions: PredictionWithPlayer[];
   players: Player[];
+  comments?: SlipCommentWithAuthor[];
+  currentPlayerId: string;
+  isAdmin?: boolean;
   leaderIds?: string[];
 }) {
   const [openPlayerIds, setOpenPlayerIds] = useState<Set<string>>(() => new Set());
   const leaders = useMemo(() => new Set(leaderIds), [leaderIds]);
+  const commentsByTarget = useMemo(() => {
+    const map = new Map<string, SlipCommentWithAuthor[]>();
+    for (const comment of comments) {
+      const list = map.get(comment.target_player_id);
+      if (list) list.push(comment);
+      else map.set(comment.target_player_id, [comment]);
+    }
+    return map;
+  }, [comments]);
 
   const { rows, submittedCount, matchById } = useMemo(() => {
     const matchIds = new Set(matches.map((m) => m.id));
@@ -188,6 +211,13 @@ export function PredictionsBoard({
                       </tbody>
                     </table>
                   </div>
+                  <SlipComments
+                    weekId={weekId}
+                    targetPlayerId={player.id}
+                    comments={commentsByTarget.get(player.id) ?? []}
+                    currentPlayerId={currentPlayerId}
+                    isAdmin={isAdmin}
+                  />
                 </div>
               ) : null}
             </li>

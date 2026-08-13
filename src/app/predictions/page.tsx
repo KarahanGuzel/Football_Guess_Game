@@ -7,11 +7,12 @@ import {
   getPastWeeks,
   getPredictionsForMatches,
   getSeasonLeaderIds,
+  getSlipCommentsForWeek,
   getStandings,
   listActivePlayers,
 } from "@/lib/data";
 import { weekLockAt } from "@/lib/week-lock";
-import type { Player, Prediction } from "@/types/database";
+import type { Player, Prediction, SlipCommentWithAuthor } from "@/types/database";
 
 type PredictionWithPlayer = Prediction & { player: Player };
 
@@ -67,7 +68,7 @@ function buildWeekPointRows(
 }
 
 export default async function PredictionsPage() {
-  await requirePlayer();
+  const currentPlayer = await requirePlayer();
 
   const [playable, pastWeeks, players, standings] = await Promise.all([
     getCurrentPlayableWeek(),
@@ -104,6 +105,15 @@ export default async function PredictionsPage() {
       ? await getPredictionsForMatches(focus.matches.map((m) => m.id))
       : [];
 
+  let comments: SlipCommentWithAuthor[] = [];
+  if (focus) {
+    try {
+      comments = await getSlipCommentsForWeek(focus.week.id);
+    } catch {
+      comments = [];
+    }
+  }
+
   const historyWeeks = pastWeeks.filter((w) => w.id !== focus?.week.id);
 
   const historySummaries = await Promise.all(
@@ -137,9 +147,13 @@ export default async function PredictionsPage() {
             <div className="panel muted">Bu haftaya henüz maç eklenmemiş.</div>
           ) : (
             <PredictionsBoard
+              weekId={focus.week.id}
               matches={focus.matches}
               predictions={predictions}
               players={players}
+              comments={comments}
+              currentPlayerId={currentPlayer.playerId}
+              isAdmin={currentPlayer.isAdmin}
               leaderIds={leaderIds}
             />
           )}
