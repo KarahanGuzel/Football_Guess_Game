@@ -1,5 +1,9 @@
-import { PlayerChip } from "@/components/player-chip";
 import type { WeekKingRow } from "@/lib/data";
+
+function weekNumber(label: string, index: number): string {
+  const match = label.match(/(\d+)/);
+  return match?.[1] ?? String(index + 1);
+}
 
 export function WeekKingsTable({
   rows,
@@ -25,63 +29,37 @@ export function WeekKingsTable({
         </div>
       ) : null}
 
-      <div className="standings-scroll">
-        <table
-          className={`standings-table week-kings-table${
-            compact ? " standings-table-compact" : ""
-          }`}
-        >
-          <thead>
-            <tr>
-              <th scope="col">
-                <span className="standings-th-main">Hafta</span>
-              </th>
-              <th scope="col">
-                <span className="standings-th-main">Kral</span>
-              </th>
-              <th scope="col" className="standings-col-num">
-                <span className="standings-th-main">Puan</span>
-                <span className="standings-th-sub">hafta</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="muted standings-empty">
-                  Henüz puanlanmış hafta yok. İlk skor sonrası krallar burada.
-                </td>
-              </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.weekId}>
-                  <td className="week-kings-week-cell">
-                    <span className="week-kings-week">{row.weekLabel}</span>
-                  </td>
-                  <td className="standings-player-cell">
-                    <div className="week-kings-players">
-                      {row.kings.map((king) => (
-                        <PlayerChip
-                          key={king.playerId}
-                          slug={king.slug}
-                          displayName={king.displayName}
-                          size={compact ? 11 : 13}
-                        />
-                      ))}
-                    </div>
-                  </td>
-                  <td className="standings-col-num standings-points">
-                    {row.points}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {rows.length === 0 ? (
+        <p className="muted week-kings-empty">
+          Henüz puanlanmış hafta yok. İlk skor sonrası krallar burada.
+        </p>
+      ) : (
+        <ul className="week-kings-list">
+          {rows.map((row, index) => {
+            const n = weekNumber(row.weekLabel, index);
+            const names = row.kings
+              .map((k) => k.displayName.toLocaleUpperCase("tr-TR"))
+              .join(" & ");
+            return (
+              <li key={row.weekId} className="week-kings-line">
+                <p className="week-kings-proclamation">
+                  <span className="week-kings-prefix">{n}.Haftanın </span>
+                  <span className="week-kings-gold">KRAL&apos;I</span>
+                  <span className="week-kings-arrow"> → </span>
+                  <span className="week-kings-gold">{names}</span>
+                </p>
+                <span className="week-kings-points" title="Hafta puanı">
+                  {row.points}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Beraberlikte birden fazla kral yazılır.
+          Beraberlikte birden fazla isim yazılır.
         </p>
       ) : null}
     </div>

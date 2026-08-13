@@ -866,7 +866,8 @@ html[data-theme="light"] .btn-primary {
   max-width: 100%;
 }
 
-.user-pill-name {
+.user-pill-name,
+.user-pill .player-chip-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2157,24 +2158,65 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   min-width: 0;
 }
 
-.week-kings-table {
-  min-width: 280px;
+.week-kings-empty {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
 }
 
-.week-kings-week-cell {
-  white-space: nowrap;
+.week-kings-list {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
 }
 
-.week-kings-week {
-  font-weight: 750;
-  letter-spacing: -0.01em;
-}
-
-.week-kings-players {
+.week-kings-line {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.65rem;
-  align-items: center;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-soft) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+.week-kings-proclamation {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.week-kings-prefix {
+  color: var(--text);
+}
+
+.week-kings-gold {
+  color: #d4a017;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.week-kings-arrow {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.week-kings-points {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.week-kings-panel-compact .week-kings-proclamation {
+  font-size: 0.84rem;
 }
 
 .week-kings-panel-compact .standings-panel-head {
