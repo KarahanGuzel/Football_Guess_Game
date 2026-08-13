@@ -1,10 +1,5 @@
 import type { WeekKingRow } from "@/lib/data";
 
-function weekNumber(label: string, index: number): string {
-  const match = label.match(/(\d+)/);
-  return match?.[1] ?? String(index + 1);
-}
-
 export function WeekKingsTable({
   rows,
   compact = false,
@@ -22,7 +17,9 @@ export function WeekKingsTable({
     >
       {titled ? (
         <div className="standings-panel-head">
-          <h2 className="section-title">Haftanın kralı</h2>
+          <h2 className="section-title">
+            Haftanın <span className="week-kings-gold">KRALI</span>
+          </h2>
           <p className="muted standings-panel-sub">
             Her puanlanan haftanın birincisi
           </p>
@@ -36,7 +33,7 @@ export function WeekKingsTable({
       ) : (
         <ul className="week-kings-list">
           {rows.map((row, index) => {
-            const n = weekNumber(row.weekLabel, index);
+            const n = index + 1;
             const names = row.kings
               .map((k) => k.displayName.toLocaleUpperCase("tr-TR"))
               .join(" & ");
@@ -50,18 +47,13 @@ export function WeekKingsTable({
                 </p>
                 <span className="week-kings-points" title="Hafta puanı">
                   {row.points}
+                  <span className="week-kings-points-unit"> puan</span>
                 </span>
               </li>
             );
           })}
         </ul>
       )}
-
-      {!compact && rows.length > 0 ? (
-        <p className="standings-legend muted">
-          Beraberlikte birden fazla isim yazılır.
-        </p>
-      ) : null}
     </div>
   );
 }

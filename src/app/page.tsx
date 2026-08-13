@@ -96,17 +96,13 @@ export default async function HomePage() {
         {standingsError ? (
           <p style={{ color: "var(--flash-error)" }}>{standingsError}</p>
         ) : (
-          <div className="home-rank-grid">
-            <div className="home-rank-block">
-              <StandingsTable
-                rows={standings}
-                compact
-                leaderIds={leaderIds}
-              />
-            </div>
-            <div className="home-rank-block">
-              <WeekKingsTable rows={weekKings} compact />
-            </div>
+          <div className="home-rank-stack">
+            <StandingsTable
+              rows={standings}
+              compact
+              leaderIds={leaderIds}
+            />
+            <WeekKingsTable rows={weekKings} compact />
           </div>
         )}
       </section>

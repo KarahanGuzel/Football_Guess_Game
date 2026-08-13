@@ -44,13 +44,11 @@ export default async function StandingsPage() {
         <p style={{ color: "var(--flash-error)" }}>{errorMessage}</p>
       ) : (
         <div className="standings-page-stack">
-          <div className="standings-tables-grid">
-            <div className="standings-page-block standings-page-table">
-              <StandingsTable rows={rows} titled leaderIds={leaderIds} />
-            </div>
-            <div className="standings-page-block standings-page-kings">
-              <WeekKingsTable rows={weekKings} />
-            </div>
+          <div className="standings-page-block standings-page-table">
+            <StandingsTable rows={rows} titled leaderIds={leaderIds} />
+          </div>
+          <div className="standings-page-block standings-page-kings">
+            <WeekKingsTable rows={weekKings} />
           </div>
           <div className="standings-page-block">
             <StandingsPointsChart data={progress} />
