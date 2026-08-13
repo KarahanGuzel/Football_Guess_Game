@@ -6,8 +6,6 @@ import {
   getMatchesForWeek,
   getPastWeeks,
   getPredictionsForMatches,
-  getSeasonLeaderIds,
-  getStandings,
   listActivePlayers,
 } from "@/lib/data";
 import { weekLockAt } from "@/lib/week-lock";
@@ -69,13 +67,11 @@ function buildWeekPointRows(
 export default async function PredictionsPage() {
   await requirePlayer();
 
-  const [playable, pastWeeks, players, standings] = await Promise.all([
+  const [playable, pastWeeks, players] = await Promise.all([
     getCurrentPlayableWeek(),
     getPastWeeks(),
     listActivePlayers(),
-    getStandings().catch(() => []),
   ]);
-  const leaderIds = getSeasonLeaderIds(standings);
 
   let focus = playable
     ? {
@@ -140,7 +136,6 @@ export default async function PredictionsPage() {
               matches={focus.matches}
               predictions={predictions}
               players={players}
-              leaderIds={leaderIds}
             />
           )}
         </section>
@@ -152,10 +147,7 @@ export default async function PredictionsPage() {
             <h2 className="section-title">Geçmiş haftalar</h2>
             <span className="past-weeks-count">{historySummaries.length}</span>
           </div>
-          <PastWeeksAccordion
-            weeks={historySummaries}
-            leaderIds={leaderIds}
-          />
+          <PastWeeksAccordion weeks={historySummaries} />
         </section>
       ) : null}
     </div>

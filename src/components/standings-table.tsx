@@ -170,8 +170,8 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Taraf = maç sonucu · Alt/Üst = 2.5 · Strike = ikisi birden · Derbi =
-          derbide strike · Oran = strike / puanlanan maç
+          Taç = genel puan 1.’si · Taraf = maç sonucu · Alt/Üst = 2.5 · Strike =
+          ikisi birden · Derbi = derbide strike · Oran = strike / puanlanan maç
         </p>
       ) : null}
     </div>

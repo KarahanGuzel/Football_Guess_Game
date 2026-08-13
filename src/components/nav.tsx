@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
-import { PlayerChip } from "@/components/player-chip";
+import { FanFlag } from "@/components/fan-flag";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionPlayer } from "@/types/session";
 
@@ -20,13 +20,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AppNav({
-  player,
-  isSeasonLeader = false,
-}: {
-  player: SessionPlayer;
-  isSeasonLeader?: boolean;
-}) {
+export function AppNav({ player }: { player: SessionPlayer }) {
   const pathname = usePathname() || "/";
 
   return (
@@ -37,12 +31,8 @@ export function AppNav({
             Tahmin <span className="brand-accent">Ligi</span>
           </Link>
           <span className="user-pill">
-            <PlayerChip
-              slug={player.slug}
-              displayName={player.displayName}
-              size={12}
-              crowned={isSeasonLeader}
-            />
+            <FanFlag slug={player.slug} displayName={player.displayName} size={12} />
+            <span className="user-pill-name">{player.displayName}</span>
           </span>
         </div>
 

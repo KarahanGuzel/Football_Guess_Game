@@ -3,17 +3,13 @@ import type { WeekKingRow } from "@/lib/data";
 
 export function WeekKingsTable({
   rows,
-  leaderIds = [],
   compact = false,
   titled = true,
 }: {
   rows: WeekKingRow[];
-  leaderIds?: string[];
   compact?: boolean;
   titled?: boolean;
 }) {
-  const leaderSet = new Set(leaderIds);
-
   return (
     <div
       className={`panel standings-panel week-kings-panel${
@@ -70,7 +66,6 @@ export function WeekKingsTable({
                           slug={king.slug}
                           displayName={king.displayName}
                           size={compact ? 11 : 13}
-                          crowned={leaderSet.has(king.playerId)}
                         />
                       ))}
                     </div>
@@ -86,7 +81,7 @@ export function WeekKingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Beraberlikte birden fazla kral yazılır. Taç = sezon lideri.
+          Beraberlikte birden fazla kral yazılır.
         </p>
       ) : null}
     </div>

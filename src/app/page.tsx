@@ -7,7 +7,6 @@ import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getCurrentPlayableWeek,
   getPredictionsForPlayer,
-  getSeasonLeaderIds,
   getStandings,
   getWeekKings,
 } from "@/lib/data";
@@ -46,7 +45,6 @@ export default async function HomePage() {
       : [];
 
   const locked = weekData ? weekData.status !== "open" : true;
-  const leaderIds = getSeasonLeaderIds(standings);
 
   return (
     <div className="stack-lg">
@@ -98,18 +96,10 @@ export default async function HomePage() {
         ) : (
           <div className="home-rank-grid">
             <div className="home-rank-block">
-              <StandingsTable
-                rows={standings}
-                compact
-                leaderIds={leaderIds}
-              />
+              <StandingsTable rows={standings} compact />
             </div>
             <div className="home-rank-block">
-              <WeekKingsTable
-                rows={weekKings}
-                leaderIds={leaderIds}
-                compact
-              />
+              <WeekKingsTable rows={weekKings} compact />
             </div>
           </div>
         )}

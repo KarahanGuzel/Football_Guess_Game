@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { PlayerChip } from "@/components/player-chip";
+import { useState } from "react";
+import { FanFlag } from "@/components/fan-flag";
 import type { Player, Week } from "@/types/database";
 
 export type PastWeekSummary = {
@@ -14,15 +14,8 @@ export type PastWeekSummary = {
   }[];
 };
 
-export function PastWeeksAccordion({
-  weeks,
-  leaderIds = [],
-}: {
-  weeks: PastWeekSummary[];
-  leaderIds?: string[];
-}) {
+export function PastWeeksAccordion({ weeks }: { weeks: PastWeekSummary[] }) {
   const [openIds, setOpenIds] = useState<Set<string>>(() => new Set());
-  const leaders = useMemo(() => new Set(leaderIds), [leaderIds]);
 
   function toggle(weekId: string) {
     setOpenIds((current) => {
@@ -81,12 +74,12 @@ export function PastWeeksAccordion({
                       <li key={row.player.id} className="past-week-points-row">
                         <span className="past-week-points-rank">{index + 1}</span>
                         <span className="past-week-points-player">
-                          <PlayerChip
+                          <FanFlag
                             slug={row.player.slug}
                             displayName={row.player.display_name}
                             size={12}
-                            crowned={leaders.has(row.player.id)}
                           />
+                          {row.player.display_name}
                         </span>
                         <span className="past-week-points-value">
                           {row.points === null

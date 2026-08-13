@@ -3,7 +3,6 @@ import { DM_Sans, Sora } from "next/font/google";
 import { AppNav } from "@/components/nav";
 import { themeInitScript } from "@/components/theme-toggle";
 import { getCurrentPlayer } from "@/lib/auth/current-user";
-import { getSeasonLeaderIds, getStandings } from "@/lib/data";
 import "./globals.css";
 
 const sora = Sora({
@@ -39,15 +38,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const player = await getCurrentPlayer().catch(() => null);
-  let isSeasonLeader = false;
-  if (player) {
-    try {
-      const standings = await getStandings();
-      isSeasonLeader = getSeasonLeaderIds(standings).includes(player.playerId);
-    } catch {
-      isSeasonLeader = false;
-    }
-  }
 
   return (
     <html lang="tr" className={`${sora.variable} ${dmSans.variable}`} suppressHydrationWarning>
@@ -55,9 +45,7 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        {player ? (
-          <AppNav player={player} isSeasonLeader={isSeasonLeader} />
-        ) : null}
+        {player ? <AppNav player={player} /> : null}
         <main className="container page-shell">{children}</main>
       </body>
     </html>

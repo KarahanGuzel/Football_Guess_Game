@@ -866,7 +866,7 @@ html[data-theme="light"] .btn-primary {
   max-width: 100%;
 }
 
-.user-pill .player-chip-name {
+.user-pill-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -905,12 +905,6 @@ html[data-theme="light"] .btn-primary {
 .player-chip-name {
   font-weight: inherit;
   min-width: 0;
-}
-
-.user-pill-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .fan-flag {

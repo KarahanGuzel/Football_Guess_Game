@@ -3,7 +3,6 @@ import { StandingsTable } from "@/components/standings-table";
 import { WeekKingsTable } from "@/components/week-kings-table";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
-  getSeasonLeaderIds,
   getStandings,
   getStandingsProgress,
   getWeekKings,
@@ -31,8 +30,6 @@ export default async function StandingsPage() {
       error instanceof Error ? error.message : "Sıralama verisi alınamadı.";
   }
 
-  const leaderIds = getSeasonLeaderIds(rows);
-
   return (
     <div className="stack-lg">
       <header className="page-header">
@@ -46,14 +43,10 @@ export default async function StandingsPage() {
         <div className="standings-page-stack">
           <div className="standings-tables-grid">
             <div className="standings-page-block standings-page-table">
-              <StandingsTable
-                rows={rows}
-                titled
-                leaderIds={leaderIds}
-              />
+              <StandingsTable rows={rows} titled />
             </div>
             <div className="standings-page-block standings-page-kings">
-              <WeekKingsTable rows={weekKings} leaderIds={leaderIds} />
+              <WeekKingsTable rows={weekKings} />
             </div>
           </div>
           <div className="standings-page-block">
