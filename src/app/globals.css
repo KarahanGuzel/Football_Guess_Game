@@ -2744,13 +2744,13 @@ html[data-theme="light"] .standings-row-top3 {
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   letter-spacing: -0.02em;
   color: var(--accent);
-  padding: 0.28rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
-  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elevated));
+  padding: 0.32rem 0.55rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+  background: color-mix(in srgb, var(--accent) 11%, var(--bg-elevated));
 }
 
 .login-rules-note {
