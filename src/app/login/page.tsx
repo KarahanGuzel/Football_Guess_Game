@@ -91,7 +91,7 @@ export default async function LoginPage() {
         </ul>
 
         <p className="login-rules-note">
-          Tahminler ilk maç başlayınca kilitlenir · Derbi maç bonus olamaz
+          Tahminler ilk maçtan 1 saat önce kilitlenir · Derbi maç bonus olamaz
         </p>
       </section>
     </div>

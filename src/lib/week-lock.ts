@@ -1,9 +1,12 @@
 import type { Week, WeekStatus } from "@/types/database";
 
+/** Predictions lock this many ms before the first kickoff. */
+export const WEEK_LOCK_LEAD_MS = 60 * 60 * 1000;
+
 export function weekLockAt(matches: { kickoff_at: string }[]): Date | null {
   if (matches.length === 0) return null;
   const times = matches.map((m) => new Date(m.kickoff_at).getTime());
-  return new Date(Math.min(...times));
+  return new Date(Math.min(...times) - WEEK_LOCK_LEAD_MS);
 }
 
 export function isWeekLockedByTime(
