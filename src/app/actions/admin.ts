@@ -360,7 +360,7 @@ export async function calculateWeekPointsAction(weekId: string) {
 }
 
 /**
- * Latest scored week only: deletes picks + comments + scores, reopens for guessing.
+ * Latest scored week only: deletes picks + comments + scores, returns to locked.
  * Standings / week kings drop that week's points automatically.
  */
 export async function clearWeekAction(weekId: string) {
@@ -400,11 +400,11 @@ export async function clearWeekAction(weekId: string) {
     .eq("week_id", weekId);
   if (clearScores.error) return { error: clearScores.error.message };
 
-  const reopenWeek = await db
+  const lockWeek = await db
     .from("weeks")
-    .update({ status: "open" })
+    .update({ status: "locked" })
     .eq("id", weekId);
-  if (reopenWeek.error) return { error: reopenWeek.error.message };
+  if (lockWeek.error) return { error: lockWeek.error.message };
 
   revalidateAll();
   revalidatePath(`/admin/weeks/${weekId}`);

@@ -26,7 +26,7 @@ export function SeasonResetPanel() {
         setError(result.error);
         return;
       }
-      setMessage("Sezon oynanmamış hale geldi. Fikstür duruyor.");
+      setMessage("Reset tamam. Fikstür duruyor; tahminler ve puanlar silindi.");
       setStep("idle");
       setTyped("");
       router.refresh();
@@ -36,7 +36,7 @@ export function SeasonResetPanel() {
   return (
     <section className="panel reveal season-reset-panel">
       <div className="section-head">
-        <h2 className="section-title">Sezonu oynanmamış yap</h2>
+        <h2 className="section-title">Reset</h2>
       </div>
       <p className="season-reset-lead">
         Fikstür, bonus ve derbi işaretleri kalır. Tahminler, puan tablosu ve
@@ -56,7 +56,7 @@ export function SeasonResetPanel() {
             setStep("confirm");
           }}
         >
-          Sezonu oynanmamış yap
+          Reset
         </button>
       ) : (
         <div className="season-reset-confirm">
@@ -82,7 +82,7 @@ export function SeasonResetPanel() {
               disabled={pending || !canSubmit}
               onClick={onReset}
             >
-              {pending ? "Sıfırlanıyor..." : "Onayı tamamla"}
+              {pending ? "Reset..." : "Reset"}
             </button>
             <button
               type="button"

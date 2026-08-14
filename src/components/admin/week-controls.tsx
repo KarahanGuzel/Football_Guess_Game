@@ -345,7 +345,7 @@ export function AdminWeekControls({
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             Puanlar hesaplandı. Sonuçları Geçmiş sayfasından görebilirsin.
-            Yanlış oynandıysa haftayı temizleyip baştan tahmin alabilirsin.
+            Yanlışsa haftayı temizleyip skorları yeniden girebilirsin.
           </p>
           <div className="stack-xs" style={{ marginBottom: "1rem" }}>
             {matches.map((match) => (
@@ -359,12 +359,12 @@ export function AdminWeekControls({
               disabled={pending || Boolean(clearBlockedReason)}
               onClick={() => {
                 const confirmed = window.confirm(
-                  `"${week.label}" temizlensin mi?\n\nSkorlar, puanlar ve bu haftanın tüm tahminleri silinir. Küpür yorumları da gider. Hafta tekrar tahmine açılır; oyuncular boş form görür.`,
+                  `"${week.label}" temizlensin mi?\n\nSkorlar, puanlar ve bu haftanın tüm tahminleri silinir. Küpür yorumları da gider. Hafta kilitli kalır; oyuncular boş form görür.`,
                 );
                 if (!confirmed) return;
                 run(
                   () => clearWeekAction(week.id),
-                  "Hafta temizlendi. Tahminler silindi; hafta tekrar açık.",
+                  "Hafta temizlendi. Tahminler silindi; skorları yeniden girebilirsin.",
                 );
               }}
             >
