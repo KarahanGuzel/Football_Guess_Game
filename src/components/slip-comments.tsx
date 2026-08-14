@@ -8,6 +8,20 @@ import {
 } from "@/app/actions/comments";
 import type { SlipCommentWithAuthor } from "@/types/database";
 
+function CommentsIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="13" height="13" aria-hidden="true">
+      <path
+        d="M4.2 3.6h11.6A1.7 1.7 0 0 1 17.5 5.3v6.4a1.7 1.7 0 0 1-1.7 1.7H9.1L5.4 16.6v-3.2H4.2A1.7 1.7 0 0 1 2.5 11.7V5.3A1.7 1.7 0 0 1 4.2 3.6Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.55"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function SlipComments({
   weekId,
   targetPlayerId,
@@ -60,9 +74,12 @@ export function SlipComments({
   return (
     <div className="slip-comments">
       <div className="slip-comments-head">
-        <span className="slip-comments-title">Yorumlar</span>
+        <span className="slip-comments-title">
+          <CommentsIcon />
+          Yorumlar
+        </span>
         {comments.length > 0 ? (
-          <span className="muted slip-comments-count">{comments.length}</span>
+          <span className="slip-comments-count">{comments.length}</span>
         ) : null}
       </div>
 
@@ -75,12 +92,12 @@ export function SlipComments({
               comment.author_player_id === currentPlayerId || isAdmin;
             return (
               <li key={comment.id} className="slip-comment-line">
-                <p className="slip-comment-text">
+                <div className="slip-comment-main">
                   <span className="slip-comment-author">
-                    {comment.author.display_name}:
-                  </span>{" "}
-                  <span className="slip-comment-body">{comment.body}</span>
-                </p>
+                    {comment.author.display_name}
+                  </span>
+                  <p className="slip-comment-body">{comment.body}</p>
+                </div>
                 {canDelete ? (
                   <button
                     type="button"
