@@ -46,29 +46,31 @@ export function AppNav({
           </span>
         </div>
 
-        <nav className="nav-links" aria-label="Ana menü">
-          {links.map((link) => {
-            const active = isActive(pathname, link.href);
-            return (
+        <div className="nav-cluster">
+          <nav className="nav-links" aria-label="Ana menü">
+            {links.map((link) => {
+              const active = isActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`nav-link${active ? " nav-link-active" : ""}`}
+                >
+                  <span className="nav-link-full">{link.label}</span>
+                  <span className="nav-link-short">{link.shortLabel}</span>
+                </Link>
+              );
+            })}
+            {player.isAdmin ? (
               <Link
-                key={link.href}
-                href={link.href}
-                className={`nav-link${active ? " nav-link-active" : ""}`}
+                href="/admin"
+                className={`nav-link${isActive(pathname, "/admin") ? " nav-link-active" : ""}`}
               >
-                <span className="nav-link-full">{link.label}</span>
-                <span className="nav-link-short">{link.shortLabel}</span>
+                <span className="nav-link-full">Yönetim</span>
+                <span className="nav-link-short">Admin</span>
               </Link>
-            );
-          })}
-          {player.isAdmin ? (
-            <Link
-              href="/admin"
-              className={`nav-link${isActive(pathname, "/admin") ? " nav-link-active" : ""}`}
-            >
-              <span className="nav-link-full">Yönetim</span>
-              <span className="nav-link-short">Admin</span>
-            </Link>
-          ) : null}
+            ) : null}
+          </nav>
           <div className="nav-actions">
             <ThemeToggle />
             <form action={logoutAction}>
@@ -77,7 +79,7 @@ export function AppNav({
               </button>
             </form>
           </div>
-        </nav>
+        </div>
       </div>
     </header>
   );

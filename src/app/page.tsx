@@ -68,7 +68,7 @@ export default async function HomePage() {
         </div>
 
         {weekError ? (
-          <p style={{ color: "var(--flash-error)" }}>{weekError}</p>
+          <p className="flash flash-error">{weekError}</p>
         ) : !weekData ? (
           <div className="panel muted">
             Şu an yayınlanmış bir tahmin haftası yok.
@@ -88,13 +88,13 @@ export default async function HomePage() {
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>
           <h2 className="section-title">Lig özeti</h2>
-          <Link href="/standings" className="muted" style={{ fontSize: "0.9rem" }}>
+          <Link href="/standings" className="text-link">
             Tümü →
           </Link>
         </div>
 
         {standingsError ? (
-          <p style={{ color: "var(--flash-error)" }}>{standingsError}</p>
+          <p className="flash flash-error">{standingsError}</p>
         ) : (
           <div className="home-rank-stack">
             <StandingsTable

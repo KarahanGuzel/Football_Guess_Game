@@ -41,7 +41,7 @@ export default async function StandingsPage() {
       </header>
 
       {errorMessage ? (
-        <p style={{ color: "var(--flash-error)" }}>{errorMessage}</p>
+        <p className="flash flash-error">{errorMessage}</p>
       ) : (
         <div className="standings-page-stack">
           <div className="standings-page-block standings-page-table">
