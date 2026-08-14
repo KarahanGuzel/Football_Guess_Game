@@ -336,6 +336,16 @@ html[data-theme="light"] .btn-primary {
   line-height: 1;
 }
 
+.home-lock-inline-locked {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 88%, transparent);
+}
+
+.home-lock-inline-locked .home-lock-inline-label {
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
 .section-head {
   display: flex;
   align-items: center;

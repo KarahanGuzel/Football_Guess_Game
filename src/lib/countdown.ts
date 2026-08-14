@@ -20,7 +20,7 @@ export function getCountdownParts(target: Date, now = new Date()): CountdownPart
 
 /** Compact Turkish remaining time, e.g. "2g 14sa", "3sa 12dk", "45dk 08sn". */
 export function formatCountdownLabel(parts: CountdownParts): string {
-  if (parts.expired) return "kilitlendi";
+  if (parts.expired) return "Kilitlendi";
   if (parts.days > 0) {
     return `${parts.days}g ${parts.hours}sa`;
   }
@@ -31,4 +31,37 @@ export function formatCountdownLabel(parts: CountdownParts): string {
     return `${parts.minutes}dk ${String(parts.seconds).padStart(2, "0")}sn`;
   }
   return `${parts.seconds}sn`;
+}
+
+export type LockCountdownView = {
+  label: string;
+  time: string | null;
+  showEmoji: boolean;
+};
+
+/**
+ * Open week: ticking countdown + whistle.
+ * Admin lock (or time expiry): "Kilitlendi", no whistle.
+ * Unlock: countdown comes back.
+ */
+export function getLockCountdownView(input: {
+  locked: boolean;
+  lockAtIso: string | null;
+  now?: Date;
+}): LockCountdownView | null {
+  if (input.locked) {
+    return { label: "Kilitlendi", time: null, showEmoji: false };
+  }
+  if (!input.lockAtIso) return null;
+
+  const parts = getCountdownParts(new Date(input.lockAtIso), input.now);
+  if (parts.expired) {
+    return { label: "Kilitlendi", time: null, showEmoji: false };
+  }
+
+  return {
+    label: "Tahminlerin Kilitlenmesine",
+    time: formatCountdownLabel(parts),
+    showEmoji: true,
+  };
 }

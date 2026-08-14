@@ -56,3 +56,15 @@ export function canClearScoredWeek(
 ): boolean {
   return getClearWeekBlockReason(week, allWeeks) === null;
 }
+
+/** Matches can be added or deleted until the week is scored. */
+export function getDeleteMatchBlockReason(status: WeekStatus): string | null {
+  if (status === "scored") {
+    return "Puanlanmış haftada maç silinemez. Önce haftayı temizleyin.";
+  }
+  return null;
+}
+
+export function canDeleteMatchFromWeek(status: WeekStatus): boolean {
+  return getDeleteMatchBlockReason(status) === null;
+}
