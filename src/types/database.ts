@@ -1,3 +1,5 @@
+import type { SlipCommentReaction } from "@/lib/slip-reactions";
+
 export type PredictResult = "home" | "draw" | "away";
 export type GoalsMarket = "under_25" | "over_25";
 export type WeekStatus = "draft" | "open" | "locked" | "scored";
@@ -70,6 +72,7 @@ export type SlipComment = {
 
 export type SlipCommentWithAuthor = SlipComment & {
   author: Player;
+  reactions: SlipCommentReaction[];
 };
 
 export type StandingRow = {

@@ -1,11 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import {
   addSlipCommentAction,
   deleteSlipCommentAction,
+  toggleSlipCommentReactionAction,
 } from "@/app/actions/comments";
+import {
+  summarizeCommentReactions,
+  toggleReactionList,
+  type SlipReactionKey,
+} from "@/lib/slip-reactions";
 import type { SlipCommentWithAuthor } from "@/types/database";
 
 function CommentsIcon() {
@@ -38,13 +44,33 @@ export function SlipComments({
   const router = useRouter();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [saving, startSave] = useTransition();
+  const [reacting, startReact] = useTransition();
+  const [optimisticComments, setOptimisticComments] = useOptimistic(
+    comments,
+    (
+      current,
+      update: { commentId: string; key: SlipReactionKey },
+    ): SlipCommentWithAuthor[] =>
+      current.map((comment) =>
+        comment.id === update.commentId
+          ? {
+              ...comment,
+              reactions: toggleReactionList(
+                comment.reactions ?? [],
+                currentPlayerId,
+                update.key,
+              ),
+            }
+          : comment,
+      ),
+  );
 
   function submit() {
     const trimmed = body.trim();
     if (!trimmed) return;
     setError(null);
-    startTransition(async () => {
+    startSave(async () => {
       const result = await addSlipCommentAction({
         weekId,
         targetPlayerId,
@@ -61,10 +87,27 @@ export function SlipComments({
 
   function onDelete(commentId: string) {
     setError(null);
-    startTransition(async () => {
+    startSave(async () => {
       const result = await deleteSlipCommentAction(commentId);
       if (result.error) {
         setError(result.error);
+        return;
+      }
+      router.refresh();
+    });
+  }
+
+  function onReact(commentId: string, key: SlipReactionKey) {
+    setError(null);
+    startReact(async () => {
+      setOptimisticComments({ commentId, key });
+      const result = await toggleSlipCommentReactionAction({
+        commentId,
+        reaction: key,
+      });
+      if (result.error) {
+        setError(result.error);
+        router.refresh();
         return;
       }
       router.refresh();
@@ -78,38 +121,68 @@ export function SlipComments({
           <CommentsIcon />
           Yorumlar
         </span>
-        {comments.length > 0 ? (
-          <span className="slip-comments-count">{comments.length}</span>
+        {optimisticComments.length > 0 ? (
+          <span className="slip-comments-count">{optimisticComments.length}</span>
         ) : null}
       </div>
 
-      {comments.length === 0 ? (
+      {optimisticComments.length === 0 ? (
         <p className="muted slip-comments-empty">Henüz yorum yok.</p>
       ) : (
         <ul className="slip-comments-list">
-          {comments.map((comment) => {
+          {optimisticComments.map((comment) => {
             const canDelete =
               comment.author_player_id === currentPlayerId || isAdmin;
+            const chips = summarizeCommentReactions(
+              comment.reactions ?? [],
+              currentPlayerId,
+            );
             return (
               <li key={comment.id} className="slip-comment-line">
-                <div className="slip-comment-main">
+                <div className="slip-comment-top">
                   <span className="slip-comment-author">
                     {comment.author.display_name}
                   </span>
-                  <p className="slip-comment-body">{comment.body}</p>
+                  {canDelete ? (
+                    <button
+                      type="button"
+                      className="slip-comment-delete"
+                      disabled={saving}
+                      onClick={() => onDelete(comment.id)}
+                      aria-label="Yorumu sil"
+                      title="Sil"
+                    >
+                      ×
+                    </button>
+                  ) : null}
                 </div>
-                {canDelete ? (
-                  <button
-                    type="button"
-                    className="slip-comment-delete"
-                    disabled={pending}
-                    onClick={() => onDelete(comment.id)}
-                    aria-label="Yorumu sil"
-                    title="Sil"
-                  >
-                    ×
-                  </button>
-                ) : null}
+                <p className="slip-comment-body">{comment.body}</p>
+                <div className="slip-comment-reactions">
+                  {chips.map((chip) => {
+                    const title = chip.mine
+                      ? `${chip.label} — sen verdin${chip.count > 1 ? `, ${chip.count}` : ""}`
+                      : chip.count > 0
+                        ? `${chip.label} — ${chip.count}`
+                        : chip.label;
+                    return (
+                      <button
+                        key={chip.key}
+                        type="button"
+                        className={`slip-reaction${chip.mine ? " slip-reaction-on" : ""}`}
+                        disabled={reacting}
+                        aria-pressed={chip.mine}
+                        aria-label={title}
+                        title={title}
+                        onClick={() => onReact(comment.id, chip.key)}
+                      >
+                        <span aria-hidden="true">{chip.glyph}</span>
+                        {chip.count > 0 ? (
+                          <span className="slip-reaction-count">{chip.count}</span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
               </li>
             );
           })}
@@ -123,7 +196,7 @@ export function SlipComments({
           maxLength={280}
           placeholder="Yorum yaz..."
           value={body}
-          disabled={pending}
+          disabled={saving}
           onChange={(e) => setBody(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -135,10 +208,10 @@ export function SlipComments({
         <button
           type="button"
           className="btn btn-secondary btn-sm"
-          disabled={pending || !body.trim()}
+          disabled={saving || !body.trim()}
           onClick={submit}
         >
-          {pending ? "..." : "Gönder"}
+          {saving ? "..." : "Gönder"}
         </button>
       </div>
       {error ? <p className="flash flash-error">{error}</p> : null}

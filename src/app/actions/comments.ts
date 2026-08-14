@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requirePlayer } from "@/lib/auth/current-user";
 import { getPlayerById, getWeek } from "@/lib/data";
+import { isSlipReactionKey } from "@/lib/slip-reactions";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 const addSchema = z.object({
@@ -14,6 +15,14 @@ const addSchema = z.object({
 
 function revalidateComments() {
   revalidatePath("/predictions");
+}
+
+function reactionTableMissing(error: { code?: string; message: string }) {
+  return (
+    error.code === "42P01" ||
+    error.code === "PGRST205" ||
+    error.message.includes("slip_comment_reactions")
+  );
 }
 
 export async function addSlipCommentAction(input: {
@@ -71,6 +80,79 @@ export async function deleteSlipCommentAction(commentId: string) {
     .eq("id", commentId);
 
   if (error) return { error: error.message };
+  revalidateComments();
+  return { ok: true as const };
+}
+
+export async function toggleSlipCommentReactionAction(input: {
+  commentId: string;
+  reaction: string;
+}) {
+  const player = await requirePlayer();
+  const commentId = input.commentId?.trim();
+  if (!commentId) return { error: "Yorum bulunamadı." };
+  if (!isSlipReactionKey(input.reaction)) {
+    return { error: "Geçersiz tepki." };
+  }
+
+  const db = getSupabaseAdmin();
+  const { data: comment, error: fetchError } = await db
+    .from("slip_comments")
+    .select("id, week_id")
+    .eq("id", commentId)
+    .maybeSingle();
+
+  if (fetchError) return { error: fetchError.message };
+  if (!comment) return { error: "Yorum bulunamadı." };
+
+  const week = await getWeek(comment.week_id);
+  if (!week) return { error: "Hafta bulunamadı." };
+  if (week.status === "draft") {
+    return { error: "Taslak haftaya tepki verilemez." };
+  }
+
+  const { data: existing, error: existingError } = await db
+    .from("slip_comment_reactions")
+    .select("id")
+    .eq("comment_id", commentId)
+    .eq("player_id", player.playerId)
+    .eq("reaction", input.reaction)
+    .maybeSingle();
+
+  if (existingError) {
+    if (reactionTableMissing(existingError)) {
+      return { error: "Tepkiler için SQL henüz çalıştırılmamış." };
+    }
+    return { error: existingError.message };
+  }
+
+  if (existing) {
+    const { error } = await db
+      .from("slip_comment_reactions")
+      .delete()
+      .eq("id", existing.id);
+    if (error) return { error: error.message };
+    revalidateComments();
+    return { ok: true as const };
+  }
+
+  const { error } = await db.from("slip_comment_reactions").insert({
+    comment_id: commentId,
+    player_id: player.playerId,
+    reaction: input.reaction,
+  });
+
+  if (error) {
+    if (error.code === "23505") {
+      revalidateComments();
+      return { ok: true as const };
+    }
+    if (reactionTableMissing(error)) {
+      return { error: "Tepkiler için SQL henüz çalıştırılmamış." };
+    }
+    return { error: error.message };
+  }
+
   revalidateComments();
   return { ok: true as const };
 }
