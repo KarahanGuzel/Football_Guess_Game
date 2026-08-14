@@ -1524,7 +1524,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.65rem 0.15rem;
+  padding: 0.65rem 0.55rem 0.65rem 0.2rem;
   border: 0;
   background: transparent;
   color: inherit;
@@ -1554,7 +1554,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 .submission-player {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.55rem;
   font-weight: 600;
 }
 
@@ -1564,7 +1564,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   justify-content: center;
   width: 1.45rem;
   height: 1.45rem;
-  margin-left: 0.2rem;
+  margin-left: 0.45rem;
   border-radius: 8px;
   color: var(--ok);
   background: color-mix(in srgb, var(--ok) 16%, transparent);
@@ -1586,6 +1586,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   font-weight: 700;
   color: var(--muted);
   flex-shrink: 0;
+  margin-right: 0.1rem;
 }
 
 .status-dot-ok {
@@ -1596,7 +1597,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   display: inline-flex;
   align-items: center;
   gap: 0.16rem;
-  margin-left: 0.08rem;
+  margin-left: 0.2rem;
   color: color-mix(in srgb, var(--ok) 62%, var(--muted));
   line-height: 1;
   flex-shrink: 0;
@@ -1633,9 +1634,9 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 }
 
 .slip-comments {
-  margin-top: 0.7rem;
-  padding: 0.7rem 0.7rem 0.75rem 0.85rem;
-  border-radius: 14px;
+  margin-top: 0.5rem;
+  padding: 0.52rem 0.55rem 0.55rem 0.65rem;
+  border-radius: 12px;
   border: 1px solid color-mix(in srgb, #7eaa9c 26%, var(--line));
   background:
     linear-gradient(
@@ -1644,9 +1645,9 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
       transparent 46%
     ),
     color-mix(in srgb, var(--bg-soft) 78%, #101a17);
-  box-shadow: inset 3px 0 0 color-mix(in srgb, #7eaa9c 58%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, #7eaa9c 58%, transparent);
   display: grid;
-  gap: 0.55rem;
+  gap: 0.4rem;
 }
 
 html[data-theme="light"] .slip-comments {
@@ -1671,8 +1672,8 @@ html[data-theme="light"] .slip-comments {
 .slip-comments-title {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
+  gap: 0.28rem;
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--muted) 70%, #7eaa9c);
@@ -1690,10 +1691,10 @@ html[data-theme="light"] .slip-comments-title svg {
 }
 
 .slip-comments-count {
-  min-width: 1.25rem;
-  padding: 0.08rem 0.4rem;
+  min-width: 1.1rem;
+  padding: 0.04rem 0.32rem;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   text-align: center;
@@ -1704,7 +1705,7 @@ html[data-theme="light"] .slip-comments-title svg {
 
 .slip-comments-empty {
   margin: 0;
-  font-size: 0.86rem;
+  font-size: 0.78rem;
 }
 
 .slip-comments-list {
@@ -1712,14 +1713,14 @@ html[data-theme="light"] .slip-comments-title svg {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
 .slip-comment-line {
   display: grid;
-  gap: 0.28rem;
-  padding: 0.5rem 0.55rem 0.55rem;
-  border-radius: 11px;
+  gap: 0.2rem;
+  padding: 0.38rem 0.42rem 0.4rem;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--bg-elevated) 62%, transparent);
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
 }
@@ -1737,33 +1738,38 @@ html[data-theme="light"] .slip-comment-line {
 }
 
 .slip-comment-author {
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.01em;
-  color: color-mix(in srgb, var(--text) 78%, #7eaa9c);
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  text-decoration-color: color-mix(in srgb, #7eaa9c 62%, var(--muted));
 }
 
 html[data-theme="light"] .slip-comment-author {
-  color: color-mix(in srgb, #2d5248 70%, var(--text));
+  color: #152019;
+  text-decoration-color: color-mix(in srgb, #3f6f62 55%, var(--muted));
 }
 
 .slip-comment-body {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.35;
   color: color-mix(in srgb, var(--text) 92%, var(--muted));
 }
 
 .slip-comment-delete {
   flex-shrink: 0;
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 1.25rem;
+  height: 1.25rem;
   border: 0;
   border-radius: 6px;
   background: transparent;
   color: var(--muted);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -1776,30 +1782,43 @@ html[data-theme="light"] .slip-comment-author {
 .slip-comment-reactions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.28rem;
-  margin-top: 0.12rem;
+  gap: 0.22rem;
+  margin-top: 0.06rem;
 }
 
 .slip-reaction {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.22rem;
-  min-height: 1.85rem;
-  padding: 0.12rem 0.48rem 0.12rem 0.4rem;
+  gap: 0.16rem;
+  min-height: 1.4rem;
+  padding: 0.05rem 0.34rem 0.05rem 0.28rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, #7eaa9c 22%, var(--line));
   background: color-mix(in srgb, var(--bg) 28%, transparent);
   color: var(--text);
-  font-size: 0.92rem;
+  font-size: 0.78rem;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  transform-origin: center;
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    filter 0.1s ease;
 }
 
 .slip-reaction:hover:not(:disabled) {
   border-color: color-mix(in srgb, #7eaa9c 48%, var(--line));
   background: color-mix(in srgb, #7eaa9c 14%, transparent);
+  transform: translateY(-1px);
+}
+
+.slip-reaction:active:not(:disabled) {
+  transform: scale(0.86);
+  filter: brightness(1.16);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.28);
 }
 
 .slip-reaction:disabled {
@@ -1807,8 +1826,31 @@ html[data-theme="light"] .slip-comment-author {
 }
 
 .slip-reaction-on {
-  background: color-mix(in srgb, #7eaa9c 24%, transparent);
-  border-color: color-mix(in srgb, #7eaa9c 52%, var(--line));
+  background: color-mix(in srgb, #7eaa9c 28%, transparent);
+  border-color: color-mix(in srgb, #7eaa9c 58%, var(--line));
+}
+
+.slip-reaction-on:active:not(:disabled) {
+  transform: scale(0.84);
+}
+
+@keyframes slip-reaction-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.82);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.slip-reaction-pop {
+  animation: slip-reaction-pop 0.24s ease;
 }
 
 html[data-theme="light"] .slip-reaction {
@@ -1816,12 +1858,12 @@ html[data-theme="light"] .slip-reaction {
 }
 
 html[data-theme="light"] .slip-reaction-on {
-  background: color-mix(in srgb, #3f6f62 12%, var(--white));
-  border-color: color-mix(in srgb, #3f6f62 38%, var(--line));
+  background: color-mix(in srgb, #3f6f62 14%, var(--white));
+  border-color: color-mix(in srgb, #3f6f62 42%, var(--line));
 }
 
 .slip-reaction-count {
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--muted);
@@ -1833,20 +1875,28 @@ html[data-theme="light"] .slip-reaction-on {
 
 .slip-comment-compose {
   display: flex;
-  gap: 0.45rem;
+  gap: 0.35rem;
   align-items: center;
+}
+
+.slip-comment-compose .btn {
+  min-height: 1.7rem;
+  height: 1.7rem;
+  padding: 0 0.65rem;
+  font-size: 0.76rem;
+  border-radius: 9px;
 }
 
 .slip-comment-input {
   flex: 1;
   min-width: 0;
-  height: 2.15rem;
-  border-radius: 10px;
+  height: 1.7rem;
+  border-radius: 9px;
   border: 1px solid color-mix(in srgb, #7eaa9c 22%, var(--line));
   background: color-mix(in srgb, var(--bg) 55%, var(--bg-elevated));
   color: var(--text);
-  padding: 0 0.7rem;
-  font-size: 0.9rem;
+  padding: 0 0.55rem;
+  font-size: 0.8rem;
 }
 
 html[data-theme="light"] .slip-comment-input {
@@ -3660,13 +3710,8 @@ html[data-theme="light"] .login-rules-title::after {
   }
 
   .slip-comments {
-    margin-top: 0.55rem;
-    padding: 0.6rem 0.55rem 0.65rem 0.7rem;
-  }
-
-  .slip-reaction {
-    min-height: 40px;
-    padding-inline: 0.58rem;
+    margin-top: 0.42rem;
+    padding: 0.45rem 0.45rem 0.48rem 0.55rem;
   }
 
   .player-picks-table {
@@ -3675,7 +3720,7 @@ html[data-theme="light"] .login-rules-title::after {
 
   .submission-row-btn {
     min-height: 2.85rem;
-    padding: 0.7rem 0.1rem;
+    padding: 0.7rem 0.5rem 0.7rem 0.15rem;
   }
 
   .week-head {
@@ -3705,6 +3750,17 @@ html[data-theme="light"] .login-rules-title::after {
 
   .btn-sm {
     min-height: 40px;
+  }
+
+  .slip-comment-compose .btn,
+  .slip-comment-compose .btn-sm {
+    min-height: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.65rem;
+  }
+
+  .slip-reaction {
+    min-height: 1.5rem;
   }
 
   .field input,

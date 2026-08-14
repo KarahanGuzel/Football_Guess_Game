@@ -16,7 +16,7 @@ import type { SlipCommentWithAuthor } from "@/types/database";
 
 function CommentsIcon() {
   return (
-    <svg viewBox="0 0 20 20" width="13" height="13" aria-hidden="true">
+    <svg viewBox="0 0 20 20" width="11" height="11" aria-hidden="true">
       <path
         d="M4.2 3.6h11.6A1.7 1.7 0 0 1 17.5 5.3v6.4a1.7 1.7 0 0 1-1.7 1.7H9.1L5.4 16.6v-3.2H4.2A1.7 1.7 0 0 1 2.5 11.7V5.3A1.7 1.7 0 0 1 4.2 3.6Z"
         fill="none"
@@ -46,6 +46,7 @@ export function SlipComments({
   const [error, setError] = useState<string | null>(null);
   const [saving, startSave] = useTransition();
   const [reacting, startReact] = useTransition();
+  const [popKey, setPopKey] = useState<string | null>(null);
   const [optimisticComments, setOptimisticComments] = useOptimistic(
     comments,
     (
@@ -98,6 +99,11 @@ export function SlipComments({
   }
 
   function onReact(commentId: string, key: SlipReactionKey) {
+    const token = `${commentId}:${key}`;
+    setPopKey(token);
+    window.setTimeout(() => {
+      setPopKey((current) => (current === token ? null : current));
+    }, 240);
     setError(null);
     startReact(async () => {
       setOptimisticComments({ commentId, key });
@@ -141,7 +147,7 @@ export function SlipComments({
               <li key={comment.id} className="slip-comment-line">
                 <div className="slip-comment-top">
                   <span className="slip-comment-author">
-                    {comment.author.display_name}
+                    {comment.author.display_name}:
                   </span>
                   {canDelete ? (
                     <button
@@ -159,6 +165,7 @@ export function SlipComments({
                 <p className="slip-comment-body">{comment.body}</p>
                 <div className="slip-comment-reactions">
                   {chips.map((chip) => {
+                    const token = `${comment.id}:${chip.key}`;
                     const title = chip.mine
                       ? `${chip.label} — sen verdin${chip.count > 1 ? `, ${chip.count}` : ""}`
                       : chip.count > 0
@@ -168,7 +175,9 @@ export function SlipComments({
                       <button
                         key={chip.key}
                         type="button"
-                        className={`slip-reaction${chip.mine ? " slip-reaction-on" : ""}`}
+                        className={`slip-reaction${chip.mine ? " slip-reaction-on" : ""}${
+                          popKey === token ? " slip-reaction-pop" : ""
+                        }`}
                         disabled={reacting}
                         aria-pressed={chip.mine}
                         aria-label={title}
