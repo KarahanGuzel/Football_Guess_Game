@@ -7,9 +7,9 @@ import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getCurrentPlayableWeek,
   getPredictionsForPlayer,
-  getSeasonLeaderIds,
   getStandings,
   getWeekKings,
+  latestWeekKingIds,
 } from "@/lib/data";
 
 export default async function HomePage() {
@@ -46,7 +46,7 @@ export default async function HomePage() {
       : [];
 
   const locked = weekData ? weekData.status !== "open" : true;
-  const leaderIds = getSeasonLeaderIds(standings);
+  const leaderIds = latestWeekKingIds(weekKings);
 
   return (
     <div className="stack-lg">

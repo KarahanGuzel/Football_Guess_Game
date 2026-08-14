@@ -1,6 +1,5 @@
 import { PlayerChip } from "@/components/player-chip";
 import { RankMedal } from "@/components/rank-medal";
-import { getSeasonLeaderIds } from "@/lib/data";
 import type { StandingRow } from "@/types/database";
 
 export function StandingsTable({
@@ -13,11 +12,11 @@ export function StandingsTable({
   compact?: boolean;
   /** Show "Genel sıralama" section header (standings page). */
   titled?: boolean;
-  /** Season leader ids for crown. Defaults from rows. */
+  /** Week-king ids for crown. Defaults from season standings if omitted. */
   leaderIds?: string[];
 }) {
   const colCount = compact ? 6 : 9;
-  const leaders = new Set(leaderIds ?? getSeasonLeaderIds(rows));
+  const leaders = new Set(leaderIds ?? []);
 
   return (
     <div className={`panel standings-panel${titled ? " standings-panel-titled" : ""}`}>
@@ -170,7 +169,7 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Taç = sezon puan 1.’si · Taraf = maç sonucu · Alt/Üst = 2.5 · Strike =
+          Taç = son puanlanan haftanın kralı · Taraf = maç sonucu · Alt/Üst = 2.5 · Strike =
           ikisi birden · Derbi = derbide strike · Oran = strike / puanlanan maç
         </p>
       ) : null}

@@ -3,7 +3,7 @@ import { DM_Sans, Sora } from "next/font/google";
 import { AppNav } from "@/components/nav";
 import { themeInitScript } from "@/components/theme-toggle";
 import { getCurrentPlayer } from "@/lib/auth/current-user";
-import { getSeasonLeaderIds, getStandings } from "@/lib/data";
+import { getWeekKings, latestWeekKingIds } from "@/lib/data";
 import "./globals.css";
 
 const sora = Sora({
@@ -39,13 +39,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const player = await getCurrentPlayer().catch(() => null);
-  let isSeasonLeader = false;
+  let isWeekKing = false;
   if (player) {
     try {
-      const standings = await getStandings();
-      isSeasonLeader = getSeasonLeaderIds(standings).includes(player.playerId);
+      const weekKings = await getWeekKings();
+      isWeekKing = latestWeekKingIds(weekKings).includes(player.playerId);
     } catch {
-      isSeasonLeader = false;
+      isWeekKing = false;
     }
   }
 
@@ -56,7 +56,7 @@ export default async function RootLayout({
       </head>
       <body>
         {player ? (
-          <AppNav player={player} isSeasonLeader={isSeasonLeader} />
+          <AppNav player={player} isWeekKing={isWeekKing} />
         ) : null}
         <main className="container page-shell">{children}</main>
       </body>

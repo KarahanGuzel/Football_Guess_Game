@@ -6,9 +6,9 @@ import {
   getMatchesForWeek,
   getPastWeeks,
   getPredictionsForMatches,
-  getSeasonLeaderIds,
   getSlipCommentsForWeek,
-  getStandings,
+  getWeekKings,
+  latestWeekKingIds,
   listActivePlayers,
 } from "@/lib/data";
 import { weekLockAt } from "@/lib/week-lock";
@@ -70,13 +70,13 @@ function buildWeekPointRows(
 export default async function PredictionsPage() {
   const currentPlayer = await requirePlayer();
 
-  const [playable, pastWeeks, players, standings] = await Promise.all([
+  const [playable, pastWeeks, players, weekKings] = await Promise.all([
     getCurrentPlayableWeek(),
     getPastWeeks(),
     listActivePlayers(),
-    getStandings().catch(() => []),
+    getWeekKings().catch(() => []),
   ]);
-  const leaderIds = getSeasonLeaderIds(standings);
+  const leaderIds = latestWeekKingIds(weekKings);
 
   let focus = playable
     ? {

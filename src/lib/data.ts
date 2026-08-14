@@ -228,6 +228,13 @@ export type WeekKingRow = {
   kings: WeekKingPlayer[];
 };
 
+/** Latest scored week's king ids (ties kept). */
+export function latestWeekKingIds(rows: WeekKingRow[]): string[] {
+  const latest = rows[rows.length - 1];
+  if (!latest || latest.kings.length === 0) return [];
+  return latest.kings.map((king) => king.playerId);
+}
+
 /** Per scored week: player(s) with the highest week points (ties kept). */
 export async function getWeekKings(): Promise<WeekKingRow[]> {
   const { data: scoredWeeks, error } = await getSupabaseAdmin()

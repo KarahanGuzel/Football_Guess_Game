@@ -14,6 +14,7 @@ import { scorePrediction } from "@/lib/scoring";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 function revalidateAll() {
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/standings");
   revalidatePath("/history");

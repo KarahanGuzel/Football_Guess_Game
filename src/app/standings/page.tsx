@@ -3,10 +3,10 @@ import { StandingsTable } from "@/components/standings-table";
 import { WeekKingsTable } from "@/components/week-kings-table";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
-  getSeasonLeaderIds,
   getStandings,
   getStandingsProgress,
   getWeekKings,
+  latestWeekKingIds,
 } from "@/lib/data";
 
 export default async function StandingsPage() {
@@ -31,7 +31,7 @@ export default async function StandingsPage() {
       error instanceof Error ? error.message : "Sıralama verisi alınamadı.";
   }
 
-  const leaderIds = getSeasonLeaderIds(rows);
+  const leaderIds = latestWeekKingIds(weekKings);
 
   return (
     <div className="stack-lg">
