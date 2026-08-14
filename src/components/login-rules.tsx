@@ -17,12 +17,7 @@ export function LoginRules() {
         <caption className="login-score-caption">Normal maç</caption>
         <thead>
           <tr>
-            <th scope="col">
-              <span className="login-score-check" aria-hidden="true">
-                ✓
-              </span>
-              <span className="login-score-hit-label">İsabet</span>
-            </th>
+            <th scope="col">İsabet</th>
             <th scope="col">Puan</th>
           </tr>
         </thead>

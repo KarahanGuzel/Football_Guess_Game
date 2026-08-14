@@ -242,6 +242,17 @@ html[data-theme="light"] .btn-primary {
   color: var(--muted);
 }
 
+.text-link {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.text-link:hover {
+  color: var(--accent);
+}
+
 .page-header {
   margin-bottom: 0.85rem;
 }
@@ -986,11 +997,21 @@ html[data-theme="light"] .btn-primary {
   box-sizing: border-box;
 }
 
+.nav-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .nav-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
   align-items: center;
+  min-width: 0;
 }
 
 .nav-link-short {
@@ -2539,27 +2560,26 @@ html[data-theme="light"] .standings-row-top3 {
 }
 
 .login-toolbar {
+  position: absolute;
+  top: 0.15rem;
+  right: 0;
+  z-index: 2;
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
-  padding-top: 0.2rem;
 }
 
 .login-hero {
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) 52px;
-  align-items: start;
-  column-gap: 0.35rem;
-  margin-bottom: 0;
-}
-
-.login-hero-spacer {
+  position: relative;
   display: block;
+  text-align: center;
+  margin-bottom: 0;
 }
 
 .login-hero-main {
   text-align: center;
   min-width: 0;
+  padding-inline: 3.4rem;
 }
 
 .login-kicker {
@@ -2881,28 +2901,12 @@ html[data-theme="light"] .login-rules-title::after {
   line-height: 1.35;
 }
 
-.login-score-hit-label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 .login-score-check {
   flex-shrink: 0;
   color: var(--accent);
   font-weight: 800;
   font-size: 0.95rem;
   line-height: 1.2;
-}
-
-.login-score-table thead .login-score-check {
-  font-size: 1rem;
 }
 
 .login-score-pts {
@@ -3213,8 +3217,16 @@ html[data-theme="light"] .login-rules-title::after {
     font-size: 0.76rem;
   }
 
-  .nav-links {
+  .nav-cluster {
     width: 100%;
+    flex: 1 1 auto;
+    justify-content: stretch;
+    gap: 0.4rem;
+  }
+
+  .nav-links {
+    width: auto;
+    flex: 1 1 auto;
     overflow-x: auto;
     flex-wrap: nowrap;
     gap: 0.28rem;
@@ -3246,7 +3258,7 @@ html[data-theme="light"] .login-rules-title::after {
   }
 
   .nav-actions {
-    margin-left: auto;
+    margin-left: 0;
   }
 
   .nav-logout {
@@ -3502,6 +3514,40 @@ html[data-theme="light"] .login-rules-title::after {
   .submission-row-btn {
     min-height: 2.85rem;
     padding: 0.7rem 0.1rem;
+  }
+
+  .week-head {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.45rem 0.65rem;
+  }
+
+  .home-lock-inline {
+    max-width: 100%;
+  }
+
+  .week-kings-line {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.35rem 0.75rem;
+    padding: 0.65rem 0.7rem;
+  }
+
+  .week-kings-proclamation {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  .btn-sm {
+    min-height: 40px;
+  }
+
+  .field input,
+  .field select {
+    min-height: 44px;
   }
 
   .stack-lg {

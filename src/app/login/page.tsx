@@ -20,7 +20,6 @@ export default async function LoginPage() {
   return (
     <div className="login-page reveal">
       <header className="login-hero">
-        <span className="login-hero-spacer" aria-hidden="true" />
         <div className="login-hero-main">
           <h1 className="login-brand">
             Tahmin <span className="brand-accent">Ligi</span>
