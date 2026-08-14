@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { formatCountdownLabel, getCountdownParts } from "@/lib/countdown";
 import { formatDateTime } from "@/lib/format";
 
+const WHISTLE = "📣";
+
 export function LockCountdown({
   lockAtIso,
   locked,
@@ -19,18 +21,40 @@ export function LockCountdown({
     return () => window.clearInterval(id);
   }, [locked, lockAtIso]);
 
-  const label = useMemo(() => {
+  const content = useMemo(() => {
     if (!lockAtIso) return null;
-    if (locked) return "kilitli";
-    return formatCountdownLabel(getCountdownParts(new Date(lockAtIso), now));
+    if (locked) {
+      return {
+        prefix: "Tahminler kilitlendi",
+        time: null as string | null,
+      };
+    }
+    const parts = getCountdownParts(new Date(lockAtIso), now);
+    if (parts.expired) {
+      return {
+        prefix: "Tahminler kilitlendi",
+        time: null as string | null,
+      };
+    }
+    return {
+      prefix: "Tahminlerin Kilitlenmesine",
+      time: formatCountdownLabel(parts),
+    };
   }, [lockAtIso, locked, now]);
 
-  if (!lockAtIso || !label) return null;
+  if (!lockAtIso || !content) return null;
 
   return (
     <span className="home-lock-inline" title={formatDateTime(lockAtIso)}>
-      <span className="home-lock-inline-label">Kilit</span>
-      <strong>{label}</strong>
+      <span className="home-lock-inline-text">
+        <span className="home-lock-inline-label">{content.prefix}</span>
+        {content.time ? (
+          <strong className="home-lock-inline-time">{content.time}</strong>
+        ) : null}
+      </span>
+      <span className="home-lock-inline-emoji" aria-hidden="true">
+        {WHISTLE}
+      </span>
     </span>
   );
 }
