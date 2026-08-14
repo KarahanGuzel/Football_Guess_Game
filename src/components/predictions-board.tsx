@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
+import { CommentMark } from "@/components/comment-mark";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { PlayerChip } from "@/components/player-chip";
 import { SlipComments } from "@/components/slip-comments";
@@ -124,6 +125,7 @@ export function PredictionsBoard({
             0,
           );
           const scored = ordered.some((p) => p.points_earned !== null);
+          const commentCount = commentsByTarget.get(player.id)?.length ?? 0;
 
           return (
             <li
@@ -146,6 +148,7 @@ export function PredictionsBoard({
                     size={12}
                     crowned={leaders.has(player.id)}
                   />
+                  <CommentMark count={commentCount} />
                   {hasPicks ? (
                     <span
                       className={`submission-chevron${isOpen ? " submission-chevron-open" : ""}`}

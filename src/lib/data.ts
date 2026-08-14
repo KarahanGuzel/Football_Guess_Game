@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { effectiveWeekStatus, weekLockAt } from "@/lib/week-lock";
+import { attachCommentReactions } from "@/lib/slip-reactions";
 import type {
   MatchWithTeams,
   Player,
@@ -386,7 +387,7 @@ export async function getStandingsProgress(): Promise<StandingsProgress> {
   };
 }
 
-/** All slip comments for a week, oldest first, with author player. */
+/** All slip comments for a week, oldest first, with author and reactions. */
 export async function getSlipCommentsForWeek(
   weekId: string,
 ): Promise<SlipCommentWithAuthor[]> {
@@ -397,5 +398,22 @@ export async function getSlipCommentsForWeek(
     .order("created_at", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as SlipCommentWithAuthor[];
+  const comments = (data ?? []) as Omit<SlipCommentWithAuthor, "reactions">[];
+  if (comments.length === 0) {
+    return [];
+  }
+
+  const { data: reactionRows, error: reactionError } = await getSupabaseAdmin()
+    .from("slip_comment_reactions")
+    .select("comment_id, player_id, reaction")
+    .in(
+      "comment_id",
+      comments.map((comment) => comment.id),
+    );
+
+  if (reactionError) {
+    return comments.map((comment) => ({ ...comment, reactions: [] }));
+  }
+
+  return attachCommentReactions(comments, reactionRows ?? []);
 }
