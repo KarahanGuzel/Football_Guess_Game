@@ -73,3 +73,16 @@ for attempt in $(seq 1 10); do
 done
 
 echo "==> [start] Ready. REST API at http://127.0.0.1:54321"
+
+# Launch the Next.js dev server in the background so the app is reachable on
+# boot. Guarded so repeated runs never spawn a duplicate server.
+if curl -fs -o /dev/null -m 2 http://localhost:3000 2>/dev/null; then
+  echo "==> [start] Next.js dev server already running on :3000."
+else
+  echo "==> [start] Launching Next.js dev server on :3000 (logs: /tmp/next-dev.log)"
+  # Fully detach (new session + all fds redirected) so this background process
+  # never holds the start command's stdout/stderr open and start can return.
+  setsid bash -c "cd '${REPO_DIR}' && exec npm run dev" </dev/null >/tmp/next-dev.log 2>&1 &
+fi
+
+echo "==> [start] Startup complete."
