@@ -39,7 +39,7 @@ export function PlayerChip({
     >
       <span className="player-chip-mark">
         {crowned ? (
-          <span className="player-chip-crown" title="Sezon lideri" aria-label="Sezon lideri">
+          <span className="player-chip-crown" title="Haftanın kralı" aria-label="Haftanın kralı">
             <CrownIcon />
           </span>
         ) : null}

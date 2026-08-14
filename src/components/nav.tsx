@@ -22,10 +22,10 @@ function isActive(pathname: string, href: string) {
 
 export function AppNav({
   player,
-  isSeasonLeader = false,
+  isWeekKing = false,
 }: {
   player: SessionPlayer;
-  isSeasonLeader?: boolean;
+  isWeekKing?: boolean;
 }) {
   const pathname = usePathname() || "/";
 
@@ -41,7 +41,7 @@ export function AppNav({
               slug={player.slug}
               displayName={player.displayName}
               size={12}
-              crowned={isSeasonLeader}
+              crowned={isWeekKing}
             />
           </span>
         </div>
