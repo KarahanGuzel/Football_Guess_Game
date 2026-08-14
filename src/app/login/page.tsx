@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { LoginForm } from "@/components/login-form";
+import { LoginRules } from "@/components/login-rules";
 import { listActivePlayers } from "@/lib/data";
 
 export default async function LoginPage() {
@@ -45,55 +46,7 @@ export default async function LoginPage() {
         <LoginForm players={players} />
       )}
 
-      <section className="panel login-rules" aria-label="Nasıl oynanır">
-        <div className="login-rules-head">
-          <h2 className="login-rules-title">Nasıl oynanır?</h2>
-          <p className="login-rules-lead">
-            Her hafta maçlara sonuç (1 / X / 2) ve Alt-Üst 2.5 tahmini gir.
-            Skorlar girilince puanlar hesaplanır; sezon sıralamasında yarışırsınız.
-          </p>
-        </div>
-
-        <ul className="login-rules-list">
-          <li className="login-rules-row">
-            <div className="login-rules-row-main">
-              <span className="login-rules-label">Normal</span>
-              <span className="login-rules-copy">
-                Sonuç + Alt/Üst — ikisi doğruysa 4, biri doğruysa 2 puan
-              </span>
-            </div>
-            <span className="login-rules-points" aria-hidden="true">
-              4 / 2
-            </span>
-          </li>
-          <li className="login-rules-row">
-            <div className="login-rules-row-main">
-              <span className="login-rules-label">Derbi</span>
-              <span className="login-rules-copy">
-                Normal puanların 2 katı
-              </span>
-            </div>
-            <span className="login-rules-points" aria-hidden="true">
-              ×2
-            </span>
-          </li>
-          <li className="login-rules-row">
-            <div className="login-rules-row-main">
-              <span className="login-rules-label">Bonus</span>
-              <span className="login-rules-copy">
-                İkisi doğruysa 6, aksi halde 0
-              </span>
-            </div>
-            <span className="login-rules-points" aria-hidden="true">
-              6 / 0
-            </span>
-          </li>
-        </ul>
-
-        <p className="login-rules-note">
-          Tahminler ilk maçtan 1 saat önce kilitlenir · Derbi maç bonus olamaz
-        </p>
-      </section>
+      <LoginRules />
     </div>
   );
 }
