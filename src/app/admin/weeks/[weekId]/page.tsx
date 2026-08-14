@@ -4,7 +4,8 @@ import { AddMatchForm } from "@/components/admin/add-match-form";
 import { EditWeekLabelForm } from "@/components/admin/edit-week-label-form";
 import { AdminWeekControls } from "@/components/admin/week-controls";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getMatchesForWeek, getWeek, listTeams } from "@/lib/data";
+import { getClearWeekBlockReason } from "@/lib/admin-season";
+import { getMatchesForWeek, getWeek, listTeams, listWeeks } from "@/lib/data";
 
 const statusMeta: Record<string, { label: string; className: string }> = {
   draft: { label: "Taslak", className: "status-draft" },
@@ -23,10 +24,13 @@ export default async function AdminWeekPage({
   const week = await getWeek(weekId);
   if (!week) notFound();
 
-  const [matches, teams] = await Promise.all([
+  const [matches, teams, weeks] = await Promise.all([
     getMatchesForWeek(weekId),
     listTeams(),
+    listWeeks(),
   ]);
+  const clearBlockedReason =
+    week.status === "scored" ? getClearWeekBlockReason(week, weeks) : null;
   const meta = statusMeta[week.status] ?? {
     label: week.status,
     className: "status-draft",
@@ -66,7 +70,11 @@ export default async function AdminWeekPage({
         <AddMatchForm weekId={week.id} teams={teams} />
       ) : null}
 
-      <AdminWeekControls week={week} matches={matches} />
+      <AdminWeekControls
+        week={week}
+        matches={matches}
+        clearBlockedReason={clearBlockedReason}
+      />
     </div>
   );
 }

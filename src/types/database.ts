@@ -25,6 +25,8 @@ export type Week = {
   status: WeekStatus;
   notes: string | null;
   created_at: string;
+  /** After "Haftayı Temizle", kickoff lock is ignored until the week is scored. */
+  bypass_time_lock: boolean;
 };
 
 export type Match = {

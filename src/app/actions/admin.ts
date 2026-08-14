@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { getClearWeekBlockReason } from "@/lib/admin-season";
 import {
   getMatchesForWeek,
   getPredictionsForMatches,
   getWeek,
+  listWeeks,
 } from "@/lib/data";
 import { scorePrediction } from "@/lib/scoring";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -16,6 +18,7 @@ function revalidateAll() {
   revalidatePath("/standings");
   revalidatePath("/history");
   revalidatePath("/fixtures");
+  revalidatePath("/predictions");
   revalidatePath("/admin");
 }
 
@@ -346,7 +349,7 @@ export async function calculateWeekPointsAction(weekId: string) {
 
   const scoreWeek = await db
     .from("weeks")
-    .update({ status: "scored" })
+    .update({ status: "scored", bypass_time_lock: false })
     .eq("id", weekId);
   if (scoreWeek.error) return { error: scoreWeek.error.message };
 
@@ -356,30 +359,36 @@ export async function calculateWeekPointsAction(weekId: string) {
   return { ok: true as const };
 }
 
-/** Puanlanmış haftayı sıfırlar: skorlar + o haftanın tahmin puanları temizlenir, durum kilitli olur. */
+/**
+ * Latest scored week only: deletes picks + comments + scores, reopens guessing.
+ * Kickoff time-lock is bypassed so players can submit again.
+ */
 export async function clearWeekAction(weekId: string) {
   await requireAdmin();
   const week = await getWeek(weekId);
   if (!week) return { error: "Hafta bulunamadı." };
-  if (week.status !== "scored") {
-    return { error: "Sadece puanı hesaplanmış hafta temizlenebilir." };
-  }
+
+  const weeks = await listWeeks();
+  const blocked = getClearWeekBlockReason(week, weeks);
+  if (blocked) return { error: blocked };
 
   const matches = await getMatchesForWeek(weekId);
   const matchIds = matches.map((m) => m.id);
   const db = getSupabaseAdmin();
 
   if (matchIds.length > 0) {
-    const clearPredictions = await db
+    const deletePredictions = await db
       .from("predictions")
-      .update({
-        result_correct: null,
-        goals_correct: null,
-        points_earned: null,
-      })
+      .delete()
       .in("match_id", matchIds);
-    if (clearPredictions.error) return { error: clearPredictions.error.message };
+    if (deletePredictions.error) return { error: deletePredictions.error.message };
   }
+
+  const deleteComments = await db
+    .from("slip_comments")
+    .delete()
+    .eq("week_id", weekId);
+  if (deleteComments.error) return { error: deleteComments.error.message };
 
   const clearScores = await db
     .from("matches")
@@ -391,11 +400,11 @@ export async function clearWeekAction(weekId: string) {
     .eq("week_id", weekId);
   if (clearScores.error) return { error: clearScores.error.message };
 
-  const resetWeek = await db
+  const reopenWeek = await db
     .from("weeks")
-    .update({ status: "locked" })
+    .update({ status: "open", bypass_time_lock: true })
     .eq("id", weekId);
-  if (resetWeek.error) return { error: resetWeek.error.message };
+  if (reopenWeek.error) return { error: reopenWeek.error.message };
 
   revalidateAll();
   revalidatePath(`/admin/weeks/${weekId}`);
@@ -403,33 +412,40 @@ export async function clearWeekAction(weekId: string) {
   return { ok: true as const };
 }
 
-/** Tüm puan tablosunu sıfırlar (tüm tahmin puanları + puanlanmış haftalar kilitliye döner). */
-export async function resetStandingsAction() {
+/**
+ * Season rewind: fixtures stay, play data goes. Weeks return to draft.
+ * Standings and week kings empty because nothing is scored.
+ */
+export async function resetSeasonToUnplayedAction() {
   await requireAdmin();
   const db = getSupabaseAdmin();
 
-  const { data: predictionRows, error: listError } = await db
+  const deletePredictions = await db
     .from("predictions")
-    .select("id");
-  if (listError) return { error: listError.message };
+    .delete()
+    .gte("created_at", "1970-01-01");
+  if (deletePredictions.error) return { error: deletePredictions.error.message };
 
-  const predictionIds = (predictionRows ?? []).map((row) => row.id as string);
-  if (predictionIds.length > 0) {
-    const clearPredictions = await db
-      .from("predictions")
-      .update({
-        result_correct: null,
-        goals_correct: null,
-        points_earned: null,
-      })
-      .in("id", predictionIds);
-    if (clearPredictions.error) return { error: clearPredictions.error.message };
-  }
+  const deleteComments = await db
+    .from("slip_comments")
+    .delete()
+    .gte("created_at", "1970-01-01");
+  if (deleteComments.error) return { error: deleteComments.error.message };
+
+  const clearScores = await db
+    .from("matches")
+    .update({
+      home_goals: null,
+      away_goals: null,
+      status: "scheduled",
+    })
+    .gte("created_at", "1970-01-01");
+  if (clearScores.error) return { error: clearScores.error.message };
 
   const resetWeeks = await db
     .from("weeks")
-    .update({ status: "locked" })
-    .eq("status", "scored");
+    .update({ status: "draft", bypass_time_lock: false })
+    .gte("created_at", "1970-01-01");
   if (resetWeeks.error) return { error: resetWeeks.error.message };
 
   revalidateAll();

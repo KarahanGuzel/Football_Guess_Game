@@ -29,9 +29,11 @@ function getPhase(status: Week["status"]): Phase {
 export function AdminWeekControls({
   week,
   matches,
+  clearBlockedReason,
 }: {
   week: Week;
   matches: MatchWithTeams[];
+  clearBlockedReason: string | null;
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -343,30 +345,41 @@ export function AdminWeekControls({
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
             Puanlar hesaplandı. Sonuçları Geçmiş sayfasından görebilirsin.
-            Yanlışsa haftayı temizleyip yeniden girebilirsin.
+            Yanlışsa haftayı temizleyip tahminleri baştan toplayabilirsin.
           </p>
           <div className="stack-xs" style={{ marginBottom: "1rem" }}>
             {matches.map((match) => (
               <MatchRow key={match.id} match={match} showScores />
             ))}
           </div>
-          <button
-            className="btn btn-secondary"
-            type="button"
-            disabled={pending}
-            onClick={() => {
-              const confirmed = window.confirm(
-                `"${week.label}" temizlensin mi?\n\nSkorlar ve bu haftanın tahmin puanları silinir. Tahminler kalır; hafta tekrar kilitli duruma döner.`,
-              );
-              if (!confirmed) return;
-              run(
-                () => clearWeekAction(week.id),
-                "Hafta temizlendi. Skorları yeniden girebilirsin.",
-              );
-            }}
-          >
-            Haftayı Temizle
-          </button>
+          <div className="admin-clear-week">
+            <button
+              className="btn btn-secondary"
+              type="button"
+              disabled={pending || Boolean(clearBlockedReason)}
+              onClick={() => {
+                const confirmed = window.confirm(
+                  `"${week.label}" temizlensin mi?\n\nSkorlar, puanlar ve bu haftanın tüm tahminleri silinir. Küpür yorumları da gider. Hafta tekrar tahmine açılır; oyuncular boş formdan yeniden girer.`,
+                );
+                if (!confirmed) return;
+                run(
+                  () => clearWeekAction(week.id),
+                  "Hafta temizlendi. Tahminler silindi; oyuncular yeniden girebilir.",
+                );
+              }}
+            >
+              Haftayı Temizle
+            </button>
+            {clearBlockedReason ? (
+              <p className="admin-clear-week-hint admin-clear-week-hint-blocked">
+                {clearBlockedReason}
+              </p>
+            ) : (
+              <p className="admin-clear-week-hint">
+                Sadece sezonun son oynanan haftası temizlenebilir. Fikstür kalır.
+              </p>
+            )}
+          </div>
         </section>
       ) : null}
 
@@ -375,7 +388,8 @@ export function AdminWeekControls({
           <h2 className="section-title">Tehlikeli alan</h2>
         </div>
         <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-          Haftayı silmek maçları ve tüm tahminleri de siler.
+          Haftayı silmek fikstürü, maçları ve tahminleri de yok eder. Sadece
+          yanlış açılmış bir hafta için.
         </p>
         <button
           className="btn btn-danger"

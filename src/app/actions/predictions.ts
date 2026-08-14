@@ -34,7 +34,7 @@ export async function upsertPredictionsAction(input: {
   const matches = await getMatchesForWeek(week.id);
   if (matches.length === 0) return { error: "Bu haftada maç yok." };
 
-  if (isWeekLockedByTime(week.status, matches)) {
+  if (isWeekLockedByTime(week, matches)) {
     return { error: "Tahminler kilitlendi. Artık değişiklik yapılamaz." };
   }
 
@@ -72,5 +72,6 @@ export async function upsertPredictionsAction(input: {
 
   revalidatePath("/");
   revalidatePath("/history");
+  revalidatePath("/predictions");
   return { ok: true as const };
 }
