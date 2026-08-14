@@ -43,6 +43,9 @@ export function AddMatchForm({
       }}
     >
       <h2 style={{ margin: 0, fontSize: "1.05rem" }}>Maç Ekle</h2>
+      <p className="muted" style={{ margin: 0, fontSize: "0.88rem" }}>
+        Yanlış maçı alttaki listeden Sil ile kaldırabilirsin.
+      </p>
       <div
         style={{
           display: "grid",
@@ -92,7 +95,7 @@ export function AddMatchForm({
       <button className="btn btn-primary" type="submit" disabled={pending}>
         {pending ? "Ekleniyor..." : "Maçı Ekle"}
       </button>
-      {error ? <p style={{ color: "#ffb4b4", margin: 0 }}>{error}</p> : null}
+      {error ? <p className="flash flash-error" style={{ margin: 0 }}>{error}</p> : null}
     </form>
   );
 }

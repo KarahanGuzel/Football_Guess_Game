@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getClearWeekBlockReason } from "@/lib/admin-season";
+import {
+  getClearWeekBlockReason,
+  getDeleteMatchBlockReason,
+} from "@/lib/admin-season";
 import {
   getMatchesForWeek,
   getPredictionsForMatches,
@@ -457,9 +460,8 @@ export async function deleteMatchAction(weekId: string, matchId: string) {
   await requireAdmin();
   const week = await getWeek(weekId);
   if (!week) return { error: "Hafta bulunamadı." };
-  if (week.status !== "draft") {
-    return { error: "Sadece taslak haftalardan maç silinebilir." };
-  }
+  const blocked = getDeleteMatchBlockReason(week.status);
+  if (blocked) return { error: blocked };
 
   const { error } = await getSupabaseAdmin()
     .from("matches")

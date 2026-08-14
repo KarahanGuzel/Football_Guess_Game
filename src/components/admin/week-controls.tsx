@@ -5,6 +5,7 @@ import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   calculateWeekPointsAction,
   clearWeekAction,
+  deleteMatchAction,
   deleteWeekAction,
   lockWeekAction,
   openWeekAction,
@@ -14,6 +15,7 @@ import {
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
+import { canDeleteMatchFromWeek } from "@/lib/admin-season";
 import { formatKickoff } from "@/lib/format";
 import type { MatchWithTeams, Week } from "@/types/database";
 
@@ -102,6 +104,8 @@ export function AdminWeekControls({
     });
   }
 
+  const allowMatchDelete = canDeleteMatchFromWeek(week.status);
+
   function onDeleteWeek() {
     const confirmed = window.confirm(
       `"${week.label}" silinsin mi?\n\nBu haftaya ait maçlar ve tahminler de silinir.`,
@@ -110,6 +114,32 @@ export function AdminWeekControls({
     run(() => deleteWeekAction(week.id), "Hafta silindi.", {
       redirectTo: "/admin",
     });
+  }
+
+  function onDeleteMatch(match: MatchWithTeams) {
+    const label = `${match.home_team.name} – ${match.away_team.name}`;
+    const bonusNote = match.is_bonus
+      ? "\n\nBu maç bonus. Silince bonus seçimi de kalkar; yayınlamak için yeniden bonus seçmen gerekir."
+      : "";
+    const confirmed = window.confirm(
+      `"${label}" silinsin mi?\n\nBu maça ait tahminler de silinir.${bonusNote}`,
+    );
+    if (!confirmed) return;
+    run(() => deleteMatchAction(week.id, match.id), "Maç silindi.");
+  }
+
+  function matchDeleteButton(match: MatchWithTeams) {
+    if (!allowMatchDelete) return null;
+    return (
+      <button
+        className="btn btn-danger btn-sm"
+        type="button"
+        disabled={pending}
+        onClick={() => onDeleteMatch(match)}
+      >
+        Sil
+      </button>
+    );
   }
 
   return (
@@ -136,25 +166,28 @@ export function AdminWeekControls({
                     key={match.id}
                     match={match}
                     trailing={
-                      match.is_derby ? (
-                        <span className="muted" style={{ fontSize: "0.85rem" }}>
-                          Derbi — bonus olamaz
-                        </span>
-                      ) : (
-                        <button
-                          className={match.is_bonus ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
-                          type="button"
-                          disabled={pending || match.is_bonus}
-                          onClick={() =>
-                            run(
-                              () => setBonusMatchAction(week.id, match.id),
-                              "Bonus maç seçildi.",
-                            )
-                          }
-                        >
-                          {match.is_bonus ? "Bonus seçili" : "Bonus yap"}
-                        </button>
-                      )
+                      <>
+                        {match.is_derby ? (
+                          <span className="muted" style={{ fontSize: "0.85rem" }}>
+                            Derbi — bonus olamaz
+                          </span>
+                        ) : (
+                          <button
+                            className={match.is_bonus ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
+                            type="button"
+                            disabled={pending || match.is_bonus}
+                            onClick={() =>
+                              run(
+                                () => setBonusMatchAction(week.id, match.id),
+                                "Bonus maç seçildi.",
+                              )
+                            }
+                          >
+                            {match.is_bonus ? "Bonus seçili" : "Bonus yap"}
+                          </button>
+                        )}
+                        {matchDeleteButton(match)}
+                      </>
                     }
                   />
                 ))}
@@ -209,7 +242,11 @@ export function AdminWeekControls({
           </button>
           <div className="stack-xs" style={{ marginTop: "1rem" }}>
             {matches.map((match) => (
-              <MatchRow key={match.id} match={match} />
+              <MatchRow
+                key={match.id}
+                match={match}
+                trailing={matchDeleteButton(match)}
+              />
             ))}
           </div>
         </section>
@@ -242,7 +279,7 @@ export function AdminWeekControls({
 
           {matches.map((match) => (
             <article key={match.id} className="score-block">
-              <MatchRow match={match} />
+              <MatchRow match={match} trailing={matchDeleteButton(match)} />
               <div className="score-grid">
                 <div className="field">
                   <label>Ev gol</label>

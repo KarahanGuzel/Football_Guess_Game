@@ -66,7 +66,7 @@ export default async function AdminWeekPage({
 
       <EditWeekLabelForm weekId={week.id} initialLabel={week.label} />
 
-      {week.status === "draft" ? (
+      {week.status !== "scored" ? (
         <AddMatchForm weekId={week.id} teams={teams} />
       ) : null}
 

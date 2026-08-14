@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   canClearScoredWeek,
+  canDeleteMatchFromWeek,
   getClearWeekBlockReason,
+  getDeleteMatchBlockReason,
   getLaterPlayedWeeks,
 } from "@/lib/admin-season";
 import type { WeekStatus } from "@/types/database";
@@ -66,5 +68,21 @@ describe("getClearWeekBlockReason", () => {
       "w2",
       "w3",
     ]);
+  });
+});
+
+describe("getDeleteMatchBlockReason", () => {
+  it("allows deleting from draft, open, and locked weeks", () => {
+    expect(canDeleteMatchFromWeek("draft")).toBe(true);
+    expect(canDeleteMatchFromWeek("open")).toBe(true);
+    expect(canDeleteMatchFromWeek("locked")).toBe(true);
+    expect(getDeleteMatchBlockReason("draft")).toBeNull();
+  });
+
+  it("blocks scored weeks until they are cleared", () => {
+    expect(canDeleteMatchFromWeek("scored")).toBe(false);
+    expect(getDeleteMatchBlockReason("scored")).toBe(
+      "Puanlanmış haftada maç silinemez. Önce haftayı temizleyin.",
+    );
   });
 });

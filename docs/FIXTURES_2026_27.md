@@ -10,7 +10,7 @@ Bu SQL dosyasını Supabase → **SQL Editor** → yapıştır → **Run**:
 - Saat verilmediği için tüm maçlar **19:00 Türkiye saati** kabul edildi.
 - Haftalar **taslak** olarak gelir → Yönetim’den bonus seç + yayınla.
 - Derbiler otomatik: FB/GS/BJK/TS kendi aralarındaki maçlar.
-- 1. Hafta: `Eyüpspor - Beşiktaş`
+- 1. Hafta: `Eyüpspor - Beşiktaş`, `Gençlerbirliği - Fenerbahçe`
 - 10. Hafta: `Kasımpaşa - Beşiktaş`
 
 ## Senin adımların
