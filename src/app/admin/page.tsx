@@ -1,6 +1,7 @@
-import { AdminStandingsPanel } from "@/components/admin/standings-panel";
 import { AdminWeeksList } from "@/components/admin/weeks-list";
 import { CreateWeekForm } from "@/components/admin/create-week-form";
+import { SeasonResetPanel } from "@/components/admin/season-reset-panel";
+import { StandingsTable } from "@/components/standings-table";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { getMatchesForWeek, getStandings, listWeeks } from "@/lib/data";
 
@@ -33,7 +34,17 @@ export default async function AdminPage() {
         <AdminWeeksList weeks={weekBundles} />
       </section>
 
-      <AdminStandingsPanel rows={standings} />
+      <section className="stack-md reveal">
+        <div className="section-head" style={{ marginBottom: 0 }}>
+          <h2 className="section-title">Puan Durumu</h2>
+        </div>
+        <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
+          Tablo maç sonuçlarından hesaplanır; buradan elle değiştirilmez.
+        </p>
+        <StandingsTable rows={standings} compact />
+      </section>
+
+      <SeasonResetPanel />
     </div>
   );
 }
