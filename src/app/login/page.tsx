@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { LoginForm } from "@/components/login-form";
 import { LoginRules } from "@/components/login-rules";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { listActivePlayers } from "@/lib/data";
 
 export default async function LoginPage() {
@@ -19,20 +20,26 @@ export default async function LoginPage() {
   return (
     <div className="login-page reveal">
       <header className="login-hero">
-        <h1 className="login-brand">
-          Tahmin <span className="brand-accent">Ligi</span>
-          <Image
-            className="login-brand-ball"
-            src="/football-ball.png"
-            alt=""
-            width={64}
-            height={64}
-            priority
-            unoptimized
-            aria-hidden="true"
-          />
-        </h1>
-        <p className="login-sub login-sub-mark">A Mezegang Product</p>
+        <span className="login-hero-spacer" aria-hidden="true" />
+        <div className="login-hero-main">
+          <h1 className="login-brand">
+            Tahmin <span className="brand-accent">Ligi</span>
+            <Image
+              className="login-brand-ball"
+              src="/football-ball.png"
+              alt=""
+              width={64}
+              height={64}
+              priority
+              unoptimized
+              aria-hidden="true"
+            />
+          </h1>
+          <p className="login-sub login-sub-mark">A Mezegang Product</p>
+        </div>
+        <div className="login-toolbar">
+          <ThemeToggle />
+        </div>
       </header>
 
       {configError ? (
