@@ -101,10 +101,18 @@ describe("week lock", () => {
       { kickoff_at: "2026-07-24T18:00:00.000Z" },
     ];
     expect(
-      isWeekLockedByTime("open", matches, new Date("2026-07-23T17:00:00.000Z")),
+      isWeekLockedByTime(
+        { status: "open" },
+        matches,
+        new Date("2026-07-23T17:00:00.000Z"),
+      ),
     ).toBe(true);
     expect(
-      isWeekLockedByTime("open", matches, new Date("2026-07-23T16:59:59.000Z")),
+      isWeekLockedByTime(
+        { status: "open" },
+        matches,
+        new Date("2026-07-23T16:59:59.000Z"),
+      ),
     ).toBe(false);
     expect(
       effectiveWeekStatus(
@@ -113,5 +121,23 @@ describe("week lock", () => {
         new Date("2026-07-23T17:30:00.000Z"),
       ),
     ).toBe("locked");
+  });
+
+  it("skips kickoff lock when the week was cleared for a replay", () => {
+    const matches = [{ kickoff_at: "2026-07-23T18:00:00.000Z" }];
+    expect(
+      isWeekLockedByTime(
+        { status: "open", bypass_time_lock: true },
+        matches,
+        new Date("2026-07-23T19:00:00.000Z"),
+      ),
+    ).toBe(false);
+    expect(
+      effectiveWeekStatus(
+        { status: "open", bypass_time_lock: true },
+        matches,
+        new Date("2026-07-23T19:00:00.000Z"),
+      ),
+    ).toBe("open");
   });
 });

@@ -101,7 +101,12 @@ export async function getCurrentPlayableWeek(): Promise<{
     const matches = await getMatchesForWeek(week.id);
     const status = effectiveWeekStatus(week, matches);
     if (status === "open" || status === "locked") {
-      return { week, matches, lockAt: weekLockAt(matches), status };
+      return {
+        week,
+        matches,
+        lockAt: week.bypass_time_lock ? null : weekLockAt(matches),
+        status,
+      };
     }
   }
 

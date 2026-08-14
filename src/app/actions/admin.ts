@@ -349,7 +349,7 @@ export async function calculateWeekPointsAction(weekId: string) {
 
   const scoreWeek = await db
     .from("weeks")
-    .update({ status: "scored" })
+    .update({ status: "scored", bypass_time_lock: false })
     .eq("id", weekId);
   if (scoreWeek.error) return { error: scoreWeek.error.message };
 
@@ -360,8 +360,8 @@ export async function calculateWeekPointsAction(weekId: string) {
 }
 
 /**
- * Latest scored week only: deletes picks + comments + scores, returns to locked.
- * Standings / week kings drop that week's points automatically.
+ * Latest scored week only: deletes picks + comments + scores, reopens guessing.
+ * Kickoff time-lock is bypassed so players can submit again.
  */
 export async function clearWeekAction(weekId: string) {
   await requireAdmin();
@@ -400,11 +400,11 @@ export async function clearWeekAction(weekId: string) {
     .eq("week_id", weekId);
   if (clearScores.error) return { error: clearScores.error.message };
 
-  const lockWeek = await db
+  const reopenWeek = await db
     .from("weeks")
-    .update({ status: "locked" })
+    .update({ status: "open", bypass_time_lock: true })
     .eq("id", weekId);
-  if (lockWeek.error) return { error: lockWeek.error.message };
+  if (reopenWeek.error) return { error: reopenWeek.error.message };
 
   revalidateAll();
   revalidatePath(`/admin/weeks/${weekId}`);
@@ -444,7 +444,7 @@ export async function resetSeasonToUnplayedAction() {
 
   const resetWeeks = await db
     .from("weeks")
-    .update({ status: "draft" })
+    .update({ status: "draft", bypass_time_lock: false })
     .gte("created_at", "1970-01-01");
   if (resetWeeks.error) return { error: resetWeeks.error.message };
 
