@@ -3,6 +3,7 @@
 --   14.08 21:30 Galatasaray - Çorum FK          (already patched)
 --   15.08 19:00 Kasımpaşa - Trabzonspor
 --   15.08 21:30 Gençlerbirliği - Fenerbahçe
+--   16.08 19:00 Başakşehir - Kocaelispor        (extra row; Göztepe was wrongly paired)
 --   16.08 21:30 Beşiktaş - Eyüpspor
 --   17.08 21:30 Samsunspor - Göztepe
 
@@ -40,7 +41,9 @@ where m.week_id = w.id
   and m.home_team_id = eyup.id
   and m.away_team_id = bjk.id;
 
--- Göztepe - Başakşehir → Samsunspor - Göztepe
+-- Göztepe - Başakşehir was one row covering two clubs. Split it:
+--   Göztepe's match → Samsunspor - Göztepe
+--   Başakşehir's match → insert Başakşehir - Kocaelispor
 update public.matches m
 set
   home_team_id = sam.id,
@@ -57,6 +60,20 @@ where m.week_id = w.id
   and sam.name = 'Samsunspor'
   and m.home_team_id = goz.id
   and m.away_team_id = bas.id;
+
+insert into public.matches (week_id, home_team_id, away_team_id, kickoff_at)
+select w.id, bas.id, koc.id, timestamptz '2026-08-16 19:00:00+03'
+from public.weeks w
+join public.teams bas on bas.name = 'Başakşehir'
+join public.teams koc on koc.name = 'Kocaelispor'
+where w.label in ('SüperLig 1.Hafta', '2026-27 1. Hafta')
+  and not exists (
+    select 1
+    from public.matches m
+    where m.week_id = w.id
+      and m.home_team_id = bas.id
+      and m.away_team_id = koc.id
+  );
 
 -- Gençlerbirliği - Fenerbahçe kickoff was left at 16.08 19:00
 update public.matches m
