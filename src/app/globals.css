@@ -2,18 +2,21 @@
 
 :root,
 html[data-theme="dark"] {
-  /* Night pitch: deep pine, one soft floodlight, matte lime accent */
+  /* Night pitch: deep pine, one soft floodlight, brighter grass lime */
   --bg: #0a1210;
   --bg-elevated: #121c18;
   --bg-soft: #1a2821;
   --line: #2a3b33;
   --text: #eef5f0;
   --muted: #8fa49a;
-  --accent: #b7d24f;
-  --accent-ink: #142015;
+  --accent: #c6e06a;
+  --accent-ink: #162012;
   --bonus: #e0a54a;
   --derby: #e07280;
-  --ok: #4cbf8a;
+  --ok: #5dca96;
+  --lock-chip-bg: #d8ee8c;
+  --lock-chip-ink: #1c3110;
+  --lock-chip-line: #b9d65c;
   --danger: #e07272;
   --white: #ffffff;
   --chip-selected-bg: #e8f0ea;
@@ -35,18 +38,21 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="light"] {
-  /* Matchday paper: cool neutral field, olive ink accent */
+  /* Matchday paper: cool field, grass-green accent (not khaki) */
   --bg: #f3f5f2;
   --bg-elevated: #ffffff;
   --bg-soft: #e7ebe6;
   --line: #cdd5ce;
   --text: #152019;
   --muted: #5f6f66;
-  --accent: #5a7c1f;
-  --accent-ink: #f5f8ef;
+  --accent: #6f9b32;
+  --accent-ink: #f7faef;
   --bonus: #b87912;
   --derby: #c24d5c;
-  --ok: #1f8a56;
+  --ok: #2a9a62;
+  --lock-chip-bg: #e3f2a8;
+  --lock-chip-ink: #243914;
+  --lock-chip-line: #c3d96e;
   --danger: #c24747;
   --white: #ffffff;
   --chip-selected-bg: #1a2620;
@@ -337,12 +343,13 @@ html[data-theme="light"] .btn-primary {
 }
 
 .home-lock-inline-locked {
-  border-color: var(--line);
-  background: color-mix(in srgb, var(--bg-soft) 88%, transparent);
+  border-color: var(--lock-chip-line);
+  background: var(--lock-chip-bg);
+  color: var(--lock-chip-ink);
 }
 
 .home-lock-inline-locked .home-lock-inline-label {
-  color: var(--muted);
+  color: var(--lock-chip-ink);
   letter-spacing: 0.02em;
 }
 
