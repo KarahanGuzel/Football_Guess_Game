@@ -10,7 +10,7 @@ Bu SQL dosyasını Supabase → **SQL Editor** → yapıştır → **Run**:
 - Saat verilmediği için diğer maçlar **19:00 Türkiye saati** kabul edildi.
 - Haftalar **taslak** olarak gelir → Yönetim’den bonus seç + yayınla.
 - Derbiler otomatik: FB/GS/BJK/TS kendi aralarındaki maçlar.
-- 1. Hafta: `Galatasaray - Çorum FK` **14.08.2026 21:30**, `Eyüpspor - Beşiktaş`, `Gençlerbirliği - Fenerbahçe`
+- 1. Hafta (TFF): `Galatasaray - Çorum FK` 14.08 21:30, `Kasımpaşa - Trabzonspor` 15.08 19:00, `Gençlerbirliği - Fenerbahçe` 15.08 21:30, `Beşiktaş - Eyüpspor` 16.08 21:30, `Samsunspor - Göztepe` 17.08 21:30
 - 10. Hafta: `Kasımpaşa - Beşiktaş`
 
 ## Senin adımların
