@@ -5,12 +5,12 @@ import { FanFlag } from "@/components/fan-flag";
 import type { StandingsProgress } from "@/lib/data";
 
 const SERIES_COLORS = [
-  "#b7d24f",
+  "#c6e06a",
   "#5b9fd4",
   "#e07280",
   "#e0a54a",
   "#9b7bff",
-  "#4cbf8a",
+  "#5dca96",
   "#f0c040",
   "#6ec6d8",
 ];
