@@ -1183,7 +1183,6 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  transform: rotate(-11deg);
   line-height: 1;
   white-space: nowrap;
 }
@@ -1201,7 +1200,6 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 .ticket-stamp-locked {
   color: var(--muted);
   border-color: color-mix(in srgb, var(--muted) 55%, var(--line));
-  transform: rotate(-8deg);
 }
 
 .prediction-summary-head {
