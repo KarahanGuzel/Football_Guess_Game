@@ -30,15 +30,13 @@ export function HistoryWeekContent({
           );
 
         const clubWash = matchClubWashStyle({
-          isDerby: match.is_derby,
           homeName: match.home_team.name,
-          awayName: match.away_team.name,
         });
 
         return (
           <section
             key={match.id}
-            className={`history-match-card${clubWash ? " history-match-card-club" : ""}`}
+            className={`history-match-card${clubWash ? " club-match-wash" : ""}`}
             style={(clubWash ?? undefined) as CSSProperties | undefined}
           >
             <div className="history-match-head">
