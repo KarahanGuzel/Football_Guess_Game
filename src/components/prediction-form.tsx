@@ -163,73 +163,72 @@ export function PredictionForm({
   if (showSummary && savedDraft) {
     return (
       <div className={`prediction-summary${justSaved ? " prediction-form-saved" : ""}`}>
-        <div className="panel prediction-summary-card prediction-summary-ticket">
-          <span className="ticket-perf" aria-hidden="true" />
-          <div className="prediction-summary-head">
-            <h3 className="prediction-summary-title">
-              Tahmin özetin
-              <span className="ticket-stamp ticket-stamp-saved">Kaydedildi</span>
-            </h3>
-            {!locked ? (
-              <button
-                type="button"
-                className="prediction-edit-btn"
-                onClick={startEditing}
-                aria-label="Tahminleri düzenle"
-                title="Düzenle"
-              >
-                <EditIcon />
-                <span>Düzenle</span>
-              </button>
-            ) : (
-              <span className="muted" style={{ fontSize: "0.82rem" }}>
-                Kilitli
-              </span>
-            )}
-          </div>
-
-          <div className="prediction-summary-table-wrap">
-            <table className="prediction-summary-table">
-              <thead>
-                <tr>
-                  <th>Maç</th>
-                  <th>Maç Sonucu</th>
-                  <th>A/Ü</th>
-                </tr>
-              </thead>
-              <tbody>
-                {matches.map((match) => {
-                  const row = savedDraft[match.id];
-                  if (!row?.result || !row.goalsMarket) return null;
-                  return (
-                    <tr key={match.id}>
-                      <td>
-                        <div className="prediction-summary-match">
-                          <MatchTeamsLine match={match} size={11} />
-                          <span className="prediction-summary-badges">
-                            {match.is_bonus ? <BonusBadge compact /> : null}
-                            {match.is_derby ? <DerbyBadge compact /> : null}
-                          </span>
-                        </div>
-                        <div className="muted prediction-summary-kickoff">
-                          {formatKickoff(match.kickoff_at)}
-                        </div>
-                      </td>
-                      <td>
-                        {resultLabelForMatch(
-                          row.result,
-                          match.home_team.short_name,
-                          match.away_team.short_name,
-                        )}
-                      </td>
-                      <td>{goalsLabel[row.goalsMarket]}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+        <div className="prediction-summary-head">
+          <h3 className="prediction-summary-title">
+            Tahmin özetin
+            <span className="ticket-stamp ticket-stamp-saved">Kaydedildi</span>
+          </h3>
+          {!locked ? (
+            <button
+              type="button"
+              className="prediction-edit-btn"
+              onClick={startEditing}
+              aria-label="Tahminleri düzenle"
+              title="Düzenle"
+            >
+              <EditIcon />
+              <span>Düzenle</span>
+            </button>
+          ) : (
+            <span className="muted" style={{ fontSize: "0.82rem" }}>
+              Kilitli
+            </span>
+          )}
         </div>
+
+        {matches.map((match) => {
+          const row = savedDraft[match.id];
+          if (!row?.result || !row.goalsMarket) return null;
+          const clubWash = matchClubWashStyle({
+            homeName: match.home_team.name,
+          });
+          return (
+            <article
+              key={match.id}
+              className={`history-match-card${clubWash ? " club-match-wash" : ""}`}
+              style={(clubWash ?? undefined) as CSSProperties | undefined}
+            >
+              <div className="history-match-head">
+                <div>
+                  <div className="history-match-teams">
+                    <MatchTeamsLine match={match} size={13} />
+                  </div>
+                  <div className="muted history-match-kickoff">
+                    {formatKickoff(match.kickoff_at)}
+                  </div>
+                </div>
+                <div className="history-match-badges">
+                  {match.is_bonus ? <BonusBadge compact /> : null}
+                  {match.is_derby ? <DerbyBadge compact /> : null}
+                </div>
+              </div>
+              <div className="prediction-summary-picks">
+                <span>
+                  <span className="muted">Sonuç</span>
+                  {resultLabelForMatch(
+                    row.result,
+                    match.home_team.short_name,
+                    match.away_team.short_name,
+                  )}
+                </span>
+                <span>
+                  <span className="muted">A/Ü</span>
+                  {goalsLabel[row.goalsMarket]}
+                </span>
+              </div>
+            </article>
+          );
+        })}
 
         {message ? <p className="prediction-flash prediction-flash-ok">{message}</p> : null}
       </div>
@@ -249,9 +248,7 @@ export function PredictionForm({
             ? " prediction-card-derby"
             : "";
         const clubWash = matchClubWashStyle({
-          isDerby: match.is_derby,
           homeName: match.home_team.name,
-          awayName: match.away_team.name,
         });
 
         return (
@@ -259,11 +256,10 @@ export function PredictionForm({
             key={match.id}
             className={`panel prediction-card${toneClass}${
               cardDone ? " prediction-card-done" : ""
-            }${clubWash ? " prediction-card-club" : ""}`}
+            }${clubWash ? " club-match-wash" : ""}`}
             style={(clubWash ?? undefined) as CSSProperties | undefined}
             data-fill={marketsFilled}
           >
-            <span className="ticket-perf" aria-hidden="true" />
             <span
               className="prediction-card-progress"
               style={{ transform: `scaleY(${marketsFilled / 2})` }}

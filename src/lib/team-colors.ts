@@ -140,18 +140,14 @@ export type ClubWashStyle = {
   ["--club-b"]: string;
 };
 
-/** Home-club stripe + wash. Derby uses both clubs' primary colours on the stripe. */
+/** Home-club stripe + wash (ev sahibi renkleri). */
 export function matchClubWashStyle(input: {
-  isDerby: boolean;
   homeName: string;
-  awayName: string;
 }): ClubWashStyle | null {
   const home = getTeamPalette(input.homeName);
   if (!home) return null;
-  const away = getTeamPalette(input.awayName);
-  const stripeB = input.isDerby && away ? away.primary : home.secondary;
   return {
     "--club-a": home.primary,
-    "--club-b": stripeB,
+    "--club-b": home.secondary,
   };
 }
