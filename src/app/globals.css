@@ -1170,27 +1170,6 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   padding: 0.9rem 1rem;
 }
 
-.prediction-summary-ticket {
-  position: relative;
-  overflow: hidden;
-  padding-left: 1.25rem;
-}
-
-.ticket-perf {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 12px;
-  pointer-events: none;
-  background: repeating-radial-gradient(
-    circle at 0 11px,
-    var(--bg) 0 3.4px,
-    transparent 3.6px 14px
-  );
-  opacity: 0.95;
-}
-
 .ticket-stamp {
   display: inline-flex;
   align-items: center;
@@ -1309,7 +1288,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 }
 
 .prediction-form-saved .prediction-card,
-.prediction-form-saved.prediction-summary .prediction-summary-card {
+.prediction-form-saved.prediction-summary .history-match-card {
   animation: prediction-pulse 0.85s ease;
 }
 
@@ -1330,7 +1309,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   position: relative;
   display: grid;
   gap: 0;
-  padding: 0.8rem 0.85rem 0.8rem 1.2rem;
+  padding: 0.8rem 0.85rem 0.8rem 1rem;
   border-radius: 14px;
   overflow: hidden;
   transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
@@ -1340,62 +1319,63 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
 }
 
-.prediction-card-club {
+.club-match-wash {
   background:
     linear-gradient(90deg, var(--club-a) 0 5px, var(--club-b) 5px 8px, transparent 8px),
     linear-gradient(
       105deg,
-      color-mix(in srgb, var(--club-a) 18%, transparent),
-      color-mix(in srgb, var(--club-b) 10%, transparent) 40%,
-      transparent 64%
+      color-mix(in srgb, var(--club-a) 16%, transparent),
+      color-mix(in srgb, var(--club-b) 8%, transparent) 42%,
+      transparent 66%
     ),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
+    color-mix(in srgb, var(--bg-soft) 42%, var(--bg-elevated));
 }
 
 .prediction-card-bonus {
-  background:
-    linear-gradient(120deg, color-mix(in srgb, var(--bonus) 14%, transparent), transparent 55%),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
   border-color: color-mix(in srgb, var(--bonus) 40%, var(--line));
 }
 
-.prediction-card-club.prediction-card-bonus {
-  background:
-    linear-gradient(90deg, var(--club-a) 0 5px, var(--club-b) 5px 8px, transparent 8px),
-    linear-gradient(120deg, color-mix(in srgb, var(--bonus) 16%, transparent), transparent 52%),
-    linear-gradient(
-      105deg,
-      color-mix(in srgb, var(--club-a) 14%, transparent),
-      transparent 60%
-    ),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
+.prediction-card-bonus::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--bonus) 14%, transparent), transparent 55%);
 }
 
 .prediction-card-derby {
-  background:
-    linear-gradient(120deg, color-mix(in srgb, var(--derby) 12%, transparent), transparent 55%),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
   border-color: color-mix(in srgb, var(--derby) 38%, var(--line));
 }
 
-.prediction-card-club.prediction-card-derby {
-  background:
-    linear-gradient(90deg, var(--club-a) 0 5px, var(--club-b) 5px 8px, transparent 8px),
-    linear-gradient(120deg, color-mix(in srgb, var(--derby) 14%, transparent), transparent 52%),
-    linear-gradient(
-      105deg,
-      color-mix(in srgb, var(--club-a) 14%, transparent),
-      transparent 60%
-    ),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%), var(--bg-elevated));
+.prediction-card-derby::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--derby) 12%, transparent), transparent 55%);
 }
 
 .prediction-card-done {
   border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
 }
 
-.prediction-card-club .prediction-card-progress {
+.prediction-card.club-match-wash .prediction-card-progress {
   display: none;
+}
+
+.prediction-summary-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.15rem;
+  font-size: 0.9rem;
+  font-weight: 750;
+}
+
+.prediction-summary-picks .muted {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 650;
+  margin-bottom: 0.12rem;
 }
 
 .prediction-card-progress {
@@ -3488,18 +3468,6 @@ html[data-theme="light"] .login-rules-title::after {
   position: relative;
 }
 
-.history-match-card-club {
-  background:
-    linear-gradient(90deg, var(--club-a) 0 5px, var(--club-b) 5px 8px, transparent 8px),
-    linear-gradient(
-      105deg,
-      color-mix(in srgb, var(--club-a) 16%, transparent),
-      color-mix(in srgb, var(--club-b) 8%, transparent) 42%,
-      transparent 66%
-    ),
-    color-mix(in srgb, var(--bg-soft) 42%, transparent);
-}
-
 .history-match-head {
   display: flex;
   flex-wrap: wrap;
@@ -3773,7 +3741,7 @@ html[data-theme="light"] .login-rules-title::after {
   }
 
   .prediction-card {
-    padding: 0.65rem 0.65rem 0.65rem 1.05rem;
+    padding: 0.65rem 0.65rem 0.65rem 0.85rem;
   }
 
   .prediction-card-head {

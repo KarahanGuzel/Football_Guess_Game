@@ -74,9 +74,7 @@ describe("matchClubWashStyle", () => {
   it("uses the home club pair", () => {
     expect(
       matchClubWashStyle({
-        isDerby: false,
         homeName: "Galatasaray",
-        awayName: "Çorum FK",
       }),
     ).toEqual({
       "--club-a": "#FDB912",
@@ -84,16 +82,14 @@ describe("matchClubWashStyle", () => {
     });
   });
 
-  it("mixes both primaries on a derby", () => {
+  it("keeps Fenerbahce navy-yellow even in a derby week", () => {
     expect(
       matchClubWashStyle({
-        isDerby: true,
         homeName: "Fenerbahçe",
-        awayName: "Galatasaray",
       }),
     ).toEqual({
       "--club-a": "#FFED00",
-      "--club-b": "#FDB912",
+      "--club-b": "#002D72",
     });
   });
 });
