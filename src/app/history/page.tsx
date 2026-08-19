@@ -11,7 +11,7 @@ export default async function HistoryPage({
 }: {
   searchParams: Promise<{ week?: string }>;
 }) {
-  await requirePlayer();
+  const player = await requirePlayer();
   const { week: openWeekId } = await searchParams;
   const weeks = await getPastWeeks();
 
@@ -32,13 +32,17 @@ export default async function HistoryPage({
     <div className="stack-md">
       <header className="page-header">
         <h1 className="page-title">Geçmiş Haftalar</h1>
-        <p className="page-sub">Haftayı açıp maç sonuçlarını ve tahminleri incele.</p>
+        <p className="page-sub">Sezon duvarı — kartı aç, maçları gör.</p>
       </header>
 
       {bundles.length === 0 ? (
         <div className="panel muted">Henüz geçmiş hafta yok.</div>
       ) : (
-        <HistoryWeeksAccordion weeks={bundles} initialOpenId={initialOpenId} />
+        <HistoryWeeksAccordion
+          weeks={bundles}
+          initialOpenId={initialOpenId}
+          currentPlayerId={player.playerId}
+        />
       )}
     </div>
   );

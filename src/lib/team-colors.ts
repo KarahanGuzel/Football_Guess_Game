@@ -134,3 +134,24 @@ export function getTeamPalette(teamName?: string | null): TeamPalette | null {
   if (!teamName) return null;
   return TEAM_COLORS[normalizeTeamName(teamName)] ?? null;
 }
+
+export type ClubWashStyle = {
+  ["--club-a"]: string;
+  ["--club-b"]: string;
+};
+
+/** Home-club stripe + wash. Derby uses both clubs' primary colours on the stripe. */
+export function matchClubWashStyle(input: {
+  isDerby: boolean;
+  homeName: string;
+  awayName: string;
+}): ClubWashStyle | null {
+  const home = getTeamPalette(input.homeName);
+  if (!home) return null;
+  const away = getTeamPalette(input.awayName);
+  const stripeB = input.isDerby && away ? away.primary : home.secondary;
+  return {
+    "--club-a": home.primary,
+    "--club-b": stripeB,
+  };
+}
