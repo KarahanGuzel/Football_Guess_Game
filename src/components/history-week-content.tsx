@@ -1,9 +1,11 @@
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { FanFlag } from "@/components/fan-flag";
 import { MatchTeamsLine } from "@/components/match-teams-line";
+import { matchClubWashStyle } from "@/lib/team-colors";
 import { formatKickoff } from "@/lib/format";
 import { goalsLabel, resultLabel } from "@/lib/prediction-labels";
 import type { MatchWithTeams, Player, Prediction } from "@/types/database";
+import type { CSSProperties } from "react";
 
 type PredictionWithPlayer = Prediction & { player: Player };
 
@@ -27,8 +29,18 @@ export function HistoryWeekContent({
             a.player.display_name.localeCompare(b.player.display_name, "tr"),
           );
 
+        const clubWash = matchClubWashStyle({
+          isDerby: match.is_derby,
+          homeName: match.home_team.name,
+          awayName: match.away_team.name,
+        });
+
         return (
-          <section key={match.id} className="history-match-card">
+          <section
+            key={match.id}
+            className={`history-match-card${clubWash ? " history-match-card-club" : ""}`}
+            style={(clubWash ?? undefined) as CSSProperties | undefined}
+          >
             <div className="history-match-head">
               <div>
                 <div className="history-match-teams">

@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, type CSSProperties } from "react";
 import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
+import { matchClubWashStyle } from "@/lib/team-colors";
 import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
 import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
 
@@ -162,9 +163,13 @@ export function PredictionForm({
   if (showSummary && savedDraft) {
     return (
       <div className={`prediction-summary${justSaved ? " prediction-form-saved" : ""}`}>
-        <div className="panel prediction-summary-card">
+        <div className="panel prediction-summary-card prediction-summary-ticket">
+          <span className="ticket-perf" aria-hidden="true" />
           <div className="prediction-summary-head">
-            <h3 className="prediction-summary-title">Tahmin özetin</h3>
+            <h3 className="prediction-summary-title">
+              Tahmin özetin
+              <span className="ticket-stamp ticket-stamp-saved">Kaydedildi</span>
+            </h3>
             {!locked ? (
               <button
                 type="button"
@@ -243,15 +248,22 @@ export function PredictionForm({
           : match.is_derby
             ? " prediction-card-derby"
             : "";
+        const clubWash = matchClubWashStyle({
+          isDerby: match.is_derby,
+          homeName: match.home_team.name,
+          awayName: match.away_team.name,
+        });
 
         return (
           <article
             key={match.id}
             className={`panel prediction-card${toneClass}${
               cardDone ? " prediction-card-done" : ""
-            }`}
+            }${clubWash ? " prediction-card-club" : ""}`}
+            style={(clubWash ?? undefined) as CSSProperties | undefined}
             data-fill={marketsFilled}
           >
+            <span className="ticket-perf" aria-hidden="true" />
             <span
               className="prediction-card-progress"
               style={{ transform: `scaleY(${marketsFilled / 2})` }}
@@ -269,8 +281,8 @@ export function PredictionForm({
               </div>
               <div className="prediction-card-badges">
                 {cardDone ? (
-                  <span className="prediction-card-check" aria-label="Tamam">
-                    ✓
+                  <span className="ticket-stamp" aria-label="Tamam">
+                    Tamam
                   </span>
                 ) : null}
                 {match.is_bonus ? <BonusBadge /> : null}
