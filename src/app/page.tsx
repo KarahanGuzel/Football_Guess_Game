@@ -6,6 +6,7 @@ import { WeekKingsTable } from "@/components/week-kings-table";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getCurrentPlayableWeek,
+  getPredictionsForMatches,
   getPredictionsForPlayer,
   getStandings,
   getWeekKings,
@@ -37,15 +38,17 @@ export default async function HomePage() {
       error instanceof Error ? error.message : "Puan durumu alınamadı.";
   }
 
+  const matchIds = weekData?.matches.map((m) => m.id) ?? [];
+  const locked = weekData ? weekData.status !== "open" : true;
   const predictions =
-    weekData && weekData.matches.length > 0
-      ? await getPredictionsForPlayer(
-          player.playerId,
-          weekData.matches.map((m) => m.id),
-        )
+    matchIds.length > 0
+      ? await getPredictionsForPlayer(player.playerId, matchIds)
+      : [];
+  const weekPredictions =
+    locked && matchIds.length > 0
+      ? await getPredictionsForMatches(matchIds)
       : [];
 
-  const locked = weekData ? weekData.status !== "open" : true;
   const leaderIds = latestWeekKingIds(weekKings);
 
   return (
@@ -81,6 +84,8 @@ export default async function HomePage() {
             matches={weekData.matches}
             initialPredictions={predictions}
             locked={locked}
+            currentPlayerId={player.playerId}
+            weekPredictions={weekPredictions}
           />
         )}
       </section>

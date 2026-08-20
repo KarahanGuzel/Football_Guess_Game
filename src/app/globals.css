@@ -1286,7 +1286,7 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 }
 
 .prediction-form-saved .prediction-card,
-.prediction-form-saved.prediction-summary .history-match-card {
+.prediction-form-saved.prediction-summary .slip-match-card {
   animation: prediction-pulse 0.85s ease;
 }
 
@@ -1374,6 +1374,102 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   font-size: 0.7rem;
   font-weight: 650;
   margin-bottom: 0.12rem;
+}
+
+.slip-match-card {
+  display: grid;
+  gap: 0;
+  padding: 0.75rem 0.8rem 0.7rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-soft) 42%, transparent);
+  overflow: hidden;
+  position: relative;
+}
+
+.slip-fixture-box {
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
+}
+
+.slip-fixture-vs {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-left: 0.05rem;
+}
+
+.slip-match-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.65rem;
+  padding: 0.5rem 0.1rem 0.45rem;
+  margin-bottom: 0.1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  font-size: 0.76rem;
+}
+
+.slip-match-badges {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.slip-pick-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.48rem 0.1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+}
+
+.slip-pick-k {
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.slip-pick-v {
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.slip-agree {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.55rem 0.1rem 0.15rem;
+}
+
+.slip-agree-label {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.slip-agree-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+}
+
+.slip-agree-people .player-chip {
+  font-size: 0.78rem;
+}
+
+.slip-agree-empty {
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
 .prediction-card-progress {

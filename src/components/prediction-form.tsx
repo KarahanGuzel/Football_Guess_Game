@@ -4,10 +4,17 @@ import { useMemo, useState, useTransition, type CSSProperties } from "react";
 import { upsertPredictionsAction } from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
+import { SavedMatchCard } from "@/components/saved-match-card";
 import { formatKickoff } from "@/lib/format";
+import { playersWithSamePick } from "@/lib/pick-agreement";
 import { matchClubWashStyle } from "@/lib/team-colors";
-import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
-import type { GoalsMarket, MatchWithTeams, PredictResult, Prediction } from "@/types/database";
+import type {
+  GoalsMarket,
+  MatchWithTeams,
+  Player,
+  PredictResult,
+  Prediction,
+} from "@/types/database";
 
 type Draft = Record<
   string,
@@ -61,11 +68,15 @@ export function PredictionForm({
   matches,
   initialPredictions,
   locked,
+  currentPlayerId,
+  weekPredictions = [],
 }: {
   weekId: string;
   matches: MatchWithTeams[];
   initialPredictions: Prediction[];
   locked: boolean;
+  currentPlayerId: string;
+  weekPredictions?: (Prediction & { player: Player })[];
 }) {
   const seed = useMemo(
     () => buildDraft(matches, initialPredictions),
@@ -189,44 +200,24 @@ export function PredictionForm({
         {matches.map((match) => {
           const row = savedDraft[match.id];
           if (!row?.result || !row.goalsMarket) return null;
-          const clubWash = matchClubWashStyle({
-            homeName: match.home_team.name,
-          });
+          const allies = locked
+            ? playersWithSamePick({
+                matchId: match.id,
+                currentPlayerId,
+                result: row.result,
+                goalsMarket: row.goalsMarket,
+                predictions: weekPredictions,
+              })
+            : [];
           return (
-            <article
+            <SavedMatchCard
               key={match.id}
-              className={`history-match-card${clubWash ? " club-match-wash" : ""}`}
-              style={(clubWash ?? undefined) as CSSProperties | undefined}
-            >
-              <div className="history-match-head">
-                <div>
-                  <div className="history-match-teams">
-                    <MatchTeamsLine match={match} size={13} />
-                  </div>
-                  <div className="muted history-match-kickoff">
-                    {formatKickoff(match.kickoff_at)}
-                  </div>
-                </div>
-                <div className="history-match-badges">
-                  {match.is_bonus ? <BonusBadge compact /> : null}
-                  {match.is_derby ? <DerbyBadge compact /> : null}
-                </div>
-              </div>
-              <div className="prediction-summary-picks">
-                <span>
-                  <span className="muted">Sonuç</span>
-                  {resultLabelForMatch(
-                    row.result,
-                    match.home_team.short_name,
-                    match.away_team.short_name,
-                  )}
-                </span>
-                <span>
-                  <span className="muted">A/Ü</span>
-                  {goalsLabel[row.goalsMarket]}
-                </span>
-              </div>
-            </article>
+              match={match}
+              result={row.result}
+              goalsMarket={row.goalsMarket}
+              locked={locked}
+              allies={allies}
+            />
           );
         })}
 
