@@ -1,7 +1,10 @@
 "use client";
 
-import { useMemo, useState, useTransition, type CSSProperties } from "react";
-import { upsertPredictionsAction } from "@/app/actions/predictions";
+import { useEffect, useMemo, useState, useTransition, type CSSProperties } from "react";
+import {
+  getWeekPredictionsAction,
+  upsertPredictionsAction,
+} from "@/app/actions/predictions";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { SavedMatchCard } from "@/components/saved-match-card";
@@ -96,6 +99,7 @@ export function PredictionForm({
   const [error, setError] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [weekPicks, setWeekPicks] = useState(weekPredictions);
 
   const filledCount = matches.filter((m) => {
     const row = draft[m.id];
@@ -105,6 +109,32 @@ export function PredictionForm({
   const fillRatio = matches.length === 0 ? 0 : filledCount / matches.length;
   const showSummary = Boolean(savedDraft) && (!editing || locked);
   const isUpdate = Boolean(savedDraft);
+
+  useEffect(() => {
+    setWeekPicks(weekPredictions);
+  }, [weekPredictions]);
+
+  useEffect(() => {
+    if (!showSummary) return;
+
+    let cancelled = false;
+
+    async function refreshWeekPicks() {
+      const result = await getWeekPredictionsAction(weekId);
+      if (cancelled || !("predictions" in result) || !result.predictions) return;
+      setWeekPicks(result.predictions);
+    }
+
+    void refreshWeekPicks();
+    const timer = window.setInterval(() => {
+      void refreshWeekPicks();
+    }, 8000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [showSummary, weekId]);
 
   function toggleResult(matchId: string, value: PredictResult) {
     setDraft((prev) => {
@@ -168,6 +198,10 @@ export function PredictionForm({
       setMessage(isUpdate ? "Tahminlerin güncellendi." : "Tahminlerin kaydedildi.");
       setJustSaved(true);
       window.setTimeout(() => setJustSaved(false), 1200);
+      const weekResult = await getWeekPredictionsAction(weekId);
+      if ("predictions" in weekResult && weekResult.predictions) {
+        setWeekPicks(weekResult.predictions);
+      }
     });
   }
 
@@ -200,22 +234,19 @@ export function PredictionForm({
         {matches.map((match) => {
           const row = savedDraft[match.id];
           if (!row?.result || !row.goalsMarket) return null;
-          const allies = locked
-            ? playersWithSamePick({
-                matchId: match.id,
-                currentPlayerId,
-                result: row.result,
-                goalsMarket: row.goalsMarket,
-                predictions: weekPredictions,
-              })
-            : [];
+          const allies = playersWithSamePick({
+            matchId: match.id,
+            currentPlayerId,
+            result: row.result,
+            goalsMarket: row.goalsMarket,
+            predictions: weekPicks,
+          });
           return (
             <SavedMatchCard
               key={match.id}
               match={match}
               result={row.result}
               goalsMarket={row.goalsMarket}
-              locked={locked}
               allies={allies}
             />
           );
