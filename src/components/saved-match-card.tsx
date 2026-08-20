@@ -30,6 +30,8 @@ function PinkyAgreeIcon() {
   );
 }
 
+const SOLO_PICK_LABEL = "Bu maça bu tahmini yapan yegâne tahmin gurusu.";
+
 export function SavedMatchCard({
   match,
   result,
@@ -95,7 +97,19 @@ export function SavedMatchCard({
               </span>
             ))}
           </div>
-        ) : null}
+        ) : (
+          <div className="slip-saved-allies">
+            <span className="slip-agree-tip" tabIndex={0}>
+              <span className="slip-agree-icon slip-agree-icon-solo">
+                <PinkyAgreeIcon />
+              </span>
+              <span className="slip-agree-bubble slip-agree-bubble-solo">
+                {SOLO_PICK_LABEL}
+              </span>
+              <span className="sr-only">{SOLO_PICK_LABEL}</span>
+            </span>
+          </div>
+        )}
       </div>
     </article>
   );

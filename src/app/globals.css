@@ -3528,6 +3528,10 @@ html[data-theme="light"] .login-rules-title::after {
   cursor: default;
 }
 
+.slip-agree-icon-solo {
+  color: var(--derby);
+}
+
 .slip-agree-icon svg {
   display: block;
   width: 100%;
@@ -3558,6 +3562,19 @@ html[data-theme="light"] .login-rules-title::after {
   transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
 }
 
+.slip-agree-bubble-solo {
+  left: auto;
+  right: 0;
+  transform: translateY(3px);
+  width: 11.8rem;
+  white-space: normal;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+  border-color: var(--derby);
+}
+
 .slip-agree-bubble::after {
   content: "";
   position: absolute;
@@ -3568,11 +3585,23 @@ html[data-theme="light"] .login-rules-title::after {
   border-top-color: var(--accent);
 }
 
+.slip-agree-bubble-solo::after {
+  left: auto;
+  right: 0.65rem;
+  margin-left: 0;
+  border-top-color: var(--derby);
+}
+
 .slip-agree-tip:hover .slip-agree-bubble,
 .slip-agree-tip:focus-visible .slip-agree-bubble {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
+}
+
+.slip-agree-tip:hover .slip-agree-bubble-solo,
+.slip-agree-tip:focus-visible .slip-agree-bubble-solo {
+  transform: translateY(0);
 }
 
 .history-match-head {
