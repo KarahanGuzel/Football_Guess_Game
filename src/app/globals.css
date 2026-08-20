@@ -3466,11 +3466,24 @@ html[data-theme="light"] .login-rules-title::after {
   position: relative;
 }
 
+.history-match-card.club-match-wash {
+  background:
+    linear-gradient(90deg, var(--club-a) 0 5px, var(--club-b) 5px 8px, transparent 8px),
+    linear-gradient(
+      105deg,
+      color-mix(in srgb, var(--club-a) 10%, transparent),
+      color-mix(in srgb, var(--club-b) 5%, transparent) 42%,
+      transparent 66%
+    ),
+    color-mix(in srgb, var(--bg-soft) 42%, transparent);
+}
+
 .history-match-card.slip-saved-card {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.55rem 0.75rem;
+  overflow: visible;
 }
 
 .slip-saved-main {
@@ -3478,29 +3491,85 @@ html[data-theme="light"] .login-rules-title::after {
   flex: 1;
 }
 
+.slip-saved-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.32rem;
+  flex-shrink: 0;
+  min-width: 1.7rem;
+}
+
 .slip-saved-allies {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   align-content: flex-start;
-  gap: 0.22rem;
-  max-width: 5.6rem;
-  flex-shrink: 0;
-  padding-top: 0.1rem;
+  gap: 0.18rem;
+  max-width: 5.8rem;
 }
 
-.slip-ticket-icon {
+.slip-agree-tip {
+  position: relative;
+  display: inline-flex;
+  outline: none;
+}
+
+.slip-agree-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.68rem;
+  height: 1.68rem;
   color: var(--accent);
   cursor: default;
 }
 
-.slip-ticket-icon svg {
+.slip-agree-icon svg {
   display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.slip-agree-bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 7px);
+  transform: translateX(-50%) translateY(3px);
+  padding: 0.26rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 8;
+  box-shadow: var(--shadow-soft);
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
+}
+
+.slip-agree-bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: var(--accent);
+}
+
+.slip-agree-tip:hover .slip-agree-bubble,
+.slip-agree-tip:focus-visible .slip-agree-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .history-match-head {

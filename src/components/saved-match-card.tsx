@@ -7,20 +7,15 @@ import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
 import type { GoalsMarket, MatchWithTeams, PredictResult } from "@/types/database";
 import type { CSSProperties } from "react";
 
-function TicketIcon() {
+/** Original filled pinky silhouette — not the Iddaa mascot. */
+function PinkyAgreeIcon() {
   return (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinejoin="round"
-    >
-      <path d="M4.5 3.5h11v3.2c-1.15.2-1.15 1.9 0 2.1v2.4c-1.15.2-1.15 1.9 0 2.1v3.2h-11v-3.2c1.15-.2 1.15-1.9 0-2.1V8.8c1.15-.2 1.15-1.9 0-2.1V3.5Z" />
-      <path d="M8 6.2v7.6" strokeDasharray="1.6 1.7" />
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <g fill="currentColor" transform="rotate(-12 16 18)">
+        <rect x="9.1" y="1.5" width="6.6" height="14.8" rx="3.3" />
+        <path d="M9.6 14.1h11.8a4.7 4.7 0 0 1 4.7 4.7v5.3A5.9 5.9 0 0 1 20.2 30H10.8A5.9 5.9 0 0 1 4.9 24.1v-5.3A4.7 4.7 0 0 1 9.6 14.1Z" />
+        <ellipse cx="24.8" cy="18.5" rx="4.5" ry="3.9" />
+      </g>
     </svg>
   );
 }
@@ -37,6 +32,8 @@ export function SavedMatchCard({
   allies: AgreeingPlayer[];
 }) {
   const clubWash = matchClubWashStyle({ homeName: match.home_team.name });
+  const hasBadges = match.is_bonus || match.is_derby;
+  const showSide = hasBadges || allies.length > 0;
 
   return (
     <article
@@ -52,10 +49,6 @@ export function SavedMatchCard({
             <div className="muted history-match-kickoff">
               {formatKickoff(match.kickoff_at)}
             </div>
-          </div>
-          <div className="history-match-badges">
-            {match.is_bonus ? <BonusBadge compact /> : null}
-            {match.is_derby ? <DerbyBadge compact /> : null}
           </div>
         </div>
         <div className="prediction-summary-picks">
@@ -74,18 +67,32 @@ export function SavedMatchCard({
         </div>
       </div>
 
-      {allies.length > 0 ? (
-        <div className="slip-saved-allies" aria-label="Aynı tahmini yapanlar">
-          {allies.map((ally) => (
-            <span
-              key={ally.playerId}
-              className="slip-ticket-icon"
-              title={ally.displayName}
-            >
-              <TicketIcon />
-              <span className="sr-only">{ally.displayName}</span>
-            </span>
-          ))}
+      {showSide ? (
+        <div className="slip-saved-side">
+          {hasBadges ? (
+            <div className="history-match-badges">
+              {match.is_bonus ? <BonusBadge compact /> : null}
+              {match.is_derby ? <DerbyBadge compact /> : null}
+            </div>
+          ) : null}
+
+          {allies.length > 0 ? (
+            <div className="slip-saved-allies" aria-label="Aynı tahmini yapanlar">
+              {allies.map((ally) => (
+                <span
+                  key={ally.playerId}
+                  className="slip-agree-tip"
+                  tabIndex={0}
+                >
+                  <span className="slip-agree-icon">
+                    <PinkyAgreeIcon />
+                  </span>
+                  <span className="slip-agree-bubble">{ally.displayName}</span>
+                  <span className="sr-only">{ally.displayName}</span>
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </article>
