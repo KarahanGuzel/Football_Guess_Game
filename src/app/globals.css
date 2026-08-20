@@ -3480,33 +3480,33 @@ html[data-theme="light"] .login-rules-title::after {
 
 .history-match-card.slip-saved-card {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.55rem 0.75rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
   overflow: visible;
 }
 
-.slip-saved-main {
-  min-width: 0;
-  flex: 1;
+.slip-saved-picks-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.4rem 0.65rem;
 }
 
-.slip-saved-side {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.32rem;
-  flex-shrink: 0;
-  min-width: 1.7rem;
+.slip-saved-picks-row .prediction-summary-picks {
+  min-width: 0;
+  flex: 1;
 }
 
 .slip-saved-allies {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  align-content: flex-start;
-  gap: 0.18rem;
-  max-width: 5.8rem;
+  align-items: flex-end;
+  gap: 0.14rem;
+  max-width: 7.2rem;
+  flex-shrink: 0;
+  padding-bottom: 0.02rem;
 }
 
 .slip-agree-tip {
