@@ -211,7 +211,12 @@ export function PredictionForm({
         <div className="prediction-summary-head">
           <h3 className="prediction-summary-title">
             Tahmin özetin
-            <span className="ticket-stamp ticket-stamp-saved">Kaydedildi</span>
+            <span className="ticket-stamp ticket-stamp-saved">
+              Kaydedildi
+              <span className="ticket-stamp-lock" aria-hidden="true">
+                🔒
+              </span>
+            </span>
           </h3>
           {!locked ? (
             <button
