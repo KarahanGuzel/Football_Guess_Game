@@ -45,7 +45,7 @@ export default async function HomePage() {
       ? await getPredictionsForPlayer(player.playerId, matchIds)
       : [];
   const weekPredictions =
-    locked && matchIds.length > 0
+    matchIds.length > 0
       ? await getPredictionsForMatches(matchIds)
       : [];
 

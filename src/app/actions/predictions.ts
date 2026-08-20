@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requirePlayer } from "@/lib/auth/current-user";
-import { getMatchesForWeek, getWeek } from "@/lib/data";
+import { getMatchesForWeek, getPredictionsForMatches, getWeek } from "@/lib/data";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { isWeekLockedByTime } from "@/lib/week-lock";
 
@@ -74,4 +74,18 @@ export async function upsertPredictionsAction(input: {
   revalidatePath("/history");
   revalidatePath("/predictions");
   return { ok: true as const };
+}
+
+export async function getWeekPredictionsAction(weekId: string) {
+  await requirePlayer();
+  if (!z.string().uuid().safeParse(weekId).success) {
+    return { error: "Geçersiz hafta." };
+  }
+
+  const week = await getWeek(weekId);
+  if (!week) return { error: "Hafta bulunamadı." };
+
+  const matches = await getMatchesForWeek(week.id);
+  const predictions = await getPredictionsForMatches(matches.map((match) => match.id));
+  return { predictions };
 }
