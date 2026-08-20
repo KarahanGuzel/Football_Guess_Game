@@ -960,7 +960,7 @@ html[data-theme="light"] .btn-primary {
   padding: 0.28rem 0.7rem;
   border-radius: 999px;
   background: color-mix(in srgb, var(--bg-soft) 85%, transparent);
-  border: 1px solid var(--line);
+  border: 1px solid var(--accent);
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 600;
@@ -1190,6 +1190,14 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 .ticket-stamp-saved {
   color: color-mix(in srgb, var(--accent) 70%, var(--ok));
   border-color: color-mix(in srgb, var(--accent) 55%, var(--ok));
+}
+
+.ticket-stamp-lock {
+  margin-left: 0.28em;
+  font-size: 0.92em;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .ticket-stamp-scored {
@@ -1760,18 +1768,13 @@ html[data-theme="light"] .slip-comments {
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--muted) 70%, #7eaa9c);
+  color: var(--accent);
   text-transform: uppercase;
 }
 
 .slip-comments-title svg {
   display: block;
-  color: color-mix(in srgb, #7eaa9c 80%, var(--muted));
-}
-
-html[data-theme="light"] .slip-comments-title,
-html[data-theme="light"] .slip-comments-title svg {
-  color: color-mix(in srgb, #3f6f62 75%, var(--muted));
+  color: var(--accent);
 }
 
 .slip-comments-count {
