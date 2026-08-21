@@ -61,11 +61,11 @@ insert into tmp_fixtures (week_label, kickoff_at, home_name, away_name) values
   ('SüperLig 1.Hafta', '2026-08-15 21:30:00+03', 'Gençlerbirliği', 'Fenerbahçe'),
 
   -- 2. Hafta
-  ('SüperLig 2.Hafta', '2026-08-23 19:00:00+03', 'Trabzonspor', 'Başakşehir'),
-  ('SüperLig 2.Hafta', '2026-08-23 19:00:00+03', 'Corendon Alanyaspor', 'Beşiktaş'),
-  ('SüperLig 2.Hafta', '2026-08-23 19:00:00+03', 'Göztepe', 'Gençlerbirliği'),
-  ('SüperLig 2.Hafta', '2026-08-23 19:00:00+03', 'Fenerbahçe', 'Konyaspor'),
-  ('SüperLig 2.Hafta', '2026-08-23 19:00:00+03', 'Erzurumspor', 'Galatasaray'),
+  ('SüperLig 2.Hafta', '2026-08-21 21:30:00+03', 'Erzurumspor', 'Galatasaray'),
+  ('SüperLig 2.Hafta', '2026-08-22 21:30:00+03', 'Fenerbahçe', 'Konyaspor'),
+  ('SüperLig 2.Hafta', '2026-08-23 21:30:00+03', 'Trabzonspor', 'Başakşehir'),
+  ('SüperLig 2.Hafta', '2026-08-23 21:30:00+03', 'Corendon Alanyaspor', 'Beşiktaş'),
+  ('SüperLig 2.Hafta', '2026-08-23 21:30:00+03', 'Göztepe', 'Gençlerbirliği'),
 
   -- 3. Hafta
   ('SüperLig 3.Hafta', '2026-08-30 19:00:00+03', 'Başakşehir', 'Kasımpaşa'),
