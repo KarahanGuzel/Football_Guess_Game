@@ -2652,6 +2652,18 @@ html[data-theme="light"] .slip-comment-input {
   color: var(--danger);
 }
 
+.standings-rank-delta-same {
+  color: color-mix(in srgb, var(--muted) 72%, var(--text));
+}
+
+.standings-rank-delta-flat {
+  display: block;
+  width: 0.58rem;
+  height: 3px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
 .standings-player.player-chip {
   font-weight: 700;
 }

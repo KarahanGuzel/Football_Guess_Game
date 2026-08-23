@@ -89,6 +89,22 @@ describe("standingsRankChanges", () => {
     expect(changes.get("baris")).toBe(-1);
   });
 
+  it("marks an unchanged place as zero", () => {
+    const rows = [
+      standing("ada", "Ada", 16),
+      standing("cem", "Cem", 8),
+    ];
+    const changes = standingsRankChanges(
+      rows,
+      progress({
+        ada: [10, 16],
+        cem: [4, 8],
+      }),
+    );
+    expect(changes.get("ada")).toBe(0);
+    expect(changes.get("cem")).toBe(0);
+  });
+
   it("uses the visible table order as the current rank", () => {
     const rows = [
       standing("baris", "Barış", 12),
@@ -129,5 +145,6 @@ describe("rankChangeLabel", () => {
   it("describes the move in Turkish", () => {
     expect(rankChangeLabel(2)).toBe("Geçen haftaya göre 2 sıra yükseldi");
     expect(rankChangeLabel(-1)).toBe("Geçen haftaya göre 1 sıra düştü");
+    expect(rankChangeLabel(0)).toBe("Geçen haftaya göre sıra değişmedi");
   });
 });

@@ -4,13 +4,23 @@ import { formatRankChange, rankChangeLabel } from "@/lib/standings-rank";
 import type { StandingRow } from "@/types/database";
 
 function RankDelta({ change }: { change?: number | null }) {
-  if (change == null || change === 0) return null;
-  const up = change > 0;
+  if (change == null) return null;
   const label = rankChangeLabel(change);
+  if (change === 0) {
+    return (
+      <span
+        className="standings-rank-delta standings-rank-delta-same"
+        title={label}
+        aria-label={label}
+      >
+        <span className="standings-rank-delta-flat" aria-hidden="true" />
+      </span>
+    );
+  }
   return (
     <span
       className={`standings-rank-delta ${
-        up ? "standings-rank-delta-up" : "standings-rank-delta-down"
+        change > 0 ? "standings-rank-delta-up" : "standings-rank-delta-down"
       }`}
       title={label}
       aria-label={label}
@@ -190,9 +200,9 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Taç = son puanlanan haftanın kralı · +/− = geçen haftaya göre sıra · Taraf = maç
-          sonucu · Alt/Üst = 2.5 · Strike = ikisi birden · Derbi = derbide strike · Oran =
-          strike / puanlanan maç
+          Taç = son puanlanan haftanın kralı · +/− = geçen haftaya göre sıra · — = aynı sıra ·
+          Taraf = maç sonucu · Alt/Üst = 2.5 · Strike = ikisi birden · Derbi = derbide strike ·
+          Oran = strike / puanlanan maç
         </p>
       ) : null}
     </div>
