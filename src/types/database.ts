@@ -87,6 +87,8 @@ export type StandingRow = {
   derby_correct_count: number;
   scored_prediction_count: number;
   success_percentage: number;
+  /** Positions gained (+) or lost (−) vs the previous scored week. */
+  rank_change?: number | null;
 };
 
 export type SessionData = {

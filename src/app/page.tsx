@@ -9,9 +9,11 @@ import {
   getPredictionsForMatches,
   getPredictionsForPlayer,
   getStandings,
+  getStandingsProgress,
   getWeekKings,
   latestWeekKingIds,
 } from "@/lib/data";
+import { attachStandingsRankChanges } from "@/lib/standings-rank";
 
 export default async function HomePage() {
   const player = await requirePlayer();
@@ -29,10 +31,13 @@ export default async function HomePage() {
   }
 
   try {
-    [standings, weekKings] = await Promise.all([
+    const [rows, kings, progress] = await Promise.all([
       getStandings(),
       getWeekKings(),
+      getStandingsProgress(),
     ]);
+    standings = attachStandingsRankChanges(rows, progress);
+    weekKings = kings;
   } catch (error) {
     standingsError =
       error instanceof Error ? error.message : "Puan durumu alınamadı.";
