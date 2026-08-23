@@ -1,6 +1,34 @@
 import { PlayerChip } from "@/components/player-chip";
 import { RankMedal } from "@/components/rank-medal";
+import { formatRankChange, rankChangeLabel } from "@/lib/standings-rank";
 import type { StandingRow } from "@/types/database";
+
+function RankDelta({ change }: { change?: number | null }) {
+  if (change == null) return null;
+  const label = rankChangeLabel(change);
+  if (change === 0) {
+    return (
+      <span
+        className="standings-rank-delta standings-rank-delta-same"
+        title={label}
+        aria-label={label}
+      >
+        <span className="standings-rank-delta-flat" aria-hidden="true" />
+      </span>
+    );
+  }
+  return (
+    <span
+      className={`standings-rank-delta ${
+        change > 0 ? "standings-rank-delta-up" : "standings-rank-delta-down"
+      }`}
+      title={label}
+      aria-label={label}
+    >
+      {formatRankChange(change)}
+    </span>
+  );
+}
 
 export function StandingsTable({
   rows,
@@ -24,7 +52,7 @@ export function StandingsTable({
         <div className="standings-panel-head">
           <h2 className="section-title">Genel sıralama</h2>
           <p className="muted standings-panel-sub">
-            Toplam puan ve isabet özeti
+            Toplam puan, isabet özeti ve geçen haftaya göre sıra
           </p>
         </div>
       ) : null}
@@ -104,13 +132,16 @@ export function StandingsTable({
                       )}
                     </td>
                     <td className="standings-player-cell">
-                      <PlayerChip
-                        slug={row.slug}
-                        displayName={row.display_name}
-                        size={compact ? 12 : 13}
-                        crowned={leaders.has(row.player_id)}
-                        className="standings-player"
-                      />
+                      <span className="standings-player-wrap">
+                        <PlayerChip
+                          slug={row.slug}
+                          displayName={row.display_name}
+                          size={compact ? 12 : 13}
+                          crowned={leaders.has(row.player_id)}
+                          className="standings-player"
+                        />
+                        <RankDelta change={row.rank_change} />
+                      </span>
                     </td>
                     <td className="standings-col-num standings-points">
                       {row.total_points}
@@ -169,8 +200,9 @@ export function StandingsTable({
       </div>
       {!compact && rows.length > 0 ? (
         <p className="standings-legend muted">
-          Taç = son puanlanan haftanın kralı · Taraf = maç sonucu · Alt/Üst = 2.5 · Strike =
-          ikisi birden · Derbi = derbide strike · Oran = strike / puanlanan maç
+          Taç = son puanlanan haftanın kralı · +/− = geçen haftaya göre sıra · — = aynı sıra ·
+          Taraf = maç sonucu · Alt/Üst = 2.5 · Strike = ikisi birden · Derbi = derbide strike ·
+          Oran = strike / puanlanan maç
         </p>
       ) : null}
     </div>

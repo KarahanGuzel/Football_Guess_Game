@@ -2323,6 +2323,10 @@ html[data-theme="light"] .slip-comment-input {
   padding: 0.15rem 0.4rem 0.32rem;
 }
 
+.standings-page-table .standings-rank-delta {
+  font-size: 0.62rem;
+}
+
 .standings-page-table .standings-table td {
   padding: 0.5rem 0.4rem;
 }
@@ -2613,11 +2617,51 @@ html[data-theme="light"] .slip-comment-input {
   padding-right: 0.75rem !important;
 }
 
+.standings-player-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  min-width: 0;
+}
+
 .standings-player {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   font-weight: 700;
+}
+
+.standings-rank-delta {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.standings-table-compact .standings-rank-delta {
+  font-size: 0.62rem;
+}
+
+.standings-rank-delta-up {
+  color: var(--ok);
+}
+
+.standings-rank-delta-down {
+  color: var(--danger);
+}
+
+.standings-rank-delta-same {
+  color: color-mix(in srgb, var(--muted) 72%, var(--text));
+}
+
+.standings-rank-delta-flat {
+  display: block;
+  width: 0.58rem;
+  height: 3px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .standings-player.player-chip {

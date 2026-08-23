@@ -3,11 +3,22 @@ import { CreateWeekForm } from "@/components/admin/create-week-form";
 import { SeasonResetPanel } from "@/components/admin/season-reset-panel";
 import { StandingsTable } from "@/components/standings-table";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getMatchesForWeek, getStandings, listWeeks } from "@/lib/data";
+import {
+  getMatchesForWeek,
+  getStandings,
+  getStandingsProgress,
+  listWeeks,
+} from "@/lib/data";
+import { attachStandingsRankChanges } from "@/lib/standings-rank";
 
 export default async function AdminPage() {
   await requireAdmin();
-  const [weeks, standings] = await Promise.all([listWeeks(), getStandings()]);
+  const [weeks, rawStandings, progress] = await Promise.all([
+    listWeeks(),
+    getStandings(),
+    getStandingsProgress(),
+  ]);
+  const standings = attachStandingsRankChanges(rawStandings, progress);
 
   const weekBundles = await Promise.all(
     weeks.map(async (week) => ({

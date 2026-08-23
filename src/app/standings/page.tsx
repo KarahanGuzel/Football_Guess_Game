@@ -8,6 +8,7 @@ import {
   getWeekKings,
   latestWeekKingIds,
 } from "@/lib/data";
+import { attachStandingsRankChanges } from "@/lib/standings-rank";
 
 export default async function StandingsPage() {
   await requirePlayer();
@@ -26,6 +27,7 @@ export default async function StandingsPage() {
       getWeekKings(),
       getStandingsProgress(),
     ]);
+    rows = attachStandingsRankChanges(rows, progress);
   } catch (error) {
     errorMessage =
       error instanceof Error ? error.message : "Sıralama verisi alınamadı.";
