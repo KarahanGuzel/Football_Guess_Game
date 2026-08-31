@@ -75,10 +75,10 @@ insert into tmp_fixtures (week_label, kickoff_at, home_name, away_name) values
   ('SüperLig 3.Hafta', '2026-08-31 21:30:00+03', 'Beşiktaş', 'Çorum FK'),
 
   -- 4. Hafta
-  ('SüperLig 4.Hafta', '2026-09-06 19:00:00+03', 'Başakşehir', 'Galatasaray'),
-  ('SüperLig 4.Hafta', '2026-09-06 19:00:00+03', 'Göztepe', 'Gaziantep FK'),
-  ('SüperLig 4.Hafta', '2026-09-06 19:00:00+03', 'Fenerbahçe', 'Beşiktaş'),
-  ('SüperLig 4.Hafta', '2026-09-06 19:00:00+03', 'Trabzonspor', 'Gençlerbirliği'),
+  ('SüperLig 4.Hafta', '2026-09-04 20:00:00+03', 'Başakşehir', 'Galatasaray'),
+  ('SüperLig 4.Hafta', '2026-09-05 20:00:00+03', 'Fenerbahçe', 'Beşiktaş'),
+  ('SüperLig 4.Hafta', '2026-09-06 20:00:00+03', 'Trabzonspor', 'Gençlerbirliği'),
+  ('SüperLig 4.Hafta', '2026-09-07 20:00:00+03', 'Göztepe', 'Gaziantep FK'),
 
   -- 5. Hafta
   ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Corendon Alanyaspor', 'Göztepe'),
