@@ -1399,42 +1399,49 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
 .derby-split-wash {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
-  border-color: color-mix(in srgb, var(--derby-home) 42%, var(--derby-away));
+  border-color: color-mix(in srgb, var(--derby-home) 18%, var(--line));
   background:
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--derby-home) 34%, var(--bg-elevated)) 0%,
-      color-mix(in srgb, var(--derby-home) 12%, var(--bg-elevated)) 46%,
-      color-mix(in srgb, var(--derby-away) 12%, var(--bg-elevated)) 54%,
-      color-mix(in srgb, var(--derby-away) 34%, var(--bg-elevated)) 100%
-    );
-}
-
-.derby-split-wash::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  padding: 2px;
-  background: linear-gradient(
-    90deg,
-    var(--derby-home),
-    color-mix(in srgb, var(--derby-home) 12%, transparent) 36%,
-    color-mix(in srgb, var(--derby-away) 12%, transparent) 64%,
-    var(--derby-away)
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.95;
+      var(--derby-home) 0 4px,
+      var(--derby-home-b) 4px 6px,
+      transparent 6px calc(100% - 6px),
+      var(--derby-away-b) calc(100% - 6px) calc(100% - 4px),
+      var(--derby-away) calc(100% - 4px)
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--derby-home) 10%, transparent),
+      transparent 36%,
+      transparent 64%,
+      color-mix(in srgb, var(--derby-away) 10%, transparent)
+    ),
+    color-mix(in srgb, var(--bg-soft) 42%, var(--bg-elevated));
 }
 
 .prediction-card-derby.derby-split-wash::after {
   display: none;
+}
+
+html[data-theme="dark"] .derby-split-wash {
+  border-color: color-mix(in srgb, var(--derby-home) 14%, var(--line));
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--derby-home) 78%, #0a1210) 0 4px,
+      color-mix(in srgb, var(--derby-home-b) 70%, #0a1210) 4px 6px,
+      transparent 6px calc(100% - 6px),
+      color-mix(in srgb, var(--derby-away-b) 55%, #0a1210) calc(100% - 6px) calc(100% - 4px),
+      color-mix(in srgb, var(--derby-away) 78%, #0a1210) calc(100% - 4px)
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--derby-home) 7%, transparent),
+      transparent 38%,
+      transparent 62%,
+      color-mix(in srgb, var(--derby-away) 7%, transparent)
+    ),
+    color-mix(in srgb, var(--bg-soft) 48%, var(--bg-elevated));
 }
 
 .prediction-card-done {
