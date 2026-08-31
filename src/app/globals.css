@@ -579,6 +579,35 @@ html[data-theme="light"] .btn-primary {
 }
 
 /* Admin weeks accordion */
+.admin-weeks-stack {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.admin-weeks-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.45rem;
+}
+
+.admin-weeks-section-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.admin-weeks-section-count {
+  font-size: 0.78rem;
+}
+
+.admin-weeks-section-empty {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
 .admin-weeks-accordion {
   display: grid;
   gap: 0.55rem;
@@ -1031,6 +1060,23 @@ html[data-theme="light"] .btn-primary {
   min-width: 0;
 }
 
+.nav-link {
+  padding: 0.52rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-height: 2.45rem;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.15s ease;
+}
+
 .nav-link-short {
   display: none;
 }
@@ -1041,17 +1087,6 @@ html[data-theme="light"] .btn-primary {
   gap: 0.35rem;
   flex-shrink: 0;
   margin-left: 0.15rem;
-}
-
-.nav-link {
-  padding: 0.48rem 0.85rem;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--muted);
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
-    transform 0.15s ease;
 }
 
 .nav-link:hover {
@@ -1359,6 +1394,47 @@ html[data-theme="light"] .pick-chip-over.pick-chip-selected {
   inset: 0;
   pointer-events: none;
   background: linear-gradient(120deg, color-mix(in srgb, var(--derby) 12%, transparent), transparent 55%);
+}
+
+.derby-split-wash {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--derby-home) 42%, var(--derby-away));
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--derby-home) 34%, var(--bg-elevated)) 0%,
+      color-mix(in srgb, var(--derby-home) 12%, var(--bg-elevated)) 46%,
+      color-mix(in srgb, var(--derby-away) 12%, var(--bg-elevated)) 54%,
+      color-mix(in srgb, var(--derby-away) 34%, var(--bg-elevated)) 100%
+    );
+}
+
+.derby-split-wash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--derby-home),
+    color-mix(in srgb, var(--derby-home) 12%, transparent) 36%,
+    color-mix(in srgb, var(--derby-away) 12%, transparent) 64%,
+    var(--derby-away)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.95;
+}
+
+.prediction-card-derby.derby-split-wash::after {
+  display: none;
 }
 
 .prediction-card-done {
@@ -2711,6 +2787,35 @@ html[data-theme="light"] .slip-comment-input {
   border: 1px solid color-mix(in srgb, #d4a017 22%, var(--line));
 }
 
+.week-kings-line-latest {
+  flex-wrap: wrap;
+  padding: 0.95rem 1rem;
+  border-color: color-mix(in srgb, #d4a017 58%, var(--line));
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(in srgb, #d4a017 24%, transparent),
+      color-mix(in srgb, #d4a017 6%, transparent) 48%,
+      transparent 72%
+    ),
+    color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  box-shadow: 0 10px 26px color-mix(in srgb, #d4a017 18%, transparent);
+}
+
+.week-kings-latest-tag {
+  flex: 1 0 100%;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d4a017;
+}
+
+.week-kings-line-latest .week-kings-proclamation {
+  font-size: 1.08rem;
+  font-weight: 750;
+}
+
 .week-kings-proclamation {
   margin: 0;
   font-size: 1rem;
@@ -2757,6 +2862,14 @@ html[data-theme="light"] .slip-comment-input {
 
 .week-kings-panel-compact .week-kings-line {
   padding: 0.65rem 0.75rem;
+}
+
+.week-kings-panel-compact .week-kings-line-latest {
+  padding: 0.8rem 0.75rem;
+}
+
+.week-kings-panel-compact .week-kings-line-latest .week-kings-proclamation {
+  font-size: 0.95rem;
 }
 
 .week-kings-panel-compact .standings-panel-head {
@@ -3533,6 +3646,10 @@ html[data-theme="light"] .login-rules-title::after {
   overflow: visible;
 }
 
+.history-match-card.slip-saved-card.derby-split-wash {
+  overflow: visible;
+}
+
 .slip-saved-picks-row {
   display: flex;
   align-items: flex-end;
@@ -3752,20 +3869,22 @@ html[data-theme="light"] .login-rules-title::after {
   .nav-cluster {
     width: 100%;
     flex: 1 1 auto;
+    flex-direction: column;
+    align-items: stretch;
     justify-content: stretch;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
 
   .nav-links {
-    width: auto;
-    flex: 1 1 auto;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    gap: 0.28rem;
-    padding: 0.05rem 0 0.2rem;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    mask-image: linear-gradient(90deg, #000 88%, transparent);
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    flex-wrap: unset;
+    gap: 0.32rem;
+    padding: 0;
+    mask-image: none;
+    -webkit-overflow-scrolling: unset;
   }
 
   .nav-links::-webkit-scrollbar {
@@ -3781,16 +3900,20 @@ html[data-theme="light"] .login-rules-title::after {
   }
 
   .nav-link {
-    flex: 0 0 auto;
-    padding: 0.5rem 0.72rem;
-    font-size: 0.84rem;
-    min-height: 2.35rem;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.7rem;
+    padding: 0.55rem 0.35rem;
+    font-size: 0.82rem;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    text-align: center;
   }
 
   .nav-actions {
     margin-left: 0;
+    justify-content: flex-end;
   }
 
   .nav-logout {

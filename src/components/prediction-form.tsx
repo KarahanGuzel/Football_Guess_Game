@@ -10,7 +10,8 @@ import { MatchTeamsLine } from "@/components/match-teams-line";
 import { SavedMatchCard } from "@/components/saved-match-card";
 import { formatKickoff } from "@/lib/format";
 import { playersWithSamePick } from "@/lib/pick-agreement";
-import { matchClubWashStyle } from "@/lib/team-colors";
+import { matchClubWashStyle, derbySplitWashStyle } from "@/lib/team-colors";
+import { sortMatchesForDisplay } from "@/lib/match-display";
 import type {
   GoalsMarket,
   MatchWithTeams,
@@ -101,7 +102,11 @@ export function PredictionForm({
   const [pending, startTransition] = useTransition();
   const [weekPicks, setWeekPicks] = useState(weekPredictions);
 
-  const filledCount = matches.filter((m) => {
+  const displayMatches = useMemo(
+    () => sortMatchesForDisplay(matches),
+    [matches],
+  );
+  const filledCount = displayMatches.filter((m) => {
     const row = draft[m.id];
     return row?.result && row?.goalsMarket;
   }).length;
@@ -236,7 +241,7 @@ export function PredictionForm({
           )}
         </div>
 
-        {matches.map((match) => {
+        {displayMatches.map((match) => {
           const row = savedDraft[match.id];
           if (!row?.result || !row.goalsMarket) return null;
           const allies = playersWithSamePick({
@@ -264,27 +269,38 @@ export function PredictionForm({
 
   return (
     <div className={`prediction-form${justSaved ? " prediction-form-saved" : ""}`}>
-      {matches.map((match) => {
+      {displayMatches.map((match) => {
         const row = draft[match.id] ?? { result: "", goalsMarket: "" };
         const marketsFilled =
           (row.result ? 1 : 0) + (row.goalsMarket ? 1 : 0);
         const cardDone = marketsFilled === 2;
+        const derbyWash = match.is_derby
+          ? derbySplitWashStyle({
+              homeName: match.home_team.name,
+              awayName: match.away_team.name,
+            })
+          : null;
         const toneClass = match.is_bonus
           ? " prediction-card-bonus"
           : match.is_derby
             ? " prediction-card-derby"
             : "";
-        const clubWash = matchClubWashStyle({
-          homeName: match.home_team.name,
-        });
+        const clubWash = derbyWash
+          ? null
+          : matchClubWashStyle({
+              homeName: match.home_team.name,
+            });
+        const washStyle = derbyWash ?? clubWash;
 
         return (
           <article
             key={match.id}
             className={`panel prediction-card${toneClass}${
               cardDone ? " prediction-card-done" : ""
-            }${clubWash ? " club-match-wash" : ""}`}
-            style={(clubWash ?? undefined) as CSSProperties | undefined}
+            }${clubWash ? " club-match-wash" : ""}${
+              derbyWash ? " derby-split-wash" : ""
+            }`}
+            style={(washStyle ?? undefined) as CSSProperties | undefined}
             data-fill={marketsFilled}
           >
             <span

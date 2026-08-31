@@ -1,3 +1,4 @@
+import { weekIndexFromLabel } from "@/lib/week-label";
 import type { WeekKingRow } from "@/lib/data";
 
 export function WeekKingsTable({
@@ -9,6 +10,8 @@ export function WeekKingsTable({
   compact?: boolean;
   titled?: boolean;
 }) {
+  const ordered = [...rows].reverse();
+
   return (
     <div
       className={`panel standings-panel week-kings-panel${
@@ -26,21 +29,34 @@ export function WeekKingsTable({
         </div>
       ) : null}
 
-      {rows.length === 0 ? (
+      {ordered.length === 0 ? (
         <p className="muted week-kings-empty">
           Henüz puanlanmış hafta yok. İlk skor sonrası krallar burada.
         </p>
       ) : (
         <ul className="week-kings-list">
-          {rows.map((row, index) => {
-            const n = index + 1;
+          {ordered.map((row, index) => {
+            const latest = index === 0;
+            const weekNo = weekIndexFromLabel(row.weekLabel);
             const names = row.kings
               .map((k) => k.displayName.toLocaleUpperCase("tr-TR"))
               .join(" & ");
             return (
-              <li key={row.weekId} className="week-kings-line">
+              <li
+                key={row.weekId}
+                className={`week-kings-line${latest ? " week-kings-line-latest" : ""}`}
+              >
+                {latest ? (
+                  <span className="week-kings-latest-tag">Son hafta</span>
+                ) : null}
                 <p className="week-kings-proclamation">
-                  <span className="week-kings-prefix">{n}.Haftanın </span>
+                  <span className="week-kings-prefix">
+                    {latest
+                      ? "Son haftanın "
+                      : weekNo != null
+                        ? `${weekNo}.Haftanın `
+                        : `${row.weekLabel} `}
+                  </span>
                   <span className="week-kings-gold">KRAL&apos;I</span>
                   <span className="week-kings-arrow"> → </span>
                   <span className="week-kings-gold">{names}</span>

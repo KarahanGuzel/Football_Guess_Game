@@ -151,3 +151,22 @@ export function matchClubWashStyle(input: {
     "--club-b": home.secondary,
   };
 }
+
+export type DerbySplitStyle = {
+  ["--derby-home"]: string;
+  ["--derby-away"]: string;
+};
+
+/** Split wash: home primary on the left, away primary on the right. */
+export function derbySplitWashStyle(input: {
+  homeName: string;
+  awayName: string;
+}): DerbySplitStyle | null {
+  const home = getTeamPalette(input.homeName);
+  const away = getTeamPalette(input.awayName);
+  if (!home || !away) return null;
+  return {
+    "--derby-home": home.primary,
+    "--derby-away": away.primary,
+  };
+}

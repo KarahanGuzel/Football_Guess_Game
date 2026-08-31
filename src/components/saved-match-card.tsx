@@ -2,7 +2,7 @@ import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { formatKickoff } from "@/lib/format";
 import type { AgreeingPlayer } from "@/lib/pick-agreement";
-import { matchClubWashStyle } from "@/lib/team-colors";
+import { matchClubWashStyle, derbySplitWashStyle } from "@/lib/team-colors";
 import { goalsLabel, resultLabelForMatch } from "@/lib/prediction-labels";
 import type { GoalsMarket, MatchWithTeams, PredictResult } from "@/types/database";
 import type { CSSProperties } from "react";
@@ -43,12 +43,23 @@ export function SavedMatchCard({
   goalsMarket: GoalsMarket;
   allies: AgreeingPlayer[];
 }) {
-  const clubWash = matchClubWashStyle({ homeName: match.home_team.name });
+  const derbyWash = match.is_derby
+    ? derbySplitWashStyle({
+        homeName: match.home_team.name,
+        awayName: match.away_team.name,
+      })
+    : null;
+  const clubWash = derbyWash
+    ? null
+    : matchClubWashStyle({ homeName: match.home_team.name });
+  const washStyle = derbyWash ?? clubWash;
 
   return (
     <article
-      className={`history-match-card slip-saved-card${clubWash ? " club-match-wash" : ""}`}
-      style={(clubWash ?? undefined) as CSSProperties | undefined}
+      className={`history-match-card slip-saved-card${
+        clubWash ? " club-match-wash" : ""
+      }${derbyWash ? " derby-split-wash" : ""}`}
+      style={(washStyle ?? undefined) as CSSProperties | undefined}
     >
       <div className="history-match-head">
         <div>

@@ -5,6 +5,7 @@ import {
   getPastWeeks,
   getPredictionsForMatches,
 } from "@/lib/data";
+import { compareWeeksChronologically } from "@/lib/week-label";
 
 export default async function HistoryPage({
   searchParams,
@@ -23,10 +24,17 @@ export default async function HistoryPage({
     }),
   );
 
+  const chronological = [...bundles].sort((a, b) =>
+    compareWeeksChronologically(a.week, b.week),
+  );
+  const latestScored = [...chronological]
+    .reverse()
+    .find((bundle) => bundle.week.status === "scored");
+
   const initialOpenId =
-    openWeekId && bundles.some((b) => b.week.id === openWeekId)
+    openWeekId && chronological.some((b) => b.week.id === openWeekId)
       ? openWeekId
-      : null;
+      : (latestScored?.week.id ?? null);
 
   return (
     <div className="stack-md">
@@ -39,7 +47,7 @@ export default async function HistoryPage({
         <div className="panel muted">Henüz geçmiş hafta yok.</div>
       ) : (
         <HistoryWeeksAccordion
-          weeks={bundles}
+          weeks={chronological}
           initialOpenId={initialOpenId}
           currentPlayerId={player.playerId}
         />

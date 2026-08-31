@@ -6,6 +6,7 @@ import { AdminWeekControls } from "@/components/admin/week-controls";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { getClearWeekBlockReason } from "@/lib/admin-season";
 import { getMatchesForWeek, getWeek, listTeams, listWeeks } from "@/lib/data";
+import { effectiveWeekStatus } from "@/lib/week-lock";
 
 const statusMeta: Record<string, { label: string; className: string }> = {
   draft: { label: "Taslak", className: "status-draft" },
@@ -31,8 +32,9 @@ export default async function AdminWeekPage({
   ]);
   const clearBlockedReason =
     week.status === "scored" ? getClearWeekBlockReason(week, weeks) : null;
-  const meta = statusMeta[week.status] ?? {
-    label: week.status,
+  const shownStatus = effectiveWeekStatus(week, matches);
+  const meta = statusMeta[shownStatus] ?? {
+    label: shownStatus,
     className: "status-draft",
   };
 
@@ -66,7 +68,7 @@ export default async function AdminWeekPage({
 
       <EditWeekLabelForm weekId={week.id} initialLabel={week.label} />
 
-      {week.status !== "scored" ? (
+      {shownStatus === "draft" || shownStatus === "open" ? (
         <AddMatchForm weekId={week.id} teams={teams} />
       ) : null}
 
