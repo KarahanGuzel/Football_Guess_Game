@@ -15,6 +15,7 @@ import {
 } from "@/lib/data";
 import { scorePrediction } from "@/lib/scoring";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { canCalculateWeekPoints } from "@/lib/week-lock";
 
 function revalidateAll() {
   revalidatePath("/", "layout");
@@ -300,12 +301,12 @@ export async function calculateWeekPointsAction(weekId: string) {
 
   const week = await getWeek(weekId);
   if (!week) return { error: "Hafta bulunamadı." };
-  if (week.status !== "locked") {
-    return { error: "Puan hesaplamak için hafta kilitli olmalı." };
-  }
 
   const matches = await getMatchesForWeek(weekId);
   if (matches.length === 0) return { error: "Bu haftada maç yok." };
+  if (!canCalculateWeekPoints(week, matches)) {
+    return { error: "Puan hesaplamak için hafta kilitli olmalı." };
+  }
 
   const incomplete = matches.some(
     (m) => m.home_goals === null || m.away_goals === null,

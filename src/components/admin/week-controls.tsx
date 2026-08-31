@@ -17,11 +17,16 @@ import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
 import { canDeleteMatchFromWeek } from "@/lib/admin-season";
 import { formatKickoff } from "@/lib/format";
+import { canCalculateWeekPoints, effectiveWeekStatus, isKickoffLockElapsed } from "@/lib/week-lock";
 import type { MatchWithTeams, Week } from "@/types/database";
 
 type Phase = "prepare" | "open" | "locked" | "done";
 
-function getPhase(status: Week["status"]): Phase {
+function getPhase(
+  week: Week,
+  matches: MatchWithTeams[],
+): Phase {
+  const status = effectiveWeekStatus(week, matches);
   if (status === "draft") return "prepare";
   if (status === "open") return "open";
   if (status === "locked") return "locked";
@@ -57,7 +62,8 @@ export function AdminWeekControls({
     );
   }, [matches]);
 
-  const phase = getPhase(week.status);
+  const phase = getPhase(week, matches);
+  const timedOut = isKickoffLockElapsed(matches) && !week.bypass_time_lock;
   const bonusCount = matches.filter((m) => m.is_bonus).length;
   const allScoresSaved =
     matches.length > 0 &&
@@ -79,7 +85,7 @@ export function AdminWeekControls({
       );
     });
   const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
-  const canCalculate = phase === "locked" && allScoresSaved;
+  const canCalculate = canCalculateWeekPoints(week, matches) && allScoresSaved;
 
   function run(
     action: () => Promise<{ error?: string; ok?: true; message?: string }>,
@@ -258,20 +264,23 @@ export function AdminWeekControls({
             <h2 className="section-title">Kilit / Skor</h2>
           </div>
           <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-            Tahminler kilitli. Gerekirse kilidi açabilirsin. Skor için: doldur →
-            Skorları Kaydet → Puanları Hesapla.
+            {timedOut
+              ? "Süre doldu, tahminler kilitli. Skor için: doldur → Skorları Kaydet → Puanları Hesapla."
+              : "Tahminler kilitli. Gerekirse kilidi açabilirsin. Skor için: doldur → Skorları Kaydet → Puanları Hesapla."}
           </p>
-          <button
-            className="btn btn-secondary"
-            type="button"
-            disabled={pending}
-            onClick={() =>
-              run(() => unlockWeekAction(week.id), "Kilit açıldı. Tahminler tekrar düzenlenebilir.")
-            }
-            style={{ marginBottom: "1rem" }}
-          >
-            Kilidi Aç
-          </button>
+          {!timedOut ? (
+            <button
+              className="btn btn-secondary"
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                run(() => unlockWeekAction(week.id), "Kilit açıldı. Tahminler tekrar düzenlenebilir.")
+              }
+              style={{ marginBottom: "1rem" }}
+            >
+              Kilidi Aç
+            </button>
+          ) : null}
 
           <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>
             Skorları gir
