@@ -132,7 +132,9 @@ describe("derbySplitWashStyle", () => {
       }),
     ).toEqual({
       "--derby-home": "#FFED00",
+      "--derby-home-b": "#002D72",
       "--derby-away": "#111111",
+      "--derby-away-b": "#FFFFFF",
     });
   });
 });
