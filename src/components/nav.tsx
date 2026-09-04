@@ -32,45 +32,20 @@ export function AppNav({
   return (
     <header className="site-header">
       <div className="container nav-inner">
-        <div className="nav-brand-block">
-          <Link href="/" className="brand">
-            Tahmin <span className="brand-accent">Ligi</span>
-          </Link>
-          <span className="user-pill">
-            <PlayerChip
-              slug={player.slug}
-              displayName={player.displayName}
-              size={12}
-              crowned={isWeekKing}
-            />
-          </span>
-        </div>
-
-        <div className="nav-cluster">
-          <nav className="nav-links" aria-label="Ana menü">
-            {links.map((link) => {
-              const active = isActive(pathname, link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`nav-link${active ? " nav-link-active" : ""}`}
-                >
-                  <span className="nav-link-full">{link.label}</span>
-                  <span className="nav-link-short">{link.shortLabel}</span>
-                </Link>
-              );
-            })}
-            {player.isAdmin ? (
-              <Link
-                href="/admin"
-                className={`nav-link${isActive(pathname, "/admin") ? " nav-link-active" : ""}`}
-              >
-                <span className="nav-link-full">Yönetim</span>
-                <span className="nav-link-short">Admin</span>
-              </Link>
-            ) : null}
-          </nav>
+        <div className="nav-top">
+          <div className="nav-brand-block">
+            <Link href="/" className="brand">
+              Tahmin <span className="brand-accent">Ligi</span>
+            </Link>
+            <span className="user-pill">
+              <PlayerChip
+                slug={player.slug}
+                displayName={player.displayName}
+                size={12}
+                crowned={isWeekKing}
+              />
+            </span>
+          </div>
           <div className="nav-actions">
             <ThemeToggle />
             <form action={logoutAction}>
@@ -80,6 +55,33 @@ export function AppNav({
             </form>
           </div>
         </div>
+
+        <nav className="nav-links" aria-label="Ana menü">
+          {links.map((link) => {
+            const active = isActive(pathname, link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`nav-link${active ? " nav-link-active" : ""}`}
+                aria-current={active ? "page" : undefined}
+              >
+                <span className="nav-link-full">{link.label}</span>
+                <span className="nav-link-short">{link.shortLabel}</span>
+              </Link>
+            );
+          })}
+          {player.isAdmin ? (
+            <Link
+              href="/admin"
+              className={`nav-link${isActive(pathname, "/admin") ? " nav-link-active" : ""}`}
+              aria-current={isActive(pathname, "/admin") ? "page" : undefined}
+            >
+              <span className="nav-link-full">Yönetim</span>
+              <span className="nav-link-short">Admin</span>
+            </Link>
+          ) : null}
+        </nav>
       </div>
     </header>
   );
