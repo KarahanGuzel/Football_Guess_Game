@@ -10,7 +10,6 @@ export default async function FixturesPage() {
     <div className="stack-md">
       <header className="page-header">
         <h1 className="page-title">Gelecek Haftalar</h1>
-        <p className="page-sub">Önümüzdeki 3 haftanın fikstürü.</p>
       </header>
 
       {weeks.length === 0 ? (

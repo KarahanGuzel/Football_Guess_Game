@@ -39,7 +39,6 @@ export default async function StandingsPage() {
     <div className="stack-lg">
       <header className="page-header">
         <h1 className="page-title">Sıralama</h1>
-        <p className="page-sub">Genel tablo, haftanın kralları ve sezon grafiği.</p>
       </header>
 
       {errorMessage ? (

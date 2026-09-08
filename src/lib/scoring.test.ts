@@ -41,14 +41,25 @@ describe("scorePrediction", () => {
   it("doubles derby points and uses bonus all-or-nothing", () => {
     expect(
       scorePrediction({
-        result: "home",
+        result: "away",
         goalsMarket: "over_25",
-        homeGoals: 2,
-        awayGoals: 1,
+        homeGoals: 1,
+        awayGoals: 2,
         isBonus: false,
         isDerby: true,
       }).pointsEarned,
     ).toBe(8);
+
+    expect(
+      scorePrediction({
+        result: "home",
+        goalsMarket: "under_25",
+        homeGoals: 1,
+        awayGoals: 2,
+        isBonus: false,
+        isDerby: true,
+      }).pointsEarned,
+    ).toBe(0);
 
     expect(
       scorePrediction({

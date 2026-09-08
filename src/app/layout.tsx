@@ -54,12 +54,17 @@ export default async function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body>
-        {player ? (
-          <AppNav player={player} isWeekKing={isWeekKing} />
-        ) : null}
-        <main className="container page-shell">{children}</main>
-      </body>
+        <body className={player ? "has-app-nav" : undefined}>
+          <a className="skip-link" href="#icerik">
+            İçeriğe geç
+          </a>
+          {player ? (
+            <AppNav player={player} isWeekKing={isWeekKing} />
+          ) : null}
+          <main id="icerik" className="container page-shell" tabIndex={-1}>
+            {children}
+          </main>
+        </body>
     </html>
   );
 }

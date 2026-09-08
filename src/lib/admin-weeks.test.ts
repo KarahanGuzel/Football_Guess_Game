@@ -157,4 +157,14 @@ describe("canCalculateWeekPoints", () => {
       ),
     ).toBe(false);
   });
+
+  it("allows recalculating a week that is already scored", () => {
+    expect(
+      canCalculateWeekPoints(
+        { status: "scored" },
+        [{ kickoff_at: "2026-09-05T17:00:00.000Z" }],
+        new Date("2026-09-08T12:00:00.000Z"),
+      ),
+    ).toBe(true);
+  });
 });

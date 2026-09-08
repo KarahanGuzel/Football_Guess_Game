@@ -44,9 +44,6 @@ export function EditWeekLabelForm({
       <div className="section-head" style={{ marginBottom: 0 }}>
         <h2 className="section-title">Hafta adı</h2>
       </div>
-      <p className="muted" style={{ margin: 0, fontSize: "0.88rem" }}>
-        Örn: SüperLig 1.Hafta veya Şampiyonlar Ligi 1.Hafta
-      </p>
       <input type="hidden" name="weekId" value={weekId} />
       <div className="field">
         <label htmlFor="week-label">İsim</label>
@@ -56,6 +53,7 @@ export function EditWeekLabelForm({
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           maxLength={80}
+          placeholder="SüperLig 5.Hafta"
           required
         />
       </div>

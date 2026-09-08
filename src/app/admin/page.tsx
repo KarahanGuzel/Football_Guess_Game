@@ -49,9 +49,6 @@ export default async function AdminPage() {
         <div className="section-head" style={{ marginBottom: 0 }}>
           <h2 className="section-title">Puan Durumu</h2>
         </div>
-        <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
-          Tablo maç sonuçlarından hesaplanır; buradan elle değiştirilmez.
-        </p>
         <StandingsTable rows={standings} compact />
       </section>
 

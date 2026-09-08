@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
-  calculateWeekPointsAction,
   clearWeekAction,
   deleteMatchAction,
   deleteWeekAction,
   lockWeekAction,
   openWeekAction,
+  saveAndCalculateWeekPointsAction,
   saveWeekScoresAction,
   setBonusMatchAction,
   unlockWeekAction,
@@ -65,9 +65,8 @@ export function AdminWeekControls({
   const phase = getPhase(week, matches);
   const timedOut = isKickoffLockElapsed(matches) && !week.bypass_time_lock;
   const bonusCount = matches.filter((m) => m.is_bonus).length;
-  const allScoresSaved =
-    matches.length > 0 &&
-    matches.every((m) => m.home_goals !== null && m.away_goals !== null);
+  const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
+  const canRescore = canCalculateWeekPoints(week, matches);
   const localScoresComplete =
     matches.length > 0 &&
     matches.every((m) => {
@@ -84,8 +83,6 @@ export function AdminWeekControls({
         away >= 0
       );
     });
-  const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
-  const canCalculate = canCalculateWeekPoints(week, matches) && allScoresSaved;
 
   function run(
     action: () => Promise<{ error?: string; ok?: true; message?: string }>,
@@ -148,105 +145,94 @@ export function AdminWeekControls({
     );
   }
 
+  function scoresPayload() {
+    return matches.map((m) => ({
+      matchId: m.id,
+      homeGoals: Number(scores[m.id]?.home),
+      awayGoals: Number(scores[m.id]?.away),
+    }));
+  }
+
   return (
     <div className="stack-md">
-      <PhaseBanner phase={phase} />
-
       {phase === "prepare" ? (
-        <>
-          <section className="panel reveal">
-            <div className="section-head">
-              <h2 className="section-title">1) Bonus maçı seç</h2>
-            </div>
-            <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-              Derbi maçlar bonus olamaz. Tam olarak bir bonus seçmelisin.
+        <section className="panel reveal">
+          <div className="section-head">
+            <h2 className="section-title">Bonus</h2>
+          </div>
+          {matches.length === 0 ? (
+            <p className="muted" style={{ margin: 0 }}>
+              Bu haftaya henüz maç yok.
             </p>
-            {matches.length === 0 ? (
-              <p className="muted" style={{ margin: 0 }}>
-                Bu haftaya henüz maç yüklenmemiş.
-              </p>
-            ) : (
-              <div className="stack-xs">
-                {matches.map((match) => (
-                  <MatchRow
-                    key={match.id}
-                    match={match}
-                    trailing={
-                      <>
-                        {match.is_derby ? (
-                          <span className="muted" style={{ fontSize: "0.85rem" }}>
-                            Derbi — bonus olamaz
-                          </span>
-                        ) : (
-                          <button
-                            className={match.is_bonus ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
-                            type="button"
-                            disabled={pending || match.is_bonus}
-                            onClick={() =>
-                              run(
-                                () => setBonusMatchAction(week.id, match.id),
-                                "Bonus maç seçildi.",
-                              )
-                            }
-                          >
-                            {match.is_bonus ? "Bonus seçili" : "Bonus yap"}
-                          </button>
-                        )}
-                        {matchDeleteButton(match)}
-                      </>
-                    }
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-
-          <section className="panel reveal">
-            <div className="section-head">
-              <h2 className="section-title">2) Haftayı yayınla</h2>
+          ) : (
+            <div className="stack-xs">
+              {matches.map((match) => (
+                <MatchRow
+                  key={match.id}
+                  match={match}
+                  trailing={
+                    <>
+                      {match.is_derby ? (
+                        <span className="muted" style={{ fontSize: "0.85rem" }}>
+                          Derbi — bonus olamaz
+                        </span>
+                      ) : (
+                        <button
+                          className={match.is_bonus ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
+                          type="button"
+                          disabled={pending || match.is_bonus}
+                          onClick={() =>
+                            run(
+                              () => setBonusMatchAction(week.id, match.id),
+                              "Bonus maç seçildi.",
+                            )
+                          }
+                        >
+                          {match.is_bonus ? "Bonus" : "Bonus yap"}
+                        </button>
+                      )}
+                      {matchDeleteButton(match)}
+                    </>
+                  }
+                />
+              ))}
             </div>
-            <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-              Yayınlanınca arkadaşlar tahmin girebilir.
+          )}
+          <button
+            className="btn btn-primary"
+            type="button"
+            disabled={pending || !canPublish}
+            onClick={() => run(() => openWeekAction(week.id), "Hafta yayınlandı.")}
+            style={{ marginTop: "0.85rem" }}
+          >
+            {pending ? "Yayınlanıyor..." : "Haftayı Yayınla"}
+          </button>
+          {!canPublish ? (
+            <p className="muted" style={{ margin: "0.55rem 0 0", fontSize: "0.85rem" }}>
+              {matches.length === 0
+                ? "Önce maç ekle."
+                : bonusCount !== 1
+                  ? "Tam 1 bonus seç."
+                  : null}
             </p>
-            <button
-              className="btn btn-primary"
-              type="button"
-              disabled={pending || !canPublish}
-              onClick={() => run(() => openWeekAction(week.id), "Hafta yayınlandı.")}
-            >
-              {pending ? "Yayınlanıyor..." : "Haftayı Yayınla"}
-            </button>
-            {!canPublish ? (
-              <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
-                {matches.length === 0
-                  ? "Önce fikstür yüklenmeli."
-                  : bonusCount !== 1
-                    ? "Devam etmek için 1 bonus maç seç."
-                    : null}
-              </p>
-            ) : null}
-          </section>
-        </>
+          ) : null}
+        </section>
       ) : null}
 
       {phase === "open" ? (
         <section className="panel reveal">
           <div className="section-head">
-            <h2 className="section-title">Tahminler açık</h2>
+            <h2 className="section-title">Tahminler</h2>
+            <button
+              className="btn btn-primary btn-sm"
+              type="button"
+              disabled={pending}
+              onClick={() => run(() => lockWeekAction(week.id), "Hafta kilitlendi.")}
+            >
+              Kilitle
+            </button>
           </div>
-          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-            İstediğin zaman tahminleri kilitleyebilirsin. Kilit sonrası kimse
-            değiştiremez.
-          </p>
-          <button
-            className="btn btn-primary"
-            type="button"
-            disabled={pending}
-            onClick={() => run(() => lockWeekAction(week.id), "Hafta kilitlendi.")}
-          >
-            Tahminleri Kilitle
-          </button>
-          <div className="stack-xs" style={{ marginTop: "1rem" }}>
+          <div className="stack-xs">
             {matches.map((match) => (
               <MatchRow
                 key={match.id}
@@ -258,43 +244,35 @@ export function AdminWeekControls({
         </section>
       ) : null}
 
-      {phase === "locked" ? (
+      {phase === "locked" || phase === "done" ? (
         <section className="panel reveal">
           <div className="section-head">
-            <h2 className="section-title">Kilit / Skor</h2>
+            <h2 className="section-title">Skorlar</h2>
+            {phase === "locked" && !timedOut ? (
+              <button
+                className="btn btn-secondary btn-sm"
+                type="button"
+                disabled={pending}
+                onClick={() =>
+                  run(() => unlockWeekAction(week.id), "Kilit açıldı.")
+                }
+              >
+                Kilidi Aç
+              </button>
+            ) : null}
           </div>
-          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-            {timedOut
-              ? "Süre doldu, tahminler kilitli. Skor için: doldur → Skorları Kaydet → Puanları Hesapla."
-              : "Tahminler kilitli. Gerekirse kilidi açabilirsin. Skor için: doldur → Skorları Kaydet → Puanları Hesapla."}
-          </p>
-          {!timedOut ? (
-            <button
-              className="btn btn-secondary"
-              type="button"
-              disabled={pending}
-              onClick={() =>
-                run(() => unlockWeekAction(week.id), "Kilit açıldı. Tahminler tekrar düzenlenebilir.")
-              }
-              style={{ marginBottom: "1rem" }}
-            >
-              Kilidi Aç
-            </button>
-          ) : null}
-
-          <h3 className="section-title" style={{ fontSize: "1rem", marginBottom: "0.5rem" }}>
-            Skorları gir
-          </h3>
 
           {matches.map((match) => (
             <article key={match.id} className="score-block">
               <MatchRow match={match} trailing={matchDeleteButton(match)} />
               <div className="score-grid">
                 <div className="field">
-                  <label>Ev gol</label>
+                  <label htmlFor={`score-home-${match.id}`}>{match.home_team.name}</label>
                   <input
+                    id={`score-home-${match.id}`}
                     type="number"
                     min={0}
+                    inputMode="numeric"
                     value={scores[match.id]?.home ?? ""}
                     onChange={(e) =>
                       setScores((prev) => ({
@@ -308,10 +286,12 @@ export function AdminWeekControls({
                   />
                 </div>
                 <div className="field">
-                  <label>Dep gol</label>
+                  <label htmlFor={`score-away-${match.id}`}>{match.away_team.name}</label>
                   <input
+                    id={`score-away-${match.id}`}
                     type="number"
                     min={0}
+                    inputMode="numeric"
                     value={scores[match.id]?.away ?? ""}
                     onChange={(e) =>
                       setScores((prev) => ({
@@ -328,115 +308,77 @@ export function AdminWeekControls({
             </article>
           ))}
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.6rem",
-              marginTop: "0.35rem",
-            }}
-          >
-            <button
-              className="btn btn-secondary"
-              type="button"
-              disabled={pending || !localScoresComplete}
-              onClick={() =>
-                run(
-                  () =>
-                    saveWeekScoresAction({
-                      weekId: week.id,
-                      scores: matches.map((m) => ({
-                        matchId: m.id,
-                        homeGoals: Number(scores[m.id]?.home),
-                        awayGoals: Number(scores[m.id]?.away),
-                      })),
-                    }),
-                  "Skorlar kaydedildi. Şimdi puanları hesaplayabilirsin.",
-                )
-              }
-            >
-              Skorları Kaydet
-            </button>
+          <div className="admin-action-row" style={{ marginTop: "0.35rem" }}>
+            {phase === "locked" ? (
+              <button
+                className="btn btn-secondary"
+                type="button"
+                disabled={pending || !localScoresComplete}
+                onClick={() =>
+                  run(
+                    () =>
+                      saveWeekScoresAction({
+                        weekId: week.id,
+                        scores: scoresPayload(),
+                      }),
+                    "Skorlar kaydedildi.",
+                  )
+                }
+              >
+                Kaydet
+              </button>
+            ) : null}
             <button
               className="btn btn-primary"
               type="button"
-              disabled={pending || !canCalculate}
+              disabled={pending || !localScoresComplete || !canRescore}
               onClick={() =>
-                run(() => calculateWeekPointsAction(week.id), "Puanlar hesaplandı.")
+                run(
+                  () =>
+                    saveAndCalculateWeekPointsAction({
+                      weekId: week.id,
+                      scores: scoresPayload(),
+                    }),
+                  phase === "done" ? "Puanlar düzeltildi." : "Puanlar hesaplandı.",
+                )
               }
             >
-              Puanları Hesapla
+              {phase === "done" ? "Puanları düzelt" : "Puanları Hesapla"}
             </button>
           </div>
           {!localScoresComplete ? (
-            <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
-              Önce tüm maç skorlarını doldur.
+            <p className="muted" style={{ margin: "0.55rem 0 0", fontSize: "0.85rem" }}>
+              Tüm skorları doldur.
             </p>
-          ) : !allScoresSaved ? (
-            <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
-              Skorları kaydettikten sonra puan hesaplama aktif olur.
-            </p>
-          ) : (
-            <p className="muted" style={{ margin: "0.65rem 0 0", fontSize: "0.85rem" }}>
-              Skorlar kayıtlı. Puanları hesaplayabilirsin.
-            </p>
-          )}
-        </section>
-      ) : null}
+          ) : null}
 
-      {phase === "done" ? (
-        <section className="panel reveal">
-          <div className="section-head">
-            <h2 className="section-title">Hafta tamamlandı</h2>
-          </div>
-          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-            Puanlar hesaplandı. Sonuçları Geçmiş sayfasından görebilirsin.
-            Yanlışsa haftayı temizleyip tahminleri baştan toplayabilirsin.
-          </p>
-          <div className="stack-xs" style={{ marginBottom: "1rem" }}>
-            {matches.map((match) => (
-              <MatchRow key={match.id} match={match} showScores />
-            ))}
-          </div>
-          <div className="admin-clear-week">
-            <button
-              className="btn btn-secondary"
-              type="button"
-              disabled={pending || Boolean(clearBlockedReason)}
-              onClick={() => {
-                const confirmed = window.confirm(
-                  `"${week.label}" temizlensin mi?\n\nSkorlar, puanlar ve bu haftanın tüm tahminleri silinir. Küpür yorumları da gider. Hafta tekrar tahmine açılır; oyuncular boş formdan yeniden girer.`,
-                );
-                if (!confirmed) return;
-                run(
-                  () => clearWeekAction(week.id),
-                  "Hafta temizlendi. Tahminler silindi; oyuncular yeniden girebilir.",
-                );
-              }}
-            >
-              Haftayı Temizle
-            </button>
-            {clearBlockedReason ? (
-              <p className="admin-clear-week-hint admin-clear-week-hint-blocked">
-                {clearBlockedReason}
-              </p>
-            ) : (
-              <p className="admin-clear-week-hint">
-                Sadece sezonun son oynanan haftası temizlenebilir. Fikstür kalır.
-              </p>
-            )}
-          </div>
+          {phase === "done" ? (
+            <div className="admin-clear-week" style={{ marginTop: "1rem" }}>
+              <button
+                className="btn btn-secondary"
+                type="button"
+                disabled={pending || Boolean(clearBlockedReason)}
+                onClick={() => {
+                  const confirmed = window.confirm(
+                    `"${week.label}" temizlensin mi?\n\nSkorlar, puanlar ve bu haftanın tüm tahminleri silinir. Küpür yorumları da gider. Hafta tekrar tahmine açılır.`,
+                  );
+                  if (!confirmed) return;
+                  run(() => clearWeekAction(week.id), "Hafta temizlendi.");
+                }}
+              >
+                Haftayı Temizle
+              </button>
+              {clearBlockedReason ? (
+                <p className="admin-clear-week-hint admin-clear-week-hint-blocked">
+                  {clearBlockedReason}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </section>
       ) : null}
 
       <section className="panel reveal danger-zone">
-        <div className="section-head">
-          <h2 className="section-title">Tehlikeli alan</h2>
-        </div>
-        <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.9rem" }}>
-          Haftayı silmek fikstürü, maçları ve tahminleri de yok eder. Sadece
-          yanlış açılmış bir hafta için.
-        </p>
         <button
           className="btn btn-danger"
           type="button"
@@ -449,40 +391,6 @@ export function AdminWeekControls({
 
       {error ? <p className="flash flash-error">{error}</p> : null}
       {message ? <p className="flash flash-ok">{message}</p> : null}
-    </div>
-  );
-}
-
-function PhaseBanner({ phase }: { phase: Phase }) {
-  const copy = {
-    prepare: {
-      title: "Hazırlık",
-      text: "Fikstür yüklü. Bonus seçip haftayı yayınlaman yeterli.",
-      chip: "status-draft",
-    },
-    open: {
-      title: "Yayında",
-      text: "Tahminler alınıyor. İstediğinde kilitleyebilirsin.",
-      chip: "status-open",
-    },
-    locked: {
-      title: "Kilitli",
-      text: "Tahminler kilitli. Skor girip puanları hesapla.",
-      chip: "status-locked",
-    },
-    done: {
-      title: "Tamamlandı",
-      text: "Bu haftanın puanları hesaplandı.",
-      chip: "status-scored",
-    },
-  }[phase];
-
-  return (
-    <div className={`panel reveal phase-banner ${copy.chip}`}>
-      <div style={{ fontWeight: 800 }}>{copy.title}</div>
-      <p className="muted" style={{ margin: "0.25rem 0 0", fontSize: "0.9rem" }}>
-        {copy.text}
-      </p>
     </div>
   );
 }
