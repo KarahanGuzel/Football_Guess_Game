@@ -101,9 +101,6 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
       <div className="panel standings-chart-panel">
         <div className="standings-chart-head">
           <h2 className="section-title">Sezon grafiği</h2>
-          <p className="muted standings-chart-sub">
-            0. haftadan bugüne toplam puan
-          </p>
         </div>
         <p className="muted" style={{ margin: 0 }}>
           Henüz puanlanmış hafta yok. İlk skor sonrası grafik dolacak.
@@ -126,9 +123,6 @@ export function StandingsPointsChart({ data }: { data: StandingsProgress }) {
     <div className="panel standings-chart-panel">
       <div className="standings-chart-head">
         <h2 className="section-title">Sezon grafiği</h2>
-        <p className="muted standings-chart-sub">
-          0. haftadan bugüne toplam puan
-        </p>
       </div>
 
       <div

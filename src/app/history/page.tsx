@@ -40,7 +40,6 @@ export default async function HistoryPage({
     <div className="stack-md">
       <header className="page-header">
         <h1 className="page-title">Geçmiş Haftalar</h1>
-        <p className="page-sub">Sezon duvarı — kartı aç, maçları gör.</p>
       </header>
 
       {bundles.length === 0 ? (

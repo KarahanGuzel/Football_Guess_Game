@@ -51,9 +51,6 @@ export function StandingsTable({
       {titled ? (
         <div className="standings-panel-head">
           <h2 className="section-title">Genel sıralama</h2>
-          <p className="muted standings-panel-sub">
-            Toplam puan, isabet özeti ve geçen haftaya göre sıra
-          </p>
         </div>
       ) : null}
 

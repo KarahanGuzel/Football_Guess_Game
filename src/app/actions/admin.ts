@@ -249,8 +249,8 @@ export async function saveWeekScoresAction(input: {
 
   const week = await getWeek(input.weekId);
   if (!week) return { error: "Hafta bulunamadı." };
-  if (week.status !== "locked" && week.status !== "open") {
-    return { error: "Bu haftaya skor girilemez." };
+  if (week.status === "draft") {
+    return { error: "Taslak haftaya skor girilemez." };
   }
 
   const matches = await getMatchesForWeek(input.weekId);
@@ -294,6 +294,16 @@ export async function saveWeekScoresAction(input: {
   revalidateAll();
   revalidatePath(`/admin/weeks/${input.weekId}`);
   return { ok: true as const };
+}
+
+/** Persist scores then rescore every pick. Works on locked and already-scored weeks. */
+export async function saveAndCalculateWeekPointsAction(input: {
+  weekId: string;
+  scores: { matchId: string; homeGoals: number; awayGoals: number }[];
+}) {
+  const saved = await saveWeekScoresAction(input);
+  if (saved.error) return saved;
+  return calculateWeekPointsAction(input.weekId);
 }
 
 export async function calculateWeekPointsAction(weekId: string) {

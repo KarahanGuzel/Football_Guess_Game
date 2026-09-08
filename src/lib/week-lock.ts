@@ -41,13 +41,14 @@ export function effectiveWeekStatus(
   return week.status;
 }
 
-/** Time-lock counts as locked, so admin can score without a separate lock click. */
+/** Time-lock counts as locked, so admin can score without a separate lock click.
+ *  Scored weeks can be recalculated after a score correction. */
 export function canCalculateWeekPoints(
   week: WeekLockInput,
   matches: { kickoff_at: string }[],
   now = new Date(),
 ): boolean {
-  if (week.status === "scored" || week.status === "draft") return false;
-  if (week.status === "locked") return true;
+  if (week.status === "draft") return false;
+  if (week.status === "locked" || week.status === "scored") return true;
   return isWeekLockedByTime(week, matches, now);
 }

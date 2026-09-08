@@ -23,9 +23,6 @@ export function WeekKingsTable({
           <h2 className="section-title">
             Haftanın <span className="week-kings-gold">KRALI</span>
           </h2>
-          <p className="muted standings-panel-sub">
-            Her puanlanan haftanın birincisi
-          </p>
         </div>
       ) : null}
 
