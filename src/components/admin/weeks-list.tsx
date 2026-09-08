@@ -76,14 +76,6 @@ function WeekItem({
           </span>
           <Chevron open={open} />
         </button>
-        <button
-          type="button"
-          className="btn btn-danger btn-sm"
-          disabled={pending}
-          onClick={onDelete}
-        >
-          {deleting ? "Siliniyor..." : "Sil"}
-        </button>
       </div>
 
       {open ? (
@@ -122,6 +114,14 @@ function WeekItem({
           )}
 
           <div className="admin-week-drawer-foot">
+            <button
+              type="button"
+              className="btn btn-danger btn-sm"
+              disabled={pending}
+              onClick={onDelete}
+            >
+              {deleting ? "Siliniyor..." : "Sil"}
+            </button>
             <Link href={`/admin/weeks/${week.id}`} className="admin-week-manage-link">
               Haftayı yönet
               <span aria-hidden="true">→</span>

@@ -267,8 +267,9 @@ export function AdminWeekControls({
               <MatchRow match={match} trailing={matchDeleteButton(match)} />
               <div className="score-grid">
                 <div className="field">
-                  <label>Ev</label>
+                  <label htmlFor={`score-home-${match.id}`}>{match.home_team.name}</label>
                   <input
+                    id={`score-home-${match.id}`}
                     type="number"
                     min={0}
                     inputMode="numeric"
@@ -285,8 +286,9 @@ export function AdminWeekControls({
                   />
                 </div>
                 <div className="field">
-                  <label>Dep</label>
+                  <label htmlFor={`score-away-${match.id}`}>{match.away_team.name}</label>
                   <input
+                    id={`score-away-${match.id}`}
                     type="number"
                     min={0}
                     inputMode="numeric"

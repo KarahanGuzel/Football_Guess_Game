@@ -58,15 +58,11 @@ export default async function HomePage() {
 
   return (
     <div className="stack-lg">
-      <header className="page-header">
-        <h1 className="page-title">Ana Sayfa</h1>
-      </header>
-
       <section className="stack-md reveal">
         <div className="section-head week-head">
-          <h2 className="section-title">
+          <h1 className="section-title">
             {weekData ? weekData.week.label : "Bu Hafta"}
-          </h2>
+          </h1>
           {weekData ? (
             <LockCountdown
               lockAtIso={weekData.lockAt?.toISOString() ?? null}
