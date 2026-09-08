@@ -81,12 +81,12 @@ insert into tmp_fixtures (week_label, kickoff_at, home_name, away_name) values
   ('SüperLig 4.Hafta', '2026-09-07 20:00:00+03', 'Göztepe', 'Gaziantep FK'),
 
   -- 5. Hafta
-  ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Corendon Alanyaspor', 'Göztepe'),
-  ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Amed Sportif Faaliyetler', 'Başakşehir'),
-  ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Konyaspor', 'Trabzonspor'),
-  ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Galatasaray', 'Kocaelispor'),
-  ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Beşiktaş', 'Erzurumspor'),
-  ('SüperLig 5.Hafta', '2026-09-13 19:00:00+03', 'Gaziantep FK', 'Fenerbahçe'),
+  ('SüperLig 5.Hafta', '2026-09-11 20:00:00+03', 'Beşiktaş', 'Erzurumspor'),
+  ('SüperLig 5.Hafta', '2026-09-12 20:00:00+03', 'Corendon Alanyaspor', 'Göztepe'),
+  ('SüperLig 5.Hafta', '2026-09-12 20:00:00+03', 'Konyaspor', 'Trabzonspor'),
+  ('SüperLig 5.Hafta', '2026-09-13 20:00:00+03', 'Amed Sportif Faaliyetler', 'Başakşehir'),
+  ('SüperLig 5.Hafta', '2026-09-13 20:00:00+03', 'Galatasaray', 'Kocaelispor'),
+  ('SüperLig 5.Hafta', '2026-09-14 20:00:00+03', 'Gaziantep FK', 'Fenerbahçe'),
 
   -- 6. Hafta
   ('SüperLig 6.Hafta', '2026-09-20 19:00:00+03', 'Trabzonspor', 'Galatasaray'),
