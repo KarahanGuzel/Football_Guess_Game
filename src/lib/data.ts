@@ -1,6 +1,12 @@
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { effectiveWeekStatus, weekLockAt } from "@/lib/week-lock";
 import { attachCommentReactions } from "@/lib/slip-reactions";
+import {
+  buildLigDefteri,
+  type DefteriMatch,
+  type DefteriPick,
+  type LigDefteriCard,
+} from "@/lib/lig-defteri";
 import type {
   MatchWithTeams,
   Player,
@@ -417,3 +423,68 @@ export async function getSlipCommentsForWeek(
 
   return attachCommentReactions(comments, reactionRows ?? []);
 }
+
+function toDefteriMatch(weekLabel: string, match: MatchWithTeams): DefteriMatch {
+  return {
+    id: match.id,
+    weekLabel,
+    homeName: match.home_team.name,
+    awayName: match.away_team.name,
+    isDerby: match.is_derby,
+    isBonus: match.is_bonus,
+    homeGoals: match.home_goals,
+    awayGoals: match.away_goals,
+  };
+}
+
+function toDefteriPicks(
+  rows: (Prediction & { player: Player })[],
+): DefteriPick[] {
+  return rows.map((row) => ({
+    matchId: row.match_id,
+    playerId: row.player_id,
+    playerName: row.player.display_name,
+    result: row.result,
+    goalsMarket: row.goals_market,
+    resultCorrect: row.result_correct,
+    pointsEarned: row.points_earned,
+  }));
+}
+
+/** Homepage ticket: one curious fact from this week’s slips + scored history. */
+export async function getLigDefteriCard(input?: {
+  currentWeekLabel?: string | null;
+  currentMatches?: MatchWithTeams[];
+  currentPicks?: (Prediction & { player: Player })[];
+}): Promise<LigDefteriCard | null> {
+  const { data: scoredWeeks, error } = await getSupabaseAdmin()
+    .from("weeks")
+    .select("*")
+    .eq("status", "scored")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+
+  const scored = [];
+  for (const week of scoredWeeks ?? []) {
+    const matches = await getMatchesForWeek(week.id);
+    if (matches.length === 0) continue;
+    const picks = await getPredictionsForMatches(matches.map((m) => m.id));
+    scored.push({
+      label: week.label,
+      matches: matches.map((match) => toDefteriMatch(week.label, match)),
+      picks: toDefteriPicks(picks),
+    });
+  }
+
+  return buildLigDefteri({
+    currentWeekLabel: input?.currentWeekLabel ?? null,
+    currentMatches:
+      input?.currentMatches?.map((match) =>
+        toDefteriMatch(input.currentWeekLabel ?? "", match),
+      ) ?? [],
+    currentPicks: toDefteriPicks(input?.currentPicks ?? []),
+    scoredWeeks: scored,
+  });
+}
+
