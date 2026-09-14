@@ -1,24 +1,36 @@
 import type { LigDefteriCard } from "@/lib/lig-defteri";
 
-export function LigDefteriBanner({ card }: { card: LigDefteriCard }) {
+export function LigDefteriBanner({ card }: { card: LigDefteriCard | null }) {
+  const entries = card?.entries ?? [];
+
   return (
-    <aside className="lig-defteri panel" aria-label="Lig defteri">
-      <div className="lig-defteri-top">
-        <p className="lig-defteri-brand">Lig defteri</p>
-        <p className="lig-defteri-kicker">{card.kicker}</p>
+    <aside
+      className="panel standings-panel standings-panel-titled lig-defteri-panel"
+      aria-label="Lig defteri"
+    >
+      <div className="standings-panel-head home-twin-head">
+        <h2 className="section-title">Lig defteri</h2>
       </div>
-      <p className="lig-defteri-headline">{card.headline}</p>
-      {card.detail ? <p className="lig-defteri-detail">{card.detail}</p> : null}
-      {card.chips.length > 0 ? (
-        <ul className="lig-defteri-chips">
-          {card.chips.map((chip) => (
-            <li key={`${chip.label}-${chip.value}`}>
-              <span className="lig-defteri-chip-label">{chip.label}</span>
-              <span className="lig-defteri-chip-value">{chip.value}</span>
+      {entries.length === 0 ? (
+        <p className="muted week-kings-empty">
+          Henüz deftere düşecek kadar küpür yok.
+        </p>
+      ) : (
+        <ul className="lig-defteri-list">
+          {entries.map((entry, index) => (
+            <li
+              key={entry.id}
+              className={`lig-defteri-line${index === 0 ? " lig-defteri-line-lead" : ""}`}
+            >
+              <p className="lig-defteri-kicker">{entry.kicker}</p>
+              <p className="lig-defteri-headline">{entry.headline}</p>
+              {entry.detail ? (
+                <p className="lig-defteri-detail">{entry.detail}</p>
+              ) : null}
             </li>
           ))}
         </ul>
-      ) : null}
+      )}
     </aside>
   );
 }

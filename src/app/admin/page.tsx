@@ -1,24 +1,43 @@
 import { AdminWeeksList } from "@/components/admin/weeks-list";
 import { CreateWeekForm } from "@/components/admin/create-week-form";
+import { LigDefteriAdminForm } from "@/components/admin/lig-defteri-form";
 import { SeasonResetPanel } from "@/components/admin/season-reset-panel";
 import { StandingsTable } from "@/components/standings-table";
 import { requireAdmin } from "@/lib/auth/current-user";
 import {
+  getCurrentPlayableWeek,
+  getLigDefteriBundle,
   getMatchesForWeek,
+  getPredictionsForMatches,
   getStandings,
   getStandingsProgress,
+  getWeekKings,
   listWeeks,
 } from "@/lib/data";
 import { attachStandingsRankChanges } from "@/lib/standings-rank";
 
 export default async function AdminPage() {
   await requireAdmin();
-  const [weeks, rawStandings, progress] = await Promise.all([
-    listWeeks(),
-    getStandings(),
-    getStandingsProgress(),
-  ]);
+  const [weeks, rawStandings, progress, weekKings, playable] = await Promise.all(
+    [
+      listWeeks(),
+      getStandings(),
+      getStandingsProgress(),
+      getWeekKings(),
+      getCurrentPlayableWeek(),
+    ],
+  );
   const standings = attachStandingsRankChanges(rawStandings, progress);
+  const weekPredictions = playable
+    ? await getPredictionsForMatches(playable.matches.map((match) => match.id))
+    : [];
+  const defteri = await getLigDefteriBundle({
+    currentWeekLabel: playable?.week.label ?? null,
+    currentMatches: playable?.matches ?? [],
+    currentPicks: weekPredictions,
+    standings,
+    weekKings,
+  });
 
   const weekBundles = await Promise.all(
     weeks.map(async (week) => ({
@@ -44,6 +63,11 @@ export default async function AdminPage() {
         </div>
         <AdminWeeksList weeks={weekBundles} />
       </section>
+
+      <LigDefteriAdminForm
+        stories={defteri.stories}
+        settings={defteri.settings}
+      />
 
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>

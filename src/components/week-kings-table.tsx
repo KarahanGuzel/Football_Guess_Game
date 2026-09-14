@@ -1,16 +1,25 @@
+import Link from "next/link";
 import { weekIndexFromLabel } from "@/lib/week-label";
+import {
+  compactWeekKings,
+  orderWeekKingsLatestFirst,
+} from "@/lib/week-kings-display";
 import type { WeekKingRow } from "@/lib/data";
 
 export function WeekKingsTable({
   rows,
   compact = false,
   titled = true,
+  allHref,
 }: {
   rows: WeekKingRow[];
   compact?: boolean;
   titled?: boolean;
+  allHref?: string;
 }) {
-  const ordered = [...rows].reverse();
+  const ordered = compact
+    ? compactWeekKings(rows)
+    : orderWeekKingsLatestFirst(rows);
 
   return (
     <div
@@ -19,10 +28,15 @@ export function WeekKingsTable({
       }${compact ? " week-kings-panel-compact" : ""}`}
     >
       {titled ? (
-        <div className="standings-panel-head">
+        <div className="standings-panel-head home-twin-head">
           <h2 className="section-title">
             Haftanın <span className="week-kings-gold">KRALI</span>
           </h2>
+          {allHref ? (
+            <Link href={allHref} className="text-link">
+              Tümü →
+            </Link>
+          ) : null}
         </div>
       ) : null}
 

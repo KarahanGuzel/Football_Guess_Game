@@ -7,11 +7,13 @@ import {
   getClearWeekBlockReason,
   getDeleteMatchBlockReason,
 } from "@/lib/admin-season";
+import { parseLigDefteriSettings } from "@/lib/lig-defteri";
 import {
   getMatchesForWeek,
   getPredictionsForMatches,
   getWeek,
   listWeeks,
+  saveLigDefteriSettings,
 } from "@/lib/data";
 import { scorePrediction } from "@/lib/scoring";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -494,6 +496,18 @@ export async function deleteWeekAction(weekId: string) {
   const { error } = await getSupabaseAdmin().from("weeks").delete().eq("id", weekId);
 
   if (error) return { error: error.message };
+  revalidateAll();
+  return { ok: true as const };
+}
+
+export async function saveLigDefteriSettingsAction(input: {
+  slots: unknown;
+}) {
+  await requireAdmin();
+  const saved = await saveLigDefteriSettings(
+    parseLigDefteriSettings({ slots: input.slots }),
+  );
+  if (saved.error) return { error: saved.error };
   revalidateAll();
   return { ok: true as const };
 }

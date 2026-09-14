@@ -2,6 +2,8 @@ import { actualResult } from "@/lib/scoring";
 import { weekIndexFromLabel } from "@/lib/week-label";
 import type { GoalsMarket, PredictResult } from "@/types/database";
 
+export const LIG_DEFTERI_SLOT_COUNT = 5;
+
 export type DefteriMatch = {
   id: string;
   weekLabel: string;
@@ -23,6 +25,21 @@ export type DefteriPick = {
   pointsEarned: number | null;
 };
 
+export type DefteriStanding = {
+  playerName: string;
+  totalPoints: number;
+  correctResultCount: number;
+  correctGoalsCount: number;
+  derbyCorrectCount: number;
+  perfectPredictionCount: number;
+};
+
+export type DefteriKing = {
+  weekLabel: string;
+  kingNames: string[];
+  points: number;
+};
+
 export type LigDefteriInput = {
   currentWeekLabel: string | null;
   currentMatches: DefteriMatch[];
@@ -32,30 +49,86 @@ export type LigDefteriInput = {
     matches: DefteriMatch[];
     picks: DefteriPick[];
   }[];
+  standings?: DefteriStanding[];
+  weekKings?: DefteriKing[];
 };
 
-export type LigDefteriChip = {
-  label: string;
-  value: string;
-};
-
-export type LigDefteriCard = {
-  kicker: string;
-  headline: string;
-  detail: string | null;
-  chips: LigDefteriChip[];
-};
-
-type Story = {
+export type LigDefteriStory = {
   id: string;
   priority: number;
   kicker: string;
   headline: string;
   detail: string | null;
-  chip: LigDefteriChip;
+};
+
+export type LigDefteriEntry = {
+  id: string;
+  kicker: string;
+  headline: string;
+  detail: string | null;
+};
+
+export type LigDefteriSlot = {
+  mode: "auto" | "custom";
+  autoStoryId: string | null;
+  kicker: string;
+  headline: string;
+  detail: string;
+};
+
+export type LigDefteriSettings = {
+  slots: LigDefteriSlot[];
+};
+
+export type LigDefteriCard = {
+  entries: LigDefteriEntry[];
 };
 
 const MIN_GROUP = 3;
+
+export function emptyLigDefteriSlot(): LigDefteriSlot {
+  return {
+    mode: "auto",
+    autoStoryId: null,
+    kicker: "",
+    headline: "",
+    detail: "",
+  };
+}
+
+export function defaultLigDefteriSettings(): LigDefteriSettings {
+  return {
+    slots: Array.from({ length: LIG_DEFTERI_SLOT_COUNT }, () =>
+      emptyLigDefteriSlot(),
+    ),
+  };
+}
+
+export function parseLigDefteriSettings(value: unknown): LigDefteriSettings {
+  const fallback = defaultLigDefteriSettings();
+  if (!value || typeof value !== "object") return fallback;
+  const slotsRaw = (value as { slots?: unknown }).slots;
+  if (!Array.isArray(slotsRaw)) return fallback;
+
+  const slots = fallback.slots.map((slot, index) => {
+    const raw = slotsRaw[index];
+    if (!raw || typeof raw !== "object") return slot;
+    const row = raw as Partial<LigDefteriSlot>;
+    const mode = row.mode === "custom" ? "custom" : "auto";
+    return {
+      mode,
+      autoStoryId:
+        typeof row.autoStoryId === "string" && row.autoStoryId.trim()
+          ? row.autoStoryId.trim()
+          : null,
+      kicker: typeof row.kicker === "string" ? row.kicker : "",
+      headline: typeof row.headline === "string" ? row.headline : "",
+      detail: typeof row.detail === "string" ? row.detail : "",
+    };
+  });
+
+  return { slots };
+}
 
 function weekTag(label: string): string {
   const n = weekIndexFromLabel(label);
@@ -102,12 +175,35 @@ function overShare(picks: DefteriPick[]): number | null {
   return over / picks.length;
 }
 
-function currentWeekStories(input: LigDefteriInput): Story[] {
+function uniqueStories(stories: LigDefteriStory[]): LigDefteriStory[] {
+  const seen = new Set<string>();
+  const out: LigDefteriStory[] = [];
+  for (const story of stories.sort(
+    (a, b) => a.priority - b.priority || a.id.localeCompare(b.id),
+  )) {
+    if (seen.has(story.id)) continue;
+    seen.add(story.id);
+    out.push(story);
+  }
+  return out;
+}
+
+function currentWeekStories(input: LigDefteriInput): LigDefteriStory[] {
   if (!input.currentWeekLabel || input.currentMatches.length === 0) return [];
   const kicker = "Bu hafta";
-  const stories: Story[] = [];
+  const stories: LigDefteriStory[] = [];
 
   for (const match of input.currentMatches) {
+    if (match.isDerby) {
+      stories.push({
+        id: `derby-up-${match.id}`,
+        priority: 42,
+        kicker,
+        headline: `Derbi: ${matchLine(match)}.`,
+        detail: null,
+      });
+    }
+
     const rows = picksForMatch(input.currentPicks, match.id);
     if (rows.length < MIN_GROUP) continue;
     const tally = resultTally(rows);
@@ -122,7 +218,6 @@ function currentWeekStories(input: LigDefteriInput): Story[] {
         kicker,
         headline: `Herkes ${resultName(match, topResult)} dedi.`,
         detail: matchLine(match),
-        chip: { label: matchLine(match), value: `${rows.length}/${rows.length}` },
       });
       continue;
     }
@@ -135,7 +230,6 @@ function currentWeekStories(input: LigDefteriInput): Story[] {
         kicker,
         headline: `Sadece ${loner.playerName} ${resultName(match, loner.result)} dedi.`,
         detail: matchLine(match),
-        chip: { label: "Tek küpür", value: loner.playerName },
       });
     } else if (match.isDerby) {
       const homeN = tally.get("home")!.length;
@@ -151,7 +245,6 @@ function currentWeekStories(input: LigDefteriInput): Story[] {
         kicker,
         headline: "Derbi ikiye bölündü.",
         detail: split,
-        chip: { label: "Derbi", value: `${homeN}–${awayN}` },
       });
     }
   }
@@ -164,27 +257,29 @@ function currentWeekStories(input: LigDefteriInput): Story[] {
       id: "current-ou",
       priority: 80,
       kicker,
-      headline: `Bu hafta küpürlerin %${pct}’i ${side}.`,
+      headline: `Küpürlerin %${pct}’i ${side}.`,
       detail: null,
-      chip: { label: `Bu hafta ${side}`, value: `%${pct}` },
     });
   }
 
   return stories;
 }
 
-function lastScoredStories(input: LigDefteriInput): Story[] {
+function lastScoredStories(input: LigDefteriInput): LigDefteriStory[] {
   const last = input.scoredWeeks[input.scoredWeeks.length - 1];
   if (!last) return [];
   const kicker = weekTag(last.label);
-  const stories: Story[] = [];
+  const stories: LigDefteriStory[] = [];
 
   for (const match of last.matches) {
     if (match.homeGoals == null || match.awayGoals == null) continue;
     const rows = picksForMatch(last.picks, match.id);
     if (rows.length < MIN_GROUP) continue;
     const hits = rows.filter((p) => p.resultCorrect === true);
-    const winner = resultName(match, actualResult(match.homeGoals, match.awayGoals));
+    const winner = resultName(
+      match,
+      actualResult(match.homeGoals, match.awayGoals),
+    );
 
     if (hits.length === 0) {
       stories.push({
@@ -193,7 +288,6 @@ function lastScoredStories(input: LigDefteriInput): Story[] {
         kicker,
         headline: `Kimse ${winner} dememişti.`,
         detail: matchLine(match),
-        chip: { label: "Kimse tutturamadı", value: match.homeName },
       });
     } else if (hits.length === 1) {
       stories.push({
@@ -202,7 +296,6 @@ function lastScoredStories(input: LigDefteriInput): Story[] {
         kicker,
         headline: `Sadece ${hits[0].playerName} ${winner} tutturdu.`,
         detail: matchLine(match),
-        chip: { label: "Tek isabet", value: hits[0].playerName },
       });
     }
   }
@@ -210,8 +303,8 @@ function lastScoredStories(input: LigDefteriInput): Story[] {
   return stories;
 }
 
-function seasonStories(input: LigDefteriInput): Story[] {
-  const stories: Story[] = [];
+function seasonStories(input: LigDefteriInput): LigDefteriStory[] {
+  const stories: LigDefteriStory[] = [];
   const bonusHits = new Map<string, { name: string; count: number }>();
   const allPicks: DefteriPick[] = [];
 
@@ -230,7 +323,12 @@ function seasonStories(input: LigDefteriInput): Story[] {
       if (pick.pointsEarned != null) {
         const row = weekPoints.get(pick.playerId);
         if (row) row.points += pick.pointsEarned;
-        else weekPoints.set(pick.playerId, { name: pick.playerName, points: pick.pointsEarned });
+        else {
+          weekPoints.set(pick.playerId, {
+            name: pick.playerName,
+            points: pick.pointsEarned,
+          });
+        }
       }
     }
 
@@ -244,7 +342,6 @@ function seasonStories(input: LigDefteriInput): Story[] {
           kicker: weekTag(week.label),
           headline: `${weekTag(week.label)} 1 puana kaldı.`,
           detail: `${ranked[0].name} ${ranked[0].points} · ${ranked[1].name} ${ranked[1].points}`,
-          chip: { label: "En yakın", value: weekTag(week.label) },
         });
       }
     }
@@ -261,7 +358,6 @@ function seasonStories(input: LigDefteriInput): Story[] {
         kicker: "Sezon",
         headline: `Bonus tam isabet: ${leader.name}.`,
         detail: `${leader.count} tam isabet`,
-        chip: { label: "Bonus", value: `${leader.name} ${leader.count}` },
       });
     }
   }
@@ -276,37 +372,177 @@ function seasonStories(input: LigDefteriInput): Story[] {
       kicker: "Sezon",
       headline: `Sezonun %${pct}’i ${side} gitmiş.`,
       detail: null,
-      chip: { label: `Sezon ${side}`, value: `%${pct}` },
+    });
+  }
+
+  if (input.scoredWeeks.length > 0) {
+    stories.push({
+      id: "weeks-played",
+      priority: 260,
+      kicker: "Sezon",
+      headline: `${input.scoredWeeks.length} hafta geride kaldı.`,
+      detail: null,
     });
   }
 
   return stories;
 }
 
-export function buildLigDefteri(input: LigDefteriInput): LigDefteriCard | null {
-  const stories = [
+function standingStories(input: LigDefteriInput): LigDefteriStory[] {
+  const rows = [...(input.standings ?? [])].filter((row) => row.totalPoints > 0);
+  if (rows.length === 0) return [];
+  const stories: LigDefteriStory[] = [];
+  const byPoints = [...rows].sort((a, b) => b.totalPoints - a.totalPoints);
+  const leader = byPoints[0];
+  stories.push({
+    id: "table-leader",
+    priority: 200,
+    kicker: "Sezon",
+    headline: `${leader.playerName} önde · ${leader.totalPoints}p.`,
+    detail: null,
+  });
+
+  const byResult = [...rows].sort(
+    (a, b) => b.correctResultCount - a.correctResultCount,
+  );
+  if (byResult[0] && byResult[0].correctResultCount > 0) {
+    stories.push({
+      id: "most-results",
+      priority: 210,
+      kicker: "Sezon",
+      headline: `En çok taraf: ${byResult[0].playerName}.`,
+      detail: `${byResult[0].correctResultCount} isabet`,
+    });
+  }
+
+  const byGoals = [...rows].sort(
+    (a, b) => b.correctGoalsCount - a.correctGoalsCount,
+  );
+  if (byGoals[0] && byGoals[0].correctGoalsCount > 0) {
+    stories.push({
+      id: "most-ou",
+      priority: 220,
+      kicker: "Sezon",
+      headline: `Alt/üst: ${byGoals[0].playerName}.`,
+      detail: `${byGoals[0].correctGoalsCount} isabet`,
+    });
+  }
+
+  const byDerby = [...rows].sort(
+    (a, b) => b.derbyCorrectCount - a.derbyCorrectCount,
+  );
+  if (byDerby[0] && byDerby[0].derbyCorrectCount > 0) {
+    stories.push({
+      id: "derby-sniper",
+      priority: 230,
+      kicker: "Sezon",
+      headline: `Derbi isabeti: ${byDerby[0].playerName}.`,
+      detail: `${byDerby[0].derbyCorrectCount} strike`,
+    });
+  }
+
+  const byPerfect = [...rows].sort(
+    (a, b) => b.perfectPredictionCount - a.perfectPredictionCount,
+  );
+  if (byPerfect[0] && byPerfect[0].perfectPredictionCount > 0) {
+    stories.push({
+      id: "strike-king",
+      priority: 240,
+      kicker: "Sezon",
+      headline: `Strike: ${byPerfect[0].playerName}.`,
+      detail: `${byPerfect[0].perfectPredictionCount} tam isabet`,
+    });
+  }
+
+  const lastKing = input.weekKings?.[input.weekKings.length - 1];
+  if (lastKing && lastKing.kingNames.length > 0) {
+    stories.push({
+      id: "last-king",
+      priority: 250,
+      kicker: weekTag(lastKing.weekLabel),
+      headline: `Son kral: ${lastKing.kingNames.join(", ")}.`,
+      detail: `${lastKing.points} puan`,
+    });
+  }
+
+  return stories;
+}
+
+export function listLigDefteriStories(input: LigDefteriInput): LigDefteriStory[] {
+  return uniqueStories([
     ...currentWeekStories(input),
     ...lastScoredStories(input),
     ...seasonStories(input),
-  ].sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id));
+    ...standingStories(input),
+  ]);
+}
 
-  const headline = stories[0];
-  if (!headline) return null;
+export function composeLigDefteriEntries(
+  stories: LigDefteriStory[],
+  settings: LigDefteriSettings = defaultLigDefteriSettings(),
+): LigDefteriEntry[] {
+  const pool = [...stories];
+  const used = new Set<string>();
+  const entries: LigDefteriEntry[] = [];
 
-  const chips: LigDefteriChip[] = [];
-  const used = new Set<string>([headline.chip.label + headline.chip.value]);
-  for (const story of stories.slice(1)) {
-    const key = story.chip.label + story.chip.value;
-    if (used.has(key)) continue;
-    used.add(key);
-    chips.push(story.chip);
-    if (chips.length === 3) break;
+  function takeAuto(preferredId: string | null): LigDefteriStory | null {
+    if (preferredId) {
+      const pinned = pool.find((story) => story.id === preferredId);
+      if (pinned && !used.has(pinned.id)) {
+        used.add(pinned.id);
+        return pinned;
+      }
+    }
+    const next = pool.find((story) => !used.has(story.id));
+    if (!next) return null;
+    used.add(next.id);
+    return next;
   }
 
-  return {
-    kicker: headline.kicker,
-    headline: headline.headline,
-    detail: headline.detail,
-    chips,
-  };
+  for (const slot of settings.slots.slice(0, LIG_DEFTERI_SLOT_COUNT)) {
+    if (slot.mode === "custom") {
+      const headline = slot.headline.trim();
+      if (!headline) continue;
+      entries.push({
+        id: `custom-${entries.length}`,
+        kicker: slot.kicker.trim() || "Not",
+        headline,
+        detail: slot.detail.trim() || null,
+      });
+      continue;
+    }
+    const story = takeAuto(slot.autoStoryId);
+    if (!story) continue;
+    entries.push({
+      id: story.id,
+      kicker: story.kicker,
+      headline: story.headline,
+      detail: story.detail,
+    });
+  }
+
+  while (entries.length < LIG_DEFTERI_SLOT_COUNT) {
+    const story = takeAuto(null);
+    if (!story) break;
+    entries.push({
+      id: story.id,
+      kicker: story.kicker,
+      headline: story.headline,
+      detail: story.detail,
+    });
+  }
+
+  return entries.slice(0, LIG_DEFTERI_SLOT_COUNT);
+}
+
+export function buildLigDefteri(
+  input: LigDefteriInput,
+  settings: LigDefteriSettings = defaultLigDefteriSettings(),
+): LigDefteriCard | null {
+  const entries = composeLigDefteriEntries(
+    listLigDefteriStories(input),
+    settings,
+  );
+  if (entries.length === 0) return null;
+  return { entries };
 }

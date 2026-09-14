@@ -7,12 +7,12 @@ import { WeekKingsTable } from "@/components/week-kings-table";
 import { requirePlayer } from "@/lib/auth/current-user";
 import {
   getCurrentPlayableWeek,
+  getLigDefteriBundle,
   getPredictionsForMatches,
   getPredictionsForPlayer,
   getStandings,
   getStandingsProgress,
   getWeekKings,
-  getLigDefteriCard,
   latestWeekKingIds,
 } from "@/lib/data";
 import { attachStandingsRankChanges } from "@/lib/standings-rank";
@@ -58,11 +58,14 @@ export default async function HomePage() {
 
   let ligDefteri = null;
   try {
-    ligDefteri = await getLigDefteriCard({
+    const bundle = await getLigDefteriBundle({
       currentWeekLabel: weekData?.week.label ?? null,
       currentMatches: weekData?.matches ?? [],
       currentPicks: weekPredictions,
+      standings,
+      weekKings,
     });
+    ligDefteri = bundle.card;
   } catch {
     ligDefteri = null;
   }
@@ -104,8 +107,6 @@ export default async function HomePage() {
         )}
       </section>
 
-      {ligDefteri ? <LigDefteriBanner card={ligDefteri} /> : null}
-
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>
           <h2 className="section-title">Lig özeti</h2>
@@ -117,16 +118,20 @@ export default async function HomePage() {
         {standingsError ? (
           <p className="flash flash-error">{standingsError}</p>
         ) : (
-          <div className="home-rank-stack">
-            <StandingsTable
-              rows={standings}
-              compact
-              leaderIds={leaderIds}
-            />
-            <WeekKingsTable rows={weekKings} compact />
-          </div>
+          <StandingsTable
+            rows={standings}
+            compact
+            leaderIds={leaderIds}
+          />
         )}
       </section>
+
+      {!standingsError ? (
+        <div className="home-twin-grid reveal">
+          <LigDefteriBanner card={ligDefteri} />
+          <WeekKingsTable rows={weekKings} compact allHref="/standings" />
+        </div>
+      ) : null}
     </div>
   );
 }

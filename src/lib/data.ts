@@ -3,9 +3,14 @@ import { effectiveWeekStatus, weekLockAt } from "@/lib/week-lock";
 import { attachCommentReactions } from "@/lib/slip-reactions";
 import {
   buildLigDefteri,
+  defaultLigDefteriSettings,
+  listLigDefteriStories,
+  parseLigDefteriSettings,
   type DefteriMatch,
   type DefteriPick,
   type LigDefteriCard,
+  type LigDefteriSettings,
+  type LigDefteriStory,
 } from "@/lib/lig-defteri";
 import type {
   MatchWithTeams,
@@ -451,12 +456,58 @@ function toDefteriPicks(
   }));
 }
 
-/** Homepage ticket: one curious fact from this week’s slips + scored history. */
-export async function getLigDefteriCard(input?: {
+/** Homepage ticket: up to five facts, honoring admin slot settings. */
+export async function getLigDefteriSettings(): Promise<LigDefteriSettings> {
+  try {
+    const { data, error } = await getSupabaseAdmin()
+      .from("site_settings")
+      .select("value")
+      .eq("key", "lig_defteri")
+      .maybeSingle();
+    if (error) return defaultLigDefteriSettings();
+    return parseLigDefteriSettings(data?.value);
+  } catch {
+    return defaultLigDefteriSettings();
+  }
+}
+
+export async function saveLigDefteriSettings(
+  settings: LigDefteriSettings,
+): Promise<{ error?: string }> {
+  const payload = parseLigDefteriSettings(settings);
+  const { error } = await getSupabaseAdmin().from("site_settings").upsert(
+    {
+      key: "lig_defteri",
+      value: payload,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "key" },
+  );
+  if (error) {
+    if (/site_settings|schema cache|does not exist/i.test(error.message)) {
+      return {
+        error:
+          "Lig defteri tablosu henüz yok. Supabase SQL editor’e migration’ı yapıştır.",
+      };
+    }
+    return { error: error.message };
+  }
+  return {};
+}
+
+export type LigDefteriBundle = {
+  stories: LigDefteriStory[];
+  settings: LigDefteriSettings;
+  card: LigDefteriCard | null;
+};
+
+export async function getLigDefteriBundle(input?: {
   currentWeekLabel?: string | null;
   currentMatches?: MatchWithTeams[];
   currentPicks?: (Prediction & { player: Player })[];
-}): Promise<LigDefteriCard | null> {
+  standings?: StandingRow[];
+  weekKings?: WeekKingRow[];
+}): Promise<LigDefteriBundle> {
   const { data: scoredWeeks, error } = await getSupabaseAdmin()
     .from("weeks")
     .select("*")
@@ -477,7 +528,7 @@ export async function getLigDefteriCard(input?: {
     });
   }
 
-  return buildLigDefteri({
+  const defteriInput = {
     currentWeekLabel: input?.currentWeekLabel ?? null,
     currentMatches:
       input?.currentMatches?.map((match) =>
@@ -485,6 +536,27 @@ export async function getLigDefteriCard(input?: {
       ) ?? [],
     currentPicks: toDefteriPicks(input?.currentPicks ?? []),
     scoredWeeks: scored,
-  });
+    standings: (input?.standings ?? []).map((row) => ({
+      playerName: row.display_name,
+      totalPoints: row.total_points,
+      correctResultCount: row.correct_result_count,
+      correctGoalsCount: row.correct_goals_count,
+      derbyCorrectCount: row.derby_correct_count,
+      perfectPredictionCount: row.perfect_prediction_count,
+    })),
+    weekKings: (input?.weekKings ?? []).map((row) => ({
+      weekLabel: row.weekLabel,
+      kingNames: row.kings.map((king) => king.displayName),
+      points: row.points,
+    })),
+  };
+
+  const settings = await getLigDefteriSettings();
+  const stories = listLigDefteriStories(defteriInput);
+  return {
+    stories,
+    settings,
+    card: buildLigDefteri(defteriInput, settings),
+  };
 }
 

@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { buildLigDefteri, type DefteriMatch, type DefteriPick } from "@/lib/lig-defteri";
+import {
+  buildLigDefteri,
+  composeLigDefteriEntries,
+  defaultLigDefteriSettings,
+  listLigDefteriStories,
+  parseLigDefteriSettings,
+  type DefteriMatch,
+  type DefteriPick,
+  type LigDefteriSlot,
+} from "@/lib/lig-defteri";
 
 function match(
   id: string,
@@ -37,6 +46,16 @@ function pick(
   };
 }
 
+function autoSlots(count: number): LigDefteriSlot[] {
+  return Array.from({ length: count }, () => ({
+    mode: "auto" as const,
+    autoStoryId: null,
+    kicker: "",
+    headline: "",
+    detail: "",
+  }));
+}
+
 describe("buildLigDefteri", () => {
   it("returns null when there is nothing interesting yet", () => {
     expect(
@@ -60,9 +79,9 @@ describe("buildLigDefteri", () => {
       ],
       scoredWeeks: [],
     });
-    expect(card?.kicker).toBe("Bu hafta");
-    expect(card?.headline).toBe("Herkes Fenerbahçe dedi.");
-    expect(card?.detail).toBe("Fenerbahçe–Eyüpspor");
+    expect(card?.entries[0]?.kicker).toBe("Bu hafta");
+    expect(card?.entries[0]?.headline).toBe("Herkes Fenerbahçe dedi.");
+    expect(card?.entries[0]?.detail).toBe("Fenerbahçe–Eyüpspor");
   });
 
   it("calls out the lone wolf on a split match", () => {
@@ -77,7 +96,7 @@ describe("buildLigDefteri", () => {
       ],
       scoredWeeks: [],
     });
-    expect(card?.headline).toBe("Sadece Emrah Amed dedi.");
+    expect(card?.entries[0]?.headline).toBe("Sadece Emrah Amed dedi.");
   });
 
   it("uses last week’s miss when nobody had the result", () => {
@@ -102,11 +121,11 @@ describe("buildLigDefteri", () => {
         },
       ],
     });
-    expect(card?.kicker).toBe("5. hafta");
-    expect(card?.headline).toBe("Kimse Göztepe dememişti.");
+    expect(card?.entries[0]?.kicker).toBe("5. hafta");
+    expect(card?.entries[0]?.headline).toBe("Kimse Göztepe dememişti.");
   });
 
-  it("adds a bonus chip from season totals", () => {
+  it("fills up to five entries from season leftovers", () => {
     const bonus = match("b1", "Başakşehir", "Gençler", { isBonus: true });
     const card = buildLigDefteri({
       currentWeekLabel: "SüperLig 6.Hafta",
@@ -134,8 +153,78 @@ describe("buildLigDefteri", () => {
           ],
         },
       ],
+      standings: [
+        {
+          playerName: "Karahan",
+          totalPoints: 40,
+          correctResultCount: 8,
+          correctGoalsCount: 6,
+          derbyCorrectCount: 2,
+          perfectPredictionCount: 4,
+        },
+      ],
     });
-    expect(card?.headline).toBe("Herkes Fenerbahçe dedi.");
-    expect(card?.chips.some((chip) => chip.label === "Bonus")).toBe(true);
+    expect(card?.entries).toHaveLength(5);
+    expect(card?.entries.some((entry) => entry.headline.includes("Bonus"))).toBe(
+      true,
+    );
+  });
+});
+
+describe("composeLigDefteriEntries", () => {
+  it("lets a custom slot replace an auto line", () => {
+    const stories = listLigDefteriStories({
+      currentWeekLabel: "SüperLig 6.Hafta",
+      currentMatches: [match("m1", "Fenerbahçe", "Eyüpspor")],
+      currentPicks: [
+        pick("m1", "a", "Karahan", "home"),
+        pick("m1", "b", "Batuhan", "home"),
+        pick("m1", "c", "Buğra", "home"),
+      ],
+      scoredWeeks: [],
+    });
+    const settings = defaultLigDefteriSettings();
+    settings.slots[0] = {
+      mode: "custom",
+      autoStoryId: null,
+      kicker: "Not",
+      headline: "Bu hafta bonus Göztepe.",
+      detail: "",
+    };
+    const entries = composeLigDefteriEntries(stories, settings);
+    expect(entries[0]?.headline).toBe("Bu hafta bonus Göztepe.");
+  });
+
+  it("pins a chosen auto story into a slot", () => {
+    const stories = [
+      {
+        id: "a",
+        priority: 10,
+        kicker: "A",
+        headline: "Bir",
+        detail: null,
+      },
+      {
+        id: "b",
+        priority: 20,
+        kicker: "B",
+        headline: "İki",
+        detail: null,
+      },
+    ];
+    const slots = autoSlots(5);
+    slots[0] = { ...slots[0], autoStoryId: "b" };
+    const entries = composeLigDefteriEntries(stories, { slots });
+    expect(entries[0]?.id).toBe("b");
+    expect(entries[1]?.id).toBe("a");
+  });
+});
+
+describe("parseLigDefteriSettings", () => {
+  it("falls back to five auto slots", () => {
+    const parsed = parseLigDefteriSettings({ slots: [{ mode: "custom" }] });
+    expect(parsed.slots).toHaveLength(5);
+    expect(parsed.slots[0]?.mode).toBe("custom");
+    expect(parsed.slots[1]?.mode).toBe("auto");
   });
 });
