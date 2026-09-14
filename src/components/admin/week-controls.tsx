@@ -8,13 +8,14 @@ import {
   deleteWeekAction,
   lockWeekAction,
   openWeekAction,
-  saveAndCalculateWeekPointsAction,
+  calculateWeekPointsAction,
   saveWeekScoresAction,
   setBonusMatchAction,
   unlockWeekAction,
 } from "@/app/actions/admin";
 import { BonusBadge, DerbyBadge } from "@/components/badges";
 import { MatchTeamsLine } from "@/components/match-teams-line";
+import { scoreAdminButtons } from "@/lib/admin-scores";
 import { canDeleteMatchFromWeek } from "@/lib/admin-season";
 import { formatKickoff } from "@/lib/format";
 import { canCalculateWeekPoints, effectiveWeekStatus, isKickoffLockElapsed } from "@/lib/week-lock";
@@ -67,22 +68,7 @@ export function AdminWeekControls({
   const bonusCount = matches.filter((m) => m.is_bonus).length;
   const canPublish = week.status === "draft" && matches.length > 0 && bonusCount === 1;
   const canRescore = canCalculateWeekPoints(week, matches);
-  const localScoresComplete =
-    matches.length > 0 &&
-    matches.every((m) => {
-      const row = scores[m.id];
-      if (!row) return false;
-      const home = Number(row.home);
-      const away = Number(row.away);
-      return (
-        row.home !== "" &&
-        row.away !== "" &&
-        Number.isInteger(home) &&
-        Number.isInteger(away) &&
-        home >= 0 &&
-        away >= 0
-      );
-    });
+  const { canSave, canCalculate } = scoreAdminButtons(matches, scores);
 
   function run(
     action: () => Promise<{ error?: string; ok?: true; message?: string }>,
@@ -172,11 +158,7 @@ export function AdminWeekControls({
                   match={match}
                   trailing={
                     <>
-                      {match.is_derby ? (
-                        <span className="muted" style={{ fontSize: "0.85rem" }}>
-                          Derbi — bonus olamaz
-                        </span>
-                      ) : (
+                      {match.is_derby ? null : (
                         <button
                           className={match.is_bonus ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
                           type="button"
@@ -309,36 +291,30 @@ export function AdminWeekControls({
           ))}
 
           <div className="admin-action-row" style={{ marginTop: "0.35rem" }}>
-            {phase === "locked" ? (
-              <button
-                className="btn btn-secondary"
-                type="button"
-                disabled={pending || !localScoresComplete}
-                onClick={() =>
-                  run(
-                    () =>
-                      saveWeekScoresAction({
-                        weekId: week.id,
-                        scores: scoresPayload(),
-                      }),
-                    "Skorlar kaydedildi.",
-                  )
-                }
-              >
-                Kaydet
-              </button>
-            ) : null}
             <button
-              className="btn btn-primary"
+              className="btn btn-secondary"
               type="button"
-              disabled={pending || !localScoresComplete || !canRescore}
+              disabled={pending || !canSave}
               onClick={() =>
                 run(
                   () =>
-                    saveAndCalculateWeekPointsAction({
+                    saveWeekScoresAction({
                       weekId: week.id,
                       scores: scoresPayload(),
                     }),
+                  "Skorlar kaydedildi.",
+                )
+              }
+            >
+              Kaydet
+            </button>
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={pending || !canCalculate || !canRescore}
+              onClick={() =>
+                run(
+                  () => calculateWeekPointsAction(week.id),
                   phase === "done" ? "Puanlar düzeltildi." : "Puanlar hesaplandı.",
                 )
               }
@@ -346,9 +322,13 @@ export function AdminWeekControls({
               {phase === "done" ? "Puanları düzelt" : "Puanları Hesapla"}
             </button>
           </div>
-          {!localScoresComplete ? (
+          {!canSave && !canCalculate ? (
             <p className="muted" style={{ margin: "0.55rem 0 0", fontSize: "0.85rem" }}>
               Tüm skorları doldur.
+            </p>
+          ) : canSave ? (
+            <p className="muted" style={{ margin: "0.55rem 0 0", fontSize: "0.85rem" }}>
+              Önce kaydet, sonra puanları hesapla.
             </p>
           ) : null}
 

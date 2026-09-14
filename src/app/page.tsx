@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LigDefteriBanner } from "@/components/lig-defteri-banner";
 import { LockCountdown } from "@/components/lock-countdown";
 import { PredictionForm } from "@/components/prediction-form";
 import { StandingsTable } from "@/components/standings-table";
@@ -11,6 +12,7 @@ import {
   getStandings,
   getStandingsProgress,
   getWeekKings,
+  getLigDefteriCard,
   latestWeekKingIds,
 } from "@/lib/data";
 import { attachStandingsRankChanges } from "@/lib/standings-rank";
@@ -54,6 +56,17 @@ export default async function HomePage() {
       ? await getPredictionsForMatches(matchIds)
       : [];
 
+  let ligDefteri = null;
+  try {
+    ligDefteri = await getLigDefteriCard({
+      currentWeekLabel: weekData?.week.label ?? null,
+      currentMatches: weekData?.matches ?? [],
+      currentPicks: weekPredictions,
+    });
+  } catch {
+    ligDefteri = null;
+  }
+
   const leaderIds = latestWeekKingIds(weekKings);
 
   return (
@@ -90,6 +103,8 @@ export default async function HomePage() {
           />
         )}
       </section>
+
+      {ligDefteri ? <LigDefteriBanner card={ligDefteri} /> : null}
 
       <section className="stack-md reveal">
         <div className="section-head" style={{ marginBottom: 0 }}>
