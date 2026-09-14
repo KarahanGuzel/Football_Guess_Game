@@ -114,8 +114,8 @@ export function parseLigDefteriSettings(value: unknown): LigDefteriSettings {
     const raw = slotsRaw[index];
     if (!raw || typeof raw !== "object") return slot;
     const row = raw as Partial<LigDefteriSlot>;
-    const mode = row.mode === "custom" ? "custom" : "auto";
-    return {
+    const mode: LigDefteriSlot["mode"] = row.mode === "custom" ? "custom" : "auto";
+    const next: LigDefteriSlot = {
       mode,
       autoStoryId:
         typeof row.autoStoryId === "string" && row.autoStoryId.trim()
@@ -125,6 +125,7 @@ export function parseLigDefteriSettings(value: unknown): LigDefteriSettings {
       headline: typeof row.headline === "string" ? row.headline : "",
       detail: typeof row.detail === "string" ? row.detail : "",
     };
+    return next;
   });
 
   return { slots };
