@@ -89,11 +89,11 @@ insert into tmp_fixtures (week_label, kickoff_at, home_name, away_name) values
   ('SüperLig 5.Hafta', '2026-09-14 20:00:00+03', 'Gaziantep FK', 'Fenerbahçe'),
 
   -- 6. Hafta
-  ('SüperLig 6.Hafta', '2026-09-20 19:00:00+03', 'Trabzonspor', 'Galatasaray'),
-  ('SüperLig 6.Hafta', '2026-09-20 19:00:00+03', 'Başakşehir', 'Gençlerbirliği'),
-  ('SüperLig 6.Hafta', '2026-09-20 19:00:00+03', 'Amed Sportif Faaliyetler', 'Beşiktaş'),
-  ('SüperLig 6.Hafta', '2026-09-20 19:00:00+03', 'Göztepe', 'Çaykur Rizespor'),
-  ('SüperLig 6.Hafta', '2026-09-20 19:00:00+03', 'Fenerbahçe', 'Eyüpspor'),
+  ('SüperLig 6.Hafta', '2026-09-19 20:00:00+03', 'Başakşehir', 'Gençlerbirliği'),
+  ('SüperLig 6.Hafta', '2026-09-19 20:00:00+03', 'Trabzonspor', 'Galatasaray'),
+  ('SüperLig 6.Hafta', '2026-09-20 17:00:00+03', 'Fenerbahçe', 'Eyüpspor'),
+  ('SüperLig 6.Hafta', '2026-09-20 20:00:00+03', 'Göztepe', 'Çaykur Rizespor'),
+  ('SüperLig 6.Hafta', '2026-09-20 20:00:00+03', 'Amed Sportif Faaliyetler', 'Beşiktaş'),
 
   -- 7. Hafta
   ('SüperLig 7.Hafta', '2026-10-11 19:00:00+03', 'Eyüpspor', 'Göztepe'),
